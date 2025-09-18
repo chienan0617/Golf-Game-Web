@@ -1112,6 +1112,16 @@ let cbgg_GLTexture_maxAnisotropicFilterLevel = 0.0,
 cbgg_GLTexture_bind = $this => {
     cbg_Gdx_gl.$glBindTexture($this.$glTarget, $this.$glHandle);
 },
+cbgg_GLTexture_unsafeSetWrap = ($this, $u, $v, $force) => {
+    if ($u !== null && !(!$force && $this.$uWrap === $u)) {
+        cbg_Gdx_gl.$glTexParameteri($this.$glTarget, 10242, $u.$glEnum0);
+        $this.$uWrap = $u;
+    }
+    if ($v !== null && !(!$force && $this.$vWrap === $v)) {
+        cbg_Gdx_gl.$glTexParameteri($this.$glTarget, 10243, $v.$glEnum0);
+        $this.$vWrap = $v;
+    }
+},
 cbgg_GLTexture_unsafeSetAnisotropicFilter = ($this, $level, $force) => {
     let $max, var$4, var$5;
     $max = cbgg_GLTexture_maxAnisotropicFilterLevel;
@@ -1150,112 +1160,11 @@ cbgg_Texture_$callClinit = () => {
     cbgg_Texture_$callClinit = $rt_eraseClinit(cbgg_Texture);
     cbgg_Texture__clinit_();
 },
-cbgg_Texture__init_ = ($this, $data) => {
-    let var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12;
-    cbgg_Texture_$callClinit();
-    var$2 = cgxgbt_TeaGL20_glGenTexture(cbg_Gdx_gl);
-    var$3 = cbgg_Texture$TextureFilter_Nearest;
-    $this.$minFilter = var$3;
-    $this.$magFilter = var$3;
-    var$3 = cbgg_Texture$TextureWrap_ClampToEdge;
-    $this.$uWrap = var$3;
-    $this.$vWrap = var$3;
-    $this.$anisotropicFilterLevel = 1.0;
-    $this.$glTarget = 3553;
-    $this.$glHandle = var$2;
-    var$3 = $this.$data4;
-    if (var$3 !== null && $data.$managed != var$3.$managed) {
-        $data = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_($data, $rt_s(3));
-        $rt_throw($data);
-    }
-    $this.$data4 = $data;
-    var$4 = $this;
-    cbgg_GLTexture_bind(var$4);
-    if ($data !== null) {
-        if (cbgg_TextureData$TextureDataType_Pixmap === cbgg_TextureData$TextureDataType_Custom) {
-            $data = new cbgu_GdxRuntimeException;
-            jl_RuntimeException__init_($data, $rt_s(4));
-            $rt_throw($data);
-        }
-        var$5 = $data;
-        var$6 = var$5.$pixmap;
-        var$7 = var$5.$disposePixmap;
-        if (var$5.$format0 === cbgg_Pixmap_getFormat(var$6))
-            var$8 = var$6;
-        else {
-            var$8 = cbgg_Pixmap__init_(cbgg_Pixmap_getWidth(var$6), cbgg_Pixmap_getHeight(var$6), var$5.$format0);
-            cbgg_Pixmap_setBlending(var$8, cbgg_Pixmap$Blending_None);
-            var$9 = cbgg_Pixmap_getWidth(var$6);
-            var$10 = cbgg_Pixmap_getHeight(var$6);
-            var$3 = var$8.$nativePixmap;
-            var$11 = var$6.$nativePixmap;
-            cbggg_Gdx2DPixmapNative_drawPixmap(var$3.$nativePixmap0, var$11.$nativePixmap0.$basePtr, 0, 0, 0, 0, var$9, var$10);
-            if (var$5.$disposePixmap)
-                cbgg_Pixmap_dispose(var$6);
-            var$7 = 1;
-        }
-        cbg_Gdx_gl.$glPixelStorei(3317, 1);
-        if (!var$5.$useMipMaps)
-            cbg_Gdx_gl.$glTexImage2D(3553, 0, cbgg_Pixmap_getGLInternalFormat(var$8), cbgg_Pixmap_getWidth(var$8), cbgg_Pixmap_getHeight(var$8), 0, cbgg_Pixmap_getGLFormat(var$8), cbgg_Pixmap_getGLType(var$8), cbgg_Pixmap_getPixels(var$8));
-        else {
-            var$2 = cbgg_Pixmap_getWidth(var$8);
-            var$12 = cbgg_Pixmap_getHeight(var$8);
-            if (!cbggg_MipMapGenerator_useHWMipMap)
-                cbggg_MipMapGenerator_generateMipMapCPU(3553, var$8, var$2, var$12);
-            else {
-                var$5 = cbg_Application$ApplicationType_WebGL;
-                if (var$5 !== cbg_Application$ApplicationType_Android && var$5 !== var$5 && var$5 !== cbg_Application$ApplicationType_iOS) {
-                    if (!cgxgbt_TeaGraphics_supportsExtension(cbg_Gdx_graphics, $rt_s(5)) && !cgxgbt_TeaGraphics_supportsExtension(cbg_Gdx_graphics, $rt_s(6)) && !jl_String_equals(jl_Class_getName(jl_Object_getClass(cbg_Gdx_gl20)), $rt_s(7)) && cbg_Gdx_gl30 === null)
-                        cbggg_MipMapGenerator_generateMipMapCPU(3553, var$8, var$2, var$12);
-                    else {
-                        cbg_Gdx_gl.$glTexImage2D(3553, 0, cbgg_Pixmap_getGLInternalFormat(var$8), cbgg_Pixmap_getWidth(var$8), cbgg_Pixmap_getHeight(var$8), 0, cbgg_Pixmap_getGLFormat(var$8), cbgg_Pixmap_getGLType(var$8), cbgg_Pixmap_getPixels(var$8));
-                        cbg_Gdx_gl20.$glGenerateMipmap(3553);
-                    }
-                } else {
-                    cbg_Gdx_gl.$glTexImage2D(3553, 0, cbgg_Pixmap_getGLInternalFormat(var$8), cbgg_Pixmap_getWidth(var$8), cbgg_Pixmap_getHeight(var$8), 0, cbgg_Pixmap_getGLFormat(var$8), cbgg_Pixmap_getGLType(var$8), cbgg_Pixmap_getPixels(var$8));
-                    cbg_Gdx_gl20.$glGenerateMipmap(3553);
-                }
-            }
-        }
-        if (var$7)
-            cbgg_Pixmap_dispose(var$8);
-    }
-    var$3 = $this.$minFilter;
-    var$5 = $this.$magFilter;
-    if (var$3 !== null) {
-        cbg_Gdx_gl.$glTexParameteri(var$4.$glTarget, 10241, var$3.$glEnum);
-        var$4.$minFilter = var$3;
-    }
-    if (var$5 !== null) {
-        cbg_Gdx_gl.$glTexParameteri(var$4.$glTarget, 10240, var$5.$glEnum);
-        var$4.$magFilter = var$5;
-    }
-    var$3 = $this.$uWrap;
-    var$5 = $this.$vWrap;
-    if (var$3 !== null) {
-        cbg_Gdx_gl.$glTexParameteri(var$4.$glTarget, 10242, var$3.$glEnum0);
-        var$4.$uWrap = var$3;
-    }
-    if (var$5 !== null) {
-        cbg_Gdx_gl.$glTexParameteri(var$4.$glTarget, 10243, var$5.$glEnum0);
-        var$4.$vWrap = var$5;
-    }
-    cbgg_GLTexture_unsafeSetAnisotropicFilter(var$4, $this.$anisotropicFilterLevel, 1);
-    cbg_Gdx_gl.$glBindTexture($this.$glTarget, 0);
-    if ($data.$managed)
-        cbgg_Texture_addManagedTexture(cbg_Gdx_app, $this);
-},
-cbgg_Texture__init_0 = var_0 => {
-    let var_1 = new cbgg_Texture();
-    cbgg_Texture__init_(var_1, var_0);
-    return var_1;
-},
 cbgg_Texture_getWidth = $this => {
-    return cbgg_Pixmap_getWidth($this.$data4.$pixmap);
+    return cbgg_Pixmap_getWidth($this.$data4.$pixmap0);
 },
 cbgg_Texture_getHeight = $this => {
-    return cbgg_Pixmap_getHeight($this.$data4.$pixmap);
+    return cbgg_Pixmap_getHeight($this.$data4.$pixmap0);
 },
 cbgg_Texture_toString = $this => {
     let var$1;
@@ -1281,7 +1190,7 @@ function cbgu_Array() {
     let a = this; jl_Object.call(a);
     a.$items = null;
     a.$size1 = 0;
-    a.$ordered = 0;
+    a.$ordered0 = 0;
     a.$iterable = null;
 }
 let cbgu_Array__init_0 = $this => {
@@ -1293,7 +1202,7 @@ cbgu_Array__init_ = () => {
     return var_0;
 },
 cbgu_Array__init_2 = ($this, $ordered, $capacity) => {
-    $this.$ordered = $ordered;
+    $this.$ordered0 = $ordered;
     $this.$items = $rt_createArray(jl_Object, $capacity);
 },
 cbgu_Array__init_1 = (var_0, var_1) => {
@@ -1312,31 +1221,6 @@ cbgu_Array_add = ($this, $value) => {
     var$5 = $this.$size1;
     $this.$size1 = var$5 + 1 | 0;
     $items[var$5] = $value;
-},
-cbgu_Array_removeIndex = ($this, $index) => {
-    let var$2, var$3, $value, $items, var$6, var$7;
-    var$2 = $this.$size1;
-    if ($index >= var$2) {
-        var$3 = new jl_IndexOutOfBoundsException;
-        $value = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($value);
-        jl_AbstractStringBuilder_append0($value, $rt_s(8));
-        $value = jl_StringBuilder_append0($value, $index);
-        jl_AbstractStringBuilder_append0($value, $rt_s(9));
-        jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0($value, $this.$size1)));
-        $rt_throw(var$3);
-    }
-    $items = $this.$items;
-    var$6 = $items.data;
-    $value = var$6[$index];
-    var$7 = var$2 - 1 | 0;
-    $this.$size1 = var$7;
-    if (!$this.$ordered)
-        var$6[$index] = var$6[var$7];
-    else
-        jl_System_fastArraycopy($items, $index + 1 | 0, $items, $index, var$7 - $index | 0);
-    var$6[$this.$size1] = null;
-    return $value;
 },
 cbgu_Array_clear = $this => {
     let var$1, var$2, var$3, var$4, var$5, var$6;
@@ -1399,21 +1283,8 @@ cbgu_Array_iterator = $this => {
         }
     }
     return var$3;
-};
-function cbgu_Json() {
-    let a = this; jl_Object.call(a);
-    a.$typeName = null;
-    a.$usePrototypes = 0;
-    a.$outputType = null;
-    a.$enumNames = 0;
-    a.$typeToFields = null;
-    a.$tagToClass = null;
-    a.$classToTag = null;
-    a.$classToSerializer = null;
-    a.$classToDefaultValues = null;
-    a.$equals1 = null;
-    a.$equals2 = null;
-}
+},
+cbgu_Json = $rt_classWithoutFields();
 function cbgu_ObjectMap() {
     let a = this; jl_Object.call(a);
     a.$size5 = 0;
@@ -1448,7 +1319,7 @@ cbgu_ObjectMap_locateKey = ($this, $key) => {
     let $other, $keyTable, $i;
     if ($key === null) {
         $other = new jl_IllegalArgumentException;
-        jl_RuntimeException__init_($other, $rt_s(10));
+        jl_RuntimeException__init_($other, $rt_s(3));
         $rt_throw($other);
     }
     $keyTable = $this.$keyTable;
@@ -1783,7 +1654,7 @@ jl_Class_getClass = $cls => {
 },
 jl_Class_toString = $this => {
     let var$1, var$2, var$3;
-    var$1 = (!($this.$platformClass.$meta.flags & 2) ? 0 : 1) ? $rt_s(11) : !jl_Class_isPrimitive($this) ? $rt_s(12) : $rt_s(13);
+    var$1 = (!($this.$platformClass.$meta.flags & 2) ? 0 : 1) ? $rt_s(4) : !jl_Class_isPrimitive($this) ? $rt_s(5) : $rt_s(6);
     var$2 = jl_Class_getName($this);
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
@@ -1803,14 +1674,14 @@ jl_Class_getSimpleName = $this => {
             $simpleName = jl_Class_getSimpleName(jl_Class_getComponentType($this));
             var$2 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$2);
-            jl_StringBuilder_append(jl_StringBuilder_append(var$2, $simpleName), $rt_s(14));
+            jl_StringBuilder_append(jl_StringBuilder_append(var$2, $simpleName), $rt_s(7));
             $simpleName = jl_AbstractStringBuilder_toString(var$2);
         } else {
             $simpleName = $this.$platformClass.$meta.enclosingClass;
             if (($simpleName === null ? null : jl_Class_getClass($simpleName)) !== null) {
                 $simpleName = $rt_str($this.$platformClass.$meta.simpleName);
                 if ($simpleName === null)
-                    $simpleName = $rt_s(13);
+                    $simpleName = $rt_s(6);
             } else {
                 $simpleName = otp_Platform_getName($this.$platformClass);
                 $lastDollar = jl_String_lastIndexOf1($simpleName, 36);
@@ -1821,7 +1692,7 @@ jl_Class_getSimpleName = $this => {
                 } else {
                     $simpleName = jl_String_substring0($simpleName, $lastDollar + 1 | 0);
                     if (jl_String_charAt($simpleName, 0) >= 48 && jl_String_charAt($simpleName, 0) <= 57)
-                        $simpleName = $rt_s(13);
+                        $simpleName = $rt_s(6);
                 }
             }
         }
@@ -1885,7 +1756,7 @@ jl_Class_getDeclaredConstructors = $this => {
             while ($i < $jsMethods.length) {
                 var$4 = $jsMethods[$i];
                 $jsMethod = var$4 === null ? null : !(var$4 instanceof $rt_objcls()) ? var$4 : otji_JSWrapper_unwrap(var$4);
-                if (jl_String_equals($rt_str($jsMethod.name), $rt_s(15))) {
+                if (jl_String_equals($rt_str($jsMethod.name), $rt_s(8))) {
                     $jsParameterTypes = $jsMethod.parameterTypes;
                     $parameterTypes = $rt_createArray(jl_Class, $jsParameterTypes.length);
                     var$8 = $parameterTypes.data;
@@ -1906,7 +1777,7 @@ jl_Class_getDeclaredConstructors = $this => {
                         $jsMethod = null;
                     else {
                         $jsMethod = new otcir_MethodCaller$forJs$lambda$_1_0;
-                        $jsMethod.$_023 = $jsParameterTypes;
+                        $jsMethod.$_022 = $jsParameterTypes;
                     }
                     var$8 = var$8.data;
                     var$11.$declaringClass = $this;
@@ -1963,21 +1834,6 @@ jl_Class_getConstructor = ($this, $parameterTypes) => {
     return $constructor;
 },
 otji_JS = $rt_classWithoutFields(),
-otji_JS_wrap = $array => {
-    let var$2, $result, $i, var$5;
-    if ($array === null)
-        return null;
-    $array = $array.data;
-    var$2 = $array.length;
-    $result = new Int8Array(var$2);
-    $i = 0;
-    while ($i < var$2) {
-        var$5 = $array[$i];
-        $result[$i] = var$5;
-        $i = $i + 1 | 0;
-    }
-    return $result;
-},
 otji_JS_function = (var$1, var$2) => {
     let name = 'jso$functor$' + var$2;
     let result = var$1[name];
@@ -2118,12 +1974,12 @@ jl_Throwable_printStackTrace0 = ($this, $stream) => {
     if ($message !== null) {
         var$2 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$2);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(16)), $message);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(9)), $message);
         otcic_JSStderrPrintStream_print(var$3, jl_AbstractStringBuilder_toString(var$2));
     }
     a: {
         var$2 = $stream;
-        otcic_JSStderrPrintStream_print(var$2, $rt_s(17));
+        otcic_JSStderrPrintStream_print(var$2, $rt_s(10));
         var$5 = $this.$stackTrace;
         if (var$5 !== null) {
             var$5 = var$5.data;
@@ -2133,8 +1989,8 @@ jl_Throwable_printStackTrace0 = ($this, $stream) => {
                 if (var$7 >= var$6)
                     break a;
                 $element = var$5[var$7];
-                otcic_JSStderrPrintStream_print(var$3, $rt_s(18));
-                var$9 = $rt_s(19);
+                otcic_JSStderrPrintStream_print(var$3, $rt_s(11));
+                var$9 = $rt_s(12);
                 if ($element !== null)
                     var$9 = $element.$toString();
                 otcic_JsConsolePrintStream_println(var$2, var$9);
@@ -2144,7 +2000,7 @@ jl_Throwable_printStackTrace0 = ($this, $stream) => {
     }
     var$2 = $this.$cause;
     if (var$2 !== null && var$2 !== $this) {
-        otcic_JSStderrPrintStream_print(var$3, $rt_s(20));
+        otcic_JSStderrPrintStream_print(var$3, $rt_s(13));
         jl_Throwable_printStackTrace0($this.$cause, $stream);
     }
 },
@@ -2477,7 +2333,7 @@ jl_String_toCharArray = $this => {
     return $array;
 },
 jl_String_valueOf = $obj => {
-    return $obj === null ? $rt_s(19) : $obj.$toString();
+    return $obj === null ? $rt_s(12) : $obj.$toString();
 },
 jl_String_valueOf0 = $i => {
     let var$2;
@@ -2520,7 +2376,7 @@ jl_String_split = ($this, $regex) => {
     var$2 = var$2;
     if (!var$2.$nativeString.length) {
         var$6 = $rt_createArray(jl_String, 1);
-        var$6.data[0] = $rt_s(13);
+        var$6.data[0] = $rt_s(6);
     } else {
         while (jur_Matcher_find($regex)) {
             var$4 = var$4 + 1 | 0;
@@ -2586,7 +2442,7 @@ jl_Integer__init_ = var_0 => {
 jl_Integer_toHexString = $i => {
     let var$2, var$3, var$4, var$5, var$6, var$7;
     if (!$i)
-        var$2 = $rt_s(21);
+        var$2 = $rt_s(14);
     else {
         var$3 = (((32 - jl_Integer_numberOfLeadingZeros($i) | 0) + 4 | 0) - 1 | 0) / 4 | 0;
         var$4 = $rt_createCharArray(var$3);
@@ -2610,14 +2466,14 @@ jl_Integer_parseInt = ($s, $radix) => {
     if ($s !== null)
         return jl_Integer_parseIntImpl($s, 0, $s.$nativeString.length, $radix);
     $s = new jl_NumberFormatException;
-    jl_RuntimeException__init_($s, $rt_s(22));
+    jl_RuntimeException__init_($s, $rt_s(15));
     $rt_throw($s);
 },
 jl_Integer_parseIntImpl = ($s, $beginIndex, $endIndex, $radix) => {
     let $negative, var$6, $value, $maxValue, var$9, $digit, var$11, var$12;
     if ($beginIndex == $endIndex) {
         $s = new jl_NumberFormatException;
-        jl_RuntimeException__init_($s, $rt_s(23));
+        jl_RuntimeException__init_($s, $rt_s(16));
         $rt_throw($s);
     }
     if ($radix >= 2 && $radix <= 36) {
@@ -2652,7 +2508,7 @@ jl_Integer_parseIntImpl = ($s, $beginIndex, $endIndex, $radix) => {
                 $s = jl_String_valueOf(jl_String_substring($s, $beginIndex, $endIndex));
                 var$12 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$12);
-                jl_StringBuilder_append(jl_StringBuilder_append(var$12, $rt_s(24)), $s);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$12, $rt_s(17)), $s);
                 jl_RuntimeException__init_(var$11, jl_AbstractStringBuilder_toString(var$12));
                 $rt_throw(var$11);
             }
@@ -2661,13 +2517,13 @@ jl_Integer_parseIntImpl = ($s, $beginIndex, $endIndex, $radix) => {
                 $s = jl_String_valueOf(jl_String_substring($s, $beginIndex, $endIndex));
                 var$12 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$12);
-                jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$12, $rt_s(25)), $radix), $rt_s(16)), $s);
+                jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$12, $rt_s(18)), $radix), $rt_s(9)), $s);
                 jl_RuntimeException__init_(var$11, jl_AbstractStringBuilder_toString(var$12));
                 $rt_throw(var$11);
             }
             if ($value > $maxValue) {
                 $s = new jl_NumberFormatException;
-                jl_RuntimeException__init_($s, $rt_s(26));
+                jl_RuntimeException__init_($s, $rt_s(19));
                 $rt_throw($s);
             }
             $value = $rt_imul($radix, $value) + $digit | 0;
@@ -2678,7 +2534,7 @@ jl_Integer_parseIntImpl = ($s, $beginIndex, $endIndex, $radix) => {
                 $s = jl_String_valueOf(jl_String_substring($s, $beginIndex, $endIndex));
                 var$12 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$12);
-                jl_StringBuilder_append(jl_StringBuilder_append(var$12, $rt_s(27)), $s);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$12, $rt_s(20)), $s);
                 jl_RuntimeException__init_(var$11, jl_AbstractStringBuilder_toString(var$12));
                 $rt_throw(var$11);
             }
@@ -2691,7 +2547,7 @@ jl_Integer_parseIntImpl = ($s, $beginIndex, $endIndex, $radix) => {
     $s = new jl_NumberFormatException;
     var$11 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$11);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$11, $rt_s(28)), $radix);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$11, $rt_s(21)), $radix);
     jl_RuntimeException__init_($s, jl_AbstractStringBuilder_toString(var$11));
     $rt_throw($s);
 },
@@ -2790,7 +2646,7 @@ jl_Integer__clinit_ = () => {
 function jl_AbstractStringBuilder() {
     let a = this; jl_Object.call(a);
     a.$buffer = null;
-    a.$length1 = 0;
+    a.$length0 = 0;
 }
 let jl_AbstractStringBuilder__init_ = $this => {
     jl_AbstractStringBuilder__init_0($this, 16);
@@ -2809,22 +2665,22 @@ jl_AbstractStringBuilder__init_1 = var_0 => {
     return var_1;
 },
 jl_AbstractStringBuilder_append0 = ($this, $string) => {
-    return $this.$insert($this.$length1, $string);
+    return $this.$insert($this.$length0, $string);
 },
 jl_AbstractStringBuilder_insert = ($this, $index, $string) => {
     let $i, $i_0, var$5, var$6;
-    if ($index >= 0 && $index <= $this.$length1) {
+    if ($index >= 0 && $index <= $this.$length0) {
         if ($string === null)
-            $string = $rt_s(19);
+            $string = $rt_s(12);
         else if (jl_String_isEmpty($string))
             return $this;
-        $this.$ensureCapacity($this.$length1 + $string.$nativeString.length | 0);
-        $i = $this.$length1 - 1 | 0;
+        $this.$ensureCapacity($this.$length0 + $string.$nativeString.length | 0);
+        $i = $this.$length0 - 1 | 0;
         while ($i >= $index) {
             $this.$buffer.data[$i + $string.$nativeString.length | 0] = $this.$buffer.data[$i];
             $i = $i + (-1) | 0;
         }
-        $this.$length1 = $this.$length1 + $string.$nativeString.length | 0;
+        $this.$length0 = $this.$length0 + $string.$nativeString.length | 0;
         $i_0 = 0;
         while ($i_0 < $string.$nativeString.length) {
             var$5 = $this.$buffer.data;
@@ -2840,7 +2696,7 @@ jl_AbstractStringBuilder_insert = ($this, $index, $string) => {
     $rt_throw($string);
 },
 jl_AbstractStringBuilder_append2 = ($this, $value, $radix) => {
-    return jl_AbstractStringBuilder_insert2($this, $this.$length1, $value, $radix);
+    return jl_AbstractStringBuilder_insert2($this, $this.$length0, $value, $radix);
 },
 jl_AbstractStringBuilder_insert2 = ($this, $target, $value, $radix) => {
     let $positive, var$5, var$6, $pos, $sz, $posLimit, var$10;
@@ -3094,7 +2950,7 @@ jl_AbstractStringBuilder_trailingDecimalZeros = $n => {
     return $result;
 },
 jl_AbstractStringBuilder_append = ($this, $c) => {
-    return $this.$insert1($this.$length1, $c);
+    return $this.$insert1($this.$length0, $c);
 },
 jl_AbstractStringBuilder_insert1 = ($this, $index, $c) => {
     jl_AbstractStringBuilder_insertSpace($this, $index, $index + 1 | 0);
@@ -3110,10 +2966,10 @@ jl_AbstractStringBuilder_ensureCapacity = ($this, $capacity) => {
     $this.$buffer = ju_Arrays_copyOf1($this.$buffer, $newLength);
 },
 jl_AbstractStringBuilder_toString = $this => {
-    return jl_String__init_0($this.$buffer, 0, $this.$length1);
+    return jl_String__init_0($this.$buffer, 0, $this.$length0);
 },
 jl_AbstractStringBuilder_append3 = ($this, $chars, $offset, $len) => {
-    return $this.$insert2($this.$length1, $chars, $offset, $len);
+    return $this.$insert2($this.$length0, $chars, $offset, $len);
 },
 jl_AbstractStringBuilder_insert0 = ($this, $index, $chars, $offset, $len) => {
     let var$5, var$6, var$7, var$8;
@@ -3135,7 +2991,7 @@ jl_AbstractStringBuilder_append1 = ($this, $chars) => {
 },
 jl_AbstractStringBuilder_insertSpace = ($this, $start, $end) => {
     let var$3, $sz, $i, var$6;
-    var$3 = $this.$length1;
+    var$3 = $this.$length0;
     $sz = var$3 - $start | 0;
     $this.$ensureCapacity((var$3 + $end | 0) - $start | 0);
     $i = $sz - 1 | 0;
@@ -3144,7 +3000,7 @@ jl_AbstractStringBuilder_insertSpace = ($this, $start, $end) => {
         var$6[$end + $i | 0] = var$6[$start + $i | 0];
         $i = $i + (-1) | 0;
     }
-    $this.$length1 = $this.$length1 + ($end - $start | 0) | 0;
+    $this.$length0 = $this.$length0 + ($end - $start | 0) | 0;
 },
 jl_Appendable = $rt_classWithoutFields(0),
 jl_StringBuilder = $rt_classWithoutFields(jl_AbstractStringBuilder),
@@ -3158,13 +3014,13 @@ jl_StringBuilder__init_ = () => {
 },
 jl_StringBuilder_append = ($this, $obj) => {
     let var$2, var$3;
-    var$2 = $this.$length1;
+    var$2 = $this.$length0;
     var$3 = $this;
-    $obj = $obj === null ? $rt_s(19) : $obj.$toString();
+    $obj = $obj === null ? $rt_s(12) : $obj.$toString();
     jl_AbstractStringBuilder_insert(var$3, var$2, $obj);
     return $this;
 },
-jl_StringBuilder_append3 = ($this, $string) => {
+jl_StringBuilder_append2 = ($this, $string) => {
     jl_AbstractStringBuilder_append0($this, $string);
     return $this;
 },
@@ -3172,22 +3028,14 @@ jl_StringBuilder_append0 = ($this, $value) => {
     jl_AbstractStringBuilder_append2($this, $value, 10);
     return $this;
 },
-jl_StringBuilder_append5 = ($this, $value) => {
+jl_StringBuilder_append4 = ($this, $value) => {
     let var$2;
-    var$2 = $this.$length1;
+    var$2 = $this.$length0;
     jl_AbstractStringBuilder_insert3($this, var$2, $value);
     return $this;
 },
-jl_StringBuilder_append2 = ($this, $c) => {
+jl_StringBuilder_append1 = ($this, $c) => {
     jl_AbstractStringBuilder_append($this, $c);
-    return $this;
-},
-jl_StringBuilder_append1 = ($this, $b) => {
-    let var$2, var$3, var$4;
-    var$2 = $this.$length1;
-    var$3 = $this;
-    var$4 = !$b ? $rt_s(29) : $rt_s(30);
-    jl_AbstractStringBuilder_insert(var$3, var$2, var$4);
     return $this;
 },
 jl_StringBuilder_delete = ($this, $start, $end) => {
@@ -3195,13 +3043,13 @@ jl_StringBuilder_delete = ($this, $start, $end) => {
     if ($start >= 0) {
         var$3 = $rt_compare($start, $end);
         if (var$3 <= 0) {
-            var$4 = $this.$length1;
+            var$4 = $this.$length0;
             if ($start <= var$4) {
                 if (var$3) {
                     if ($end > var$4)
                         $end = var$4;
                     var$5 = var$4 - $end | 0;
-                    $this.$length1 = var$4 - ($end - $start | 0) | 0;
+                    $this.$length0 = var$4 - ($end - $start | 0) | 0;
                     var$4 = 0;
                     while (var$4 < var$5) {
                         var$6 = $this.$buffer.data;
@@ -3224,10 +3072,10 @@ jl_StringBuilder_delete = ($this, $start, $end) => {
 jl_StringBuilder_deleteCharAt = ($this, $index) => {
     let var$2, var$3, var$4, var$5;
     if ($index >= 0) {
-        var$2 = $this.$length1;
+        var$2 = $this.$length0;
         if ($index < var$2) {
             var$2 = var$2 - 1 | 0;
-            $this.$length1 = var$2;
+            $this.$length0 = var$2;
             while ($index < var$2) {
                 var$3 = $this.$buffer.data;
                 var$4 = $index + 1 | 0;
@@ -3244,7 +3092,7 @@ jl_StringBuilder_deleteCharAt = ($this, $index) => {
 jl_StringBuilder_subSequence = ($this, var$1, var$2) => {
     let var$3;
     var$3 = $this;
-    if (var$1 <= var$2 && var$1 >= 0 && var$2 <= var$3.$length1)
+    if (var$1 <= var$2 && var$1 >= 0 && var$2 <= var$3.$length0)
         return jl_String__init_0(var$3.$buffer, var$1, var$2 - var$1 | 0);
     var$3 = new jl_IndexOutOfBoundsException;
     jl_Exception__init_(var$3);
@@ -3254,12 +3102,12 @@ jl_StringBuilder_insert = ($this, var$1, var$2, var$3, var$4) => {
     jl_AbstractStringBuilder_insert0($this, var$1, var$2, var$3, var$4);
     return $this;
 },
-jl_StringBuilder_append4 = ($this, var$1, var$2, var$3) => {
+jl_StringBuilder_append3 = ($this, var$1, var$2, var$3) => {
     jl_AbstractStringBuilder_append3($this, var$1, var$2, var$3);
     return $this;
 },
 jl_StringBuilder_length = $this => {
-    return $this.$length1;
+    return $this.$length0;
 },
 jl_StringBuilder_toString = $this => {
     return jl_AbstractStringBuilder_toString($this);
@@ -3289,8 +3137,8 @@ dcgt_TeaVMLauncher_main = $args => {
     $config = new cgxgbt_TeaApplicationConfiguration;
     $config.$useGL30 = 0;
     $config.$preloadAssets = 1;
-    $config.$storagePrefix = $rt_s(31);
-    $config.$localStoragePrefix = $rt_s(32);
+    $config.$storagePrefix = $rt_s(22);
+    $config.$localStoragePrefix = $rt_s(23);
     $config.$shouldEncodePreference = 0;
     $config.$showDownloadLogs = 0;
     $config.$width = (-1);
@@ -3304,9 +3152,9 @@ dcgt_TeaVMLauncher_main = $args => {
     $config.$preserveDrawingBuffer = 0;
     $config.$useDebugGL = 0;
     $config.$usePhysicalPixels = 0;
-    $config.$powerPreference = $rt_s(33);
+    $config.$powerPreference = $rt_s(24);
     $config.$baseUrlProvider = new cgxgbtu_TeaDefaultBaseUrlProvider;
-    $config.$canvasID = $rt_s(34);
+    $config.$canvasID = $rt_s(25);
     $config.$width = 0;
     $config.$height = 0;
     var$3 = new cgxgbt_TeaApplication;
@@ -3429,25 +3277,25 @@ cgxgbt_TeaApplication_agentInfo = null,
 cgxgbt_TeaApplication_init = $this => {
     let $assetDownload, $hostPageBaseURL, var$3, var$4, $map, $instance, var$7, var$8;
     cgxgbt_TeaApplication_agentInfo = cgxgbta_TeaWebAgent_createAgent$js_body$_1();
-    jl_System_setProperty($rt_s(35), $rt_s(13));
-    jl_System_setProperty($rt_s(36), $rt_str(cgxgbt_TeaApplication_agentInfo.userAgent));
+    jl_System_setProperty($rt_s(26), $rt_s(6));
+    jl_System_setProperty($rt_s(27), $rt_str(cgxgbt_TeaApplication_agentInfo.userAgent));
     if (cgxgbt_TeaApplication_agentInfo.windows ? 1 : 0)
-        jl_System_setProperty($rt_s(37), $rt_s(38));
+        jl_System_setProperty($rt_s(28), $rt_s(29));
     else if (cgxgbt_TeaApplication_agentInfo.macOS ? 1 : 0)
-        jl_System_setProperty($rt_s(37), $rt_s(39));
+        jl_System_setProperty($rt_s(28), $rt_s(30));
     else if (!(cgxgbt_TeaApplication_agentInfo.linux ? 1 : 0))
-        jl_System_setProperty($rt_s(37), $rt_s(40));
+        jl_System_setProperty($rt_s(28), $rt_s(31));
     else
-        jl_System_setProperty($rt_s(37), $rt_s(41));
+        jl_System_setProperty($rt_s(28), $rt_s(32));
     $this.$graphics = cgxgbt_TeaGraphics__init_0($this.$config);
     $assetDownload = new cgxgbta_AssetDownloadImpl;
     $assetDownload.$showLogs = $this.$config.$showDownloadLogs;
     cgxgbta_AssetInstance_downloaderInstance = $assetDownload;
     $hostPageBaseURL = $rt_str((cgxgbtdi_TeaWindow_get()).$window0.location.href);
-    var$3 = $hostPageBaseURL.$nativeString.length - $rt_s(42).$nativeString.length | 0;
+    var$3 = $hostPageBaseURL.$nativeString.length - $rt_s(33).$nativeString.length | 0;
     var$4 = 0;
-    $map = $rt_s(42);
-    $instance = $rt_s(42);
+    $map = $rt_s(33);
+    $instance = $rt_s(33);
     a: {
         while (var$4 <= var$3) {
             var$7 = 0;
@@ -3465,7 +3313,7 @@ cgxgbt_TeaApplication_init = $this => {
         var$3 = 0;
     }
     if (var$3)
-        $hostPageBaseURL = jl_String_replace(jl_String_replace(jl_String_replace($hostPageBaseURL, $rt_s(43), $rt_s(13)), $rt_s(44), $rt_s(13)), $rt_s(45), $rt_s(13));
+        $hostPageBaseURL = jl_String_replace(jl_String_replace(jl_String_replace($hostPageBaseURL, $rt_s(34), $rt_s(6)), $rt_s(35), $rt_s(6)), $rt_s(36), $rt_s(6));
     var$4 = jl_String_indexOf($hostPageBaseURL, 63, 0);
     if (var$4 >= 0)
         $hostPageBaseURL = jl_String_substring($hostPageBaseURL, 0, var$4);
@@ -3520,12 +3368,12 @@ cgxgbt_TeaApplication_init = $this => {
     $assetDownload = cgxgbt_DefaultTeaAudio__init_0();
     $this.$audio = $assetDownload;
     cbg_Gdx_audio = $assetDownload;
-    cgxgbtdi_TeaWindow_addEventListener($this.$window, $rt_s(46), otji_JSWrapper_unwrap(cgxgbt_TeaApplication$1__init_0($this)));
+    cgxgbtdi_TeaWindow_addEventListener($this.$window, $rt_s(37), otji_JSWrapper_unwrap(cgxgbt_TeaApplication$1__init_0($this)));
     $assetDownload = cgxgbtdi_TeaWindow_getDocument($this.$window);
     $map = cgxgbt_TeaApplication$2__init_0($this);
     $assetDownload.addEventListener("visibilitychange", otji_JS_function(otji_JSWrapper_unwrap($map), "handleEvent"));
     if (cgxgbt_TeaApplicationConfiguration_isAutoSizeApplication($this.$config))
-        cgxgbtdi_TeaWindow_addEventListener($this.$window, $rt_s(47), otji_JSWrapper_unwrap(cgxgbt_TeaApplication$3__init_0($this)));
+        cgxgbtdi_TeaWindow_addEventListener($this.$window, $rt_s(38), otji_JSWrapper_unwrap(cgxgbt_TeaApplication$3__init_0($this)));
     cgxgbtdi_TeaWindow_requestAnimationFrame($this.$window, $this);
 },
 cgxgbt_TeaApplication_run = $this => {
@@ -3575,7 +3423,7 @@ cgxgbt_TeaApplication_run = $this => {
                                 default:
                                     break c;
                             }
-                            cgxgbta_AssetLoadImpl_preload($this.$assetLoader, $this.$config, $rt_s(48));
+                            cgxgbta_AssetLoadImpl_preload($this.$assetLoader, $this.$config, $rt_s(39));
                             $this.$initState = cgxgbt_TeaApplication$AppState_DOWNLOAD_ASSETS;
                             break c;
                         }
@@ -3593,7 +3441,7 @@ cgxgbt_TeaApplication_run = $this => {
                                 if ($progressBar !== null) {
                                     $t = $progressBar.style;
                                     $element = jl_StringBuilder__init_();
-                                    jl_StringBuilder_append2(jl_StringBuilder_append0($element, $percentage), 37);
+                                    jl_StringBuilder_append1(jl_StringBuilder_append0($element, $percentage), 37);
                                     $t.setProperty("width", $rt_ustr(jl_StringBuilder_toString($element)));
                                 }
                             }
@@ -3686,34 +3534,34 @@ cgxgbt_TeaApplication_step = ($this, $appListener) => {
         $appListener = new dcgb_UpdateThread;
         $appListener.$running = 1;
         dcgb_GameLoop_updateThread = $appListener;
-        var$7 = jl_Thread__init_($appListener, $rt_s(49));
+        var$7 = jl_Thread__init_($appListener, $rt_s(40));
         dcgb_GameLoop_thread = var$7;
         $appListener = new jl_Thread$start$lambda$_4_0;
         $appListener.$_09 = var$7;
         otp_Platform_startThread($appListener);
         $appListener = new dcgb_RootObject;
-        dcgb_GameObject__init_($appListener, $rt_s(50));
+        dcgb_GameObject__init_($appListener, $rt_s(41));
         var$8 = new dcgbs_Scene;
         var$9 = $rt_createArray(dcgb_GameObject, 1);
         var$10 = var$9.data;
         var$7 = new dcgcc_ClassicalPage;
-        dcgb_GameObject__init_(var$7, $rt_s(51));
+        dcgb_GameObject__init_(var$7, $rt_s(42));
         var$11 = new dcgbs_Scene;
         var$12 = $rt_createArray(dcgb_GameObject, 1);
         var$13 = var$12.data;
         var$14 = new dcgcc_Test;
-        dcgb_GameObject__init_(var$14, $rt_s(52));
+        dcgb_GameObject__init_(var$14, $rt_s(43));
         var$14.$renderPosition = cbgm_Vector2__init_0();
         var$14.$size10 = dcgbf_Size_zero();
         var$14.$gridSize = 30;
         var$13[0] = var$14;
-        dcgbs_Scene__init_(var$11, $rt_s(53), var$12);
+        dcgbs_Scene__init_(var$11, $rt_s(44), var$12);
         dcgbs_SceneManager_addScene(var$11);
-        dcgbs_SceneManager_pushToScene($rt_s(53));
+        dcgbs_SceneManager_pushToScene($rt_s(44));
         var$10[0] = var$7;
-        dcgbs_Scene__init_(var$8, $rt_s(54), var$9);
+        dcgbs_Scene__init_(var$8, $rt_s(45), var$9);
         dcgbs_SceneManager_addScene(var$8);
-        dcgbs_SceneManager_pushToScene($rt_s(54));
+        dcgbs_SceneManager_pushToScene($rt_s(45));
         dcgb_GameRegistry_add($appListener);
         $resizeBypass = 1;
     }
@@ -3748,7 +3596,7 @@ cgxgbt_TeaApplication_step = ($this, $appListener) => {
                 $appListener = dcgb_Game_batch;
                 if ($appListener.$drawing) {
                     var$15 = new jl_IllegalStateException;
-                    jl_RuntimeException__init_(var$15, $rt_s(55));
+                    jl_RuntimeException__init_(var$15, $rt_s(46));
                     $rt_throw(var$15);
                 }
                 $appListener.$renderCalls = 0;
@@ -3765,17 +3613,17 @@ cgxgbt_TeaApplication_step = ($this, $appListener) => {
                 cbgm_Matrix4_mul(cbgm_Matrix4_set($appListener.$combinedMatrix, $appListener.$projectionMatrix.$val), $appListener.$transformMatrix);
                 var$15 = $appListener.$customShader;
                 if (var$15 !== null) {
-                    var$15.$setUniformMatrix($rt_s(56), $appListener.$combinedMatrix);
-                    $appListener.$customShader.$setUniformi($rt_s(57), 0);
+                    var$15.$setUniformMatrix($rt_s(47), $appListener.$combinedMatrix);
+                    $appListener.$customShader.$setUniformi($rt_s(48), 0);
                 } else {
                     var$15 = $appListener.$shader;
                     var$18 = $appListener.$combinedMatrix;
-                    $width = cbggg_ShaderProgram_fetchUniformLocation(var$15, $rt_s(56));
+                    $width = cbggg_ShaderProgram_fetchUniformLocation(var$15, $rt_s(47));
                     var$7 = cbg_Gdx_gl20;
                     cbggg_ShaderProgram_checkManaged(var$15);
                     var$9 = var$18.$val;
                     cgxgbt_TeaGL20_glUniformMatrix4fv(var$7, $width, 1, 0, var$9, 0);
-                    cbggg_ShaderProgram_setUniformi($appListener.$shader, $rt_s(57), 0);
+                    cbggg_ShaderProgram_setUniformi($appListener.$shader, $rt_s(48), 0);
                 }
                 $appListener.$drawing = 1;
                 var$15 = juc_CopyOnWriteArrayList_iterator(dcgb_GameRegistry_gameObjects);
@@ -3797,29 +3645,32 @@ cgxgbt_TeaApplication_step = ($this, $appListener) => {
     var$7 = new jl_IndexOutOfBoundsException;
     var$15 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$15);
-    jl_AbstractStringBuilder_append0(var$15, $rt_s(8));
+    jl_AbstractStringBuilder_append0(var$15, $rt_s(49));
     var$15 = jl_StringBuilder_append0(var$15, $i);
-    jl_AbstractStringBuilder_append0(var$15, $rt_s(9));
+    jl_AbstractStringBuilder_append0(var$15, $rt_s(50));
     jl_RuntimeException__init_(var$7, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$15, $appListener.$size1)));
     $rt_throw(var$7);
+},
+cgxgbt_TeaApplication_getType = $this => {
+    return cbg_Application$ApplicationType_WebGL;
 },
 cgxgbt_TeaApplication_initGdx = $this => {
     let var$1, var$2;
     var$1 = $this.$assetLoader;
     var$2 = new cgxgbt_TeaApplication$4;
     var$2.$this$045 = $this;
-    cgxgbta_AssetLoadImpl_loadScript(var$1, $rt_s(58), var$2);
+    cgxgbta_AssetLoadImpl_loadScript(var$1, $rt_s(51), var$2);
 },
 cgxgbt_TeaApplication_initSound = $this => {
     let var$1, var$2;
     var$1 = $this.$assetLoader;
     var$2 = new cgxgbt_TeaApplication$5;
     var$2.$this$028 = $this;
-    cgxgbta_AssetLoadImpl_loadScript(var$1, $rt_s(59), var$2);
+    cgxgbta_AssetLoadImpl_loadScript(var$1, $rt_s(52), var$2);
 },
 cgxgbt_TeaApplication__clinit_ = () => {
-    cgxgbt_TeaApplication_WEB_SCRIPT_PATH = $rt_s(60);
-    cgxgbt_TeaApplication_WEB_ASSET_PATH = $rt_s(61);
+    cgxgbt_TeaApplication_WEB_SCRIPT_PATH = $rt_s(53);
+    cgxgbt_TeaApplication_WEB_ASSET_PATH = $rt_s(54);
 },
 cbg_ApplicationListener = $rt_classWithoutFields(0),
 cbg_ApplicationAdapter = $rt_classWithoutFields(),
@@ -3897,10 +3748,10 @@ function cbgu_IntArray() {
     let a = this; jl_Object.call(a);
     a.$items0 = null;
     a.$size2 = 0;
-    a.$ordered0 = 0;
+    a.$ordered = 0;
 }
 let cbgu_IntArray__init_0 = ($this, $ordered, $capacity) => {
-    $this.$ordered0 = $ordered;
+    $this.$ordered = $ordered;
     $this.$items0 = $rt_createIntArray($capacity);
 },
 cbgu_IntArray__init_ = (var_0, var_1) => {
@@ -3931,9 +3782,9 @@ cbgu_IntArray_get = ($this, $index) => {
     var$2 = new jl_IndexOutOfBoundsException;
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_AbstractStringBuilder_append0(var$3, $rt_s(8));
+    jl_AbstractStringBuilder_append0(var$3, $rt_s(49));
     var$3 = jl_StringBuilder_append0(var$3, $index);
-    jl_AbstractStringBuilder_append0(var$3, $rt_s(9));
+    jl_AbstractStringBuilder_append0(var$3, $rt_s(50));
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$3, $this.$size2)));
     $rt_throw(var$2);
 },
@@ -4239,7 +4090,7 @@ let cbgm_Interpolation$BounceOut__init_ = ($this, $bounces) => {
     var$5 = new jl_IllegalArgumentException;
     var$6 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$6);
-    jl_AbstractStringBuilder_append0(var$6, $rt_s(62));
+    jl_AbstractStringBuilder_append0(var$6, $rt_s(55));
     jl_RuntimeException__init_(var$5, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$6, $bounces)));
     $rt_throw(var$5);
 },
@@ -4649,19 +4500,19 @@ cgxgbt_TeaApplication$AppState_$VALUES = null,
 cgxgbt_TeaApplication$AppState__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cgxgbt_TeaApplication$AppState;
-    jl_Enum__init_(var$1, $rt_s(63), 0);
+    jl_Enum__init_(var$1, $rt_s(56), 0);
     cgxgbt_TeaApplication$AppState_INIT = var$1;
     var$1 = new cgxgbt_TeaApplication$AppState;
-    jl_Enum__init_(var$1, $rt_s(64), 1);
+    jl_Enum__init_(var$1, $rt_s(57), 1);
     cgxgbt_TeaApplication$AppState_PRELOAD_ASSETS = var$1;
     var$1 = new cgxgbt_TeaApplication$AppState;
-    jl_Enum__init_(var$1, $rt_s(65), 2);
+    jl_Enum__init_(var$1, $rt_s(58), 2);
     cgxgbt_TeaApplication$AppState_DOWNLOAD_ASSETS = var$1;
     var$1 = new cgxgbt_TeaApplication$AppState;
-    jl_Enum__init_(var$1, $rt_s(66), 3);
+    jl_Enum__init_(var$1, $rt_s(59), 3);
     cgxgbt_TeaApplication$AppState_APP_CREATE = var$1;
     var$1 = new cgxgbt_TeaApplication$AppState;
-    jl_Enum__init_(var$1, $rt_s(67), 4);
+    jl_Enum__init_(var$1, $rt_s(60), 4);
     cgxgbt_TeaApplication$AppState_APP_LOOP = var$1;
     var$2 = $rt_createArray(cgxgbt_TeaApplication$AppState, 5);
     var$3 = var$2.data;
@@ -4805,7 +4656,7 @@ otji_JSWrapper_wrap = $jsNumber => {
     if ($jsNumber === null)
         return null;
     $type = $rt_str(typeof $jsNumber);
-    $isObject = !jl_String_equals($type, $rt_s(68)) && !jl_String_equals($type, $rt_s(69)) ? 0 : 1;
+    $isObject = !jl_String_equals($type, $rt_s(61)) && !jl_String_equals($type, $rt_s(62)) ? 0 : 1;
     otji_JSWrapper$Helper_$callClinit();
     $wrappers = otji_JSWrapper$Helper_wrappers;
     if ($wrappers !== null) {
@@ -4818,7 +4669,7 @@ otji_JSWrapper_wrap = $jsNumber => {
             $wrappers.set($jsNumber, new WeakRef($wrapper));
             return $wrapper;
         }
-        if (jl_String_equals($type, $rt_s(70))) {
+        if (jl_String_equals($type, $rt_s(63))) {
             $stringWrappers = otji_JSWrapper$Helper_stringWrappers;
             $stringFinalizationRegistry = otji_JSWrapper$Helper_stringFinalizationRegistry;
             $existingRef = $stringWrappers.get($jsNumber);
@@ -4831,7 +4682,7 @@ otji_JSWrapper_wrap = $jsNumber => {
             otji_JSWrapper_register$js_body$_4($stringFinalizationRegistry, $wrapperAsJs, $jsNumber);
             return $wrapper;
         }
-        if (jl_String_equals($type, $rt_s(71))) {
+        if (jl_String_equals($type, $rt_s(64))) {
             $numberWrappers = otji_JSWrapper$Helper_numberWrappers;
             $numberFinalizationRegistry = otji_JSWrapper$Helper_numberFinalizationRegistry;
             $existingRef = $numberWrappers.get($jsNumber);
@@ -4844,7 +4695,7 @@ otji_JSWrapper_wrap = $jsNumber => {
             otji_JSWrapper_register$js_body$_4($numberFinalizationRegistry, $wrapperAsJs, $jsNumber);
             return $wrapper;
         }
-        if (jl_String_equals($type, $rt_s(72))) {
+        if (jl_String_equals($type, $rt_s(65))) {
             $existingRef = otji_JSWrapper$Helper_undefinedWrapper;
             $existing = $existingRef === null ? void 0 : $existingRef.deref();
             if (!(typeof $existing == 'undefined' ? 1 : 0))
@@ -4958,7 +4809,7 @@ jl_System_arraycopy = ($src, $srcPos, $dest, $destPos, $length) => {
         $rt_throw($src);
     }
     $dest = new jl_NullPointerException;
-    jl_RuntimeException__init_($dest, $rt_s(73));
+    jl_RuntimeException__init_($dest, $rt_s(66));
     $rt_throw($dest);
 },
 jl_System_fastArraycopy = ($src, $srcPos, $dest, $destPos, $length) => {
@@ -4996,14 +4847,14 @@ jl_System_setProperty = (var$1, var$2) => {
         var$3 = new ju_Properties;
         ju_Hashtable__init_(var$3);
         var$4 = var$3;
-        ju_Hashtable_put(var$4, $rt_s(74), $rt_s(75));
-        ju_Hashtable_put(var$4, $rt_s(37), $rt_s(76));
-        ju_Hashtable_put(var$4, $rt_s(77), $rt_s(78));
-        ju_Hashtable_put(var$4, $rt_s(79), $rt_s(80));
-        ju_Hashtable_put(var$4, $rt_s(81), $rt_s(17));
-        ju_Hashtable_put(var$4, $rt_s(82), $rt_s(83));
-        ju_Hashtable_put(var$4, $rt_s(84), $rt_s(75));
-        ju_Hashtable_put(var$4, $rt_s(85), $rt_s(78));
+        ju_Hashtable_put(var$4, $rt_s(67), $rt_s(68));
+        ju_Hashtable_put(var$4, $rt_s(28), $rt_s(69));
+        ju_Hashtable_put(var$4, $rt_s(70), $rt_s(71));
+        ju_Hashtable_put(var$4, $rt_s(72), $rt_s(73));
+        ju_Hashtable_put(var$4, $rt_s(74), $rt_s(10));
+        ju_Hashtable_put(var$4, $rt_s(75), $rt_s(76));
+        ju_Hashtable_put(var$4, $rt_s(77), $rt_s(68));
+        ju_Hashtable_put(var$4, $rt_s(78), $rt_s(71));
         var$5 = new ju_Properties;
         ju_Hashtable__init_(var$5);
         var$5.$defaults = var$3;
@@ -5076,32 +4927,32 @@ let cgxgbt_TeaGraphics__init_ = ($this, $config) => {
     $rendererString = $this.$gl20.$glGetString(7937);
     $canvas1 = new cbggg_GLVersion;
     $window = cbg_Application$ApplicationType_WebGL;
-    $canvas1.$TAG = $rt_s(86);
+    $canvas1.$TAG = $rt_s(79);
     if ($window === cbg_Application$ApplicationType_Android)
-        $canvas1.$type1 = cbggg_GLVersion$Type_GLES;
+        $canvas1.$type0 = cbggg_GLVersion$Type_GLES;
     else if ($window === cbg_Application$ApplicationType_iOS)
-        $canvas1.$type1 = cbggg_GLVersion$Type_GLES;
+        $canvas1.$type0 = cbggg_GLVersion$Type_GLES;
     else if ($window === cbg_Application$ApplicationType_Desktop)
-        $canvas1.$type1 = cbggg_GLVersion$Type_OpenGL;
+        $canvas1.$type0 = cbggg_GLVersion$Type_OpenGL;
     else if ($window === cbg_Application$ApplicationType_Applet)
-        $canvas1.$type1 = cbggg_GLVersion$Type_OpenGL;
+        $canvas1.$type0 = cbggg_GLVersion$Type_OpenGL;
     else if ($window !== $window)
-        $canvas1.$type1 = cbggg_GLVersion$Type_NONE;
+        $canvas1.$type0 = cbggg_GLVersion$Type_NONE;
     else
-        $canvas1.$type1 = cbggg_GLVersion$Type_WebGL;
-    $window = $canvas1.$type1;
+        $canvas1.$type0 = cbggg_GLVersion$Type_WebGL;
+    $window = $canvas1.$type0;
     if ($window === cbggg_GLVersion$Type_GLES)
-        cbggg_GLVersion_extractVersion($canvas1, $rt_s(87), $versionString);
+        cbggg_GLVersion_extractVersion($canvas1, $rt_s(80), $versionString);
     else if ($window === cbggg_GLVersion$Type_WebGL)
-        cbggg_GLVersion_extractVersion($canvas1, $rt_s(88), $versionString);
+        cbggg_GLVersion_extractVersion($canvas1, $rt_s(81), $versionString);
     else if ($window === cbggg_GLVersion$Type_OpenGL)
-        cbggg_GLVersion_extractVersion($canvas1, $rt_s(89), $versionString);
+        cbggg_GLVersion_extractVersion($canvas1, $rt_s(82), $versionString);
     else {
         $canvas1.$majorVersion = (-1);
         $canvas1.$minorVersion = (-1);
         $canvas1.$releaseVersion = (-1);
-        $vendorString = $rt_s(13);
-        $rendererString = $rt_s(13);
+        $vendorString = $rt_s(6);
+        $rendererString = $rt_s(6);
     }
     $canvas1.$versionString = $versionString;
     $canvas1.$vendorString = $vendorString;
@@ -5156,11 +5007,11 @@ cgxgbt_TeaGraphics_setCanvasSize = ($this, $width, $height, $usePhysicalPixels) 
         cgxgbtd_StyleWrapper$Unit_$callClinit();
         var$8 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$8);
-        jl_StringBuilder_append(jl_StringBuilder_append0(var$8, $width), $rt_s(90));
+        jl_StringBuilder_append(jl_StringBuilder_append0(var$8, $width), $rt_s(83));
         $style.setProperty("width", $rt_ustr(jl_AbstractStringBuilder_toString(var$8)));
         var$8 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$8);
-        jl_StringBuilder_append(jl_StringBuilder_append0(var$8, $height), $rt_s(90));
+        jl_StringBuilder_append(jl_StringBuilder_append0(var$8, $height), $rt_s(83));
         $style.setProperty("height", $rt_ustr(jl_AbstractStringBuilder_toString(var$8)));
     }
 },
@@ -5202,7 +5053,7 @@ cgxgbta_AssetDownloadImpl_load = ($this, $async, $url, $type, $listener) => {
         $listener = jl_System_out();
         var$6 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$6);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(91)), $url);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(84)), $url);
         var$6 = jl_AbstractStringBuilder_toString(var$6);
         otcic_JsConsolePrintStream_println($listener, var$6);
     }
@@ -5220,7 +5071,7 @@ cgxgbta_AssetDownloadImpl_load = ($this, $async, $url, $type, $listener) => {
                 $type = jl_String_valueOf($type);
                 $listener = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_($listener);
-                jl_StringBuilder_append(jl_StringBuilder_append($listener, $rt_s(92)), $type);
+                jl_StringBuilder_append(jl_StringBuilder_append($listener, $rt_s(85)), $type);
                 jl_RuntimeException__init_($url, jl_AbstractStringBuilder_toString($listener));
                 $rt_throw($url);
         }
@@ -5250,7 +5101,7 @@ cgxgbta_AssetDownloadImpl_loadBinaryInternally = ($this, $async, $url, $listener
     let $request, var$6;
     $request = new XMLHttpRequest();
     var$6 = new cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0;
-    var$6.$_013 = $this;
+    var$6.$_012 = $this;
     var$6.$_15 = $request;
     var$6.$_24 = $listener;
     var$6.$_32 = $url;
@@ -5258,7 +5109,7 @@ cgxgbta_AssetDownloadImpl_loadBinaryInternally = ($this, $async, $url, $listener
     var$6.$_5 = $async;
     $request.onreadystatechange = otji_JS_function(otji_JSWrapper_unwrap(var$6), "handleEvent");
     var$6 = new cgxgbta_AssetDownloadImpl$setOnProgress$lambda$_8_0;
-    var$6.$_017 = $listener;
+    var$6.$_016 = $listener;
     $listener = otji_JSWrapper_unwrap(var$6);
     $request.addEventListener("progress", otji_JS_function($listener, "handleEvent"));
     $request.open("GET", $rt_ustr($url), !!$async);
@@ -5282,7 +5133,7 @@ let cgxgbta_AssetLoadImpl_getAssetUrl = $this => {
     var$1 = $this.$baseUrl;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, var$1), $rt_s(93));
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, var$1), $rt_s(86));
     return jl_AbstractStringBuilder_toString(var$2);
 },
 cgxgbta_AssetLoadImpl_getScriptUrl = $this => {
@@ -5290,7 +5141,7 @@ cgxgbta_AssetLoadImpl_getScriptUrl = $this => {
     var$1 = $this.$baseUrl;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, var$1), $rt_s(94));
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, var$1), $rt_s(87));
     return jl_AbstractStringBuilder_toString(var$2);
 },
 cgxgbta_AssetLoadImpl_preload = ($this, $config, $assetFileUrl) => {
@@ -5321,7 +5172,7 @@ cgxgbta_AssetLoadImpl_loadScript = ($this, $path, $listener) => {
         var$3 = jl_System_out();
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(95)), var$6);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(88)), var$6);
         var$4 = jl_AbstractStringBuilder_toString(var$4);
         otcic_JsConsolePrintStream_println(var$3, var$4);
     }
@@ -5474,7 +5325,7 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
     let $type, $target, $canvas2, var$5, $button, $relativeX, $relativeY, $touch, $mouseX, $mouseY, $wheelDelta, $touches, $i, $j, $real, $equals, $touch_0, $touchId, $j_0, var$21;
     a: {
         $type = $rt_str($touchEvent.type);
-        if (jl_String_equals($type, $rt_s(96))) {
+        if (jl_String_equals($type, $rt_s(89))) {
             window.focus();
             $target = $touchEvent.target;
             $canvas2 = $this.$canvas;
@@ -5515,7 +5366,7 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
                 $this.$hasFocus = 0;
             return;
         }
-        if (jl_String_equals($type, $rt_s(97))) {
+        if (jl_String_equals($type, $rt_s(90))) {
             if (!$this.$touched.data[0])
                 return;
             cbgu_IntSet_remove($this.$pressedButtons, cgxgbtu_KeyCodes_getButton($touchEvent.button));
@@ -5537,14 +5388,14 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
             $touch = $this.$processor;
             if ($touch !== null)
                 $touch.$touchUp($this.$touchX.data[0], $this.$touchY.data[0], 0, cgxgbtu_KeyCodes_getButton($touchEvent.button));
-        } else if (!jl_String_equals($type, $rt_s(98))) {
-            if (jl_String_equals($type, $rt_s(99))) {
+        } else if (!jl_String_equals($type, $rt_s(91))) {
+            if (jl_String_equals($type, $rt_s(92))) {
                 if ($this.$processor !== null) {
                     $wheelDelta = cgxgbt_TeaInput_getMouseWheelVelocity($touchEvent);
                     $this.$processor.$scrolled(0.0, $wheelDelta | 0);
                 }
                 $this.$currentEventTimeStamp = cbgu_TimeUtils_nanoTime();
-            } else if (jl_String_equals($type, $rt_s(100))) {
+            } else if (jl_String_equals($type, $rt_s(93))) {
                 $this.$justTouched = 1;
                 $touches = $touchEvent.changedTouches;
                 $i = 0;
@@ -5592,7 +5443,7 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
             }
         }
     }
-    if (jl_String_equals($type, $rt_s(101))) {
+    if (jl_String_equals($type, $rt_s(94))) {
         $touches = $touchEvent.changedTouches;
         $i = 0;
         $j = $touches.length;
@@ -5611,7 +5462,7 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
         $this.$currentEventTimeStamp = cbgu_TimeUtils_nanoTime();
         $touchEvent.preventDefault();
     }
-    if (jl_String_equals($type, $rt_s(102))) {
+    if (jl_String_equals($type, $rt_s(95))) {
         $touches = $touchEvent.changedTouches;
         $i = 0;
         $j_0 = $touches.length;
@@ -5636,7 +5487,7 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
         $this.$currentEventTimeStamp = cbgu_TimeUtils_nanoTime();
         $touchEvent.preventDefault();
     }
-    if (jl_String_equals($type, $rt_s(103))) {
+    if (jl_String_equals($type, $rt_s(96))) {
         $touches = $touchEvent.changedTouches;
         $i = 0;
         $j_0 = $touches.length;
@@ -5665,8 +5516,8 @@ cgxgbt_TeaInput_handleMouseEvents = ($this, $touchEvent) => {
 cgxgbt_TeaInput_handleKeyboardEvents = ($this, $keyboardEvent) => {
     let $type, $c, var$4, $code, var$6, $keyChar;
     $type = $rt_str($keyboardEvent.type);
-    if (!(jl_String_equals($type, $rt_s(104)) && $this.$hasFocus)) {
-        if (jl_String_equals($type, $rt_s(105)) && $this.$hasFocus) {
+    if (!(jl_String_equals($type, $rt_s(97)) && $this.$hasFocus)) {
+        if (jl_String_equals($type, $rt_s(98)) && $this.$hasFocus) {
             $c = $keyboardEvent.charCode & 65535;
             var$4 = $this.$processor;
             if (var$4 !== null)
@@ -5675,7 +5526,7 @@ cgxgbt_TeaInput_handleKeyboardEvents = ($this, $keyboardEvent) => {
                 $keyboardEvent.preventDefault();
                 $keyboardEvent.stopPropagation();
             }
-        } else if (jl_String_equals($type, $rt_s(106)) && $this.$hasFocus) {
+        } else if (jl_String_equals($type, $rt_s(99)) && $this.$hasFocus) {
             $code = cgxgbtu_KeyCodes_keyForCode($keyboardEvent.keyCode);
             if (cbg_AbstractInput_isCatchKey($this, $code))
                 $keyboardEvent.preventDefault();
@@ -5830,7 +5681,7 @@ cgxgbt_TeaInput_setDelta = ($this, $touchId, $x, $y) => {
     $this.$deltaY.data[$touchId] = $y;
 },
 cgxgbt_TeaInput_getCompatMode = ($this, $element) => {
-    if (jl_String_equals($rt_str($element.compatMode), $rt_s(107)))
+    if (jl_String_equals($rt_str($element.compatMode), $rt_s(100)))
         $element = $element.documentElement;
     return $element;
 },
@@ -5936,7 +5787,7 @@ let cgxgbt_TeaFiles__init_ = ($this, $config, $teaApplication) => {
         var$6 = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB;
         if (typeof var$6 === 'undefined' ? 1 : 0) {
             $teaApplication = new jl_IllegalStateException;
-            jl_RuntimeException__init_($teaApplication, $rt_s(108));
+            jl_RuntimeException__init_($teaApplication, $rt_s(101));
             $rt_throw($teaApplication);
         }
         var$7 = var$5.$localStoragePrefix;
@@ -5945,12 +5796,12 @@ let cgxgbt_TeaFiles__init_ = ($this, $config, $teaApplication) => {
         var$3.$_03 = var$5;
         var$5.onupgradeneeded = otji_JS_function(otji_JSWrapper_unwrap(var$3), "handleEvent");
         var$3 = new cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_1;
-        var$3.$_018 = var$4;
+        var$3.$_017 = var$4;
         var$3.$_17 = var$5;
         var$3.$_25 = $teaApplication;
         var$5.onsuccess = otji_JS_function(otji_JSWrapper_unwrap(var$3), "handleEvent");
         var$3 = new cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_2;
-        var$3.$_014 = var$7;
+        var$3.$_013 = var$7;
         var$3.$_16 = $teaApplication;
         var$5.onerror = otji_JS_function(otji_JSWrapper_unwrap(var$3), "handleEvent");
     }
@@ -5970,9 +5821,6 @@ cgxgbt_TeaFiles_getFileDB = ($this, $type) => {
     if ($type !== cbg_Files$FileType_Local)
         return null;
     return $this.$localStorage;
-},
-cgxgbt_TeaFiles_internal = ($this, $path) => {
-    return cgxgbt_TeaFileHandle__init_($this, $path, cbg_Files$FileType_Internal);
 };
 function cgxgbt_TeaNet() {
     jl_Object.call(this);
@@ -6003,18 +5851,18 @@ let cgxgbt_TeaClipboard__init_ = $this => {
     var$1 = new cgxgbt_TeaClipboard$ClipboardWriteHandler;
     var$1.$this$00 = $this;
     $this.$writeHandler = var$1;
-    $this.$content = $rt_s(13);
+    $this.$content = $rt_s(6);
     var$1 = cgxgbtdi_TeaWindow_getDocument(cgxgbtdi_TeaWindow_get());
     var$2 = new cgxgbt_TeaClipboard$_init_$lambda$_0_0;
     var$2.$_06 = $this;
     var$1.addEventListener("copy", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$1 = cgxgbtdi_TeaWindow_getDocument(cgxgbtdi_TeaWindow_get());
     var$2 = new cgxgbt_TeaClipboard$_init_$lambda$_0_1;
-    var$2.$_021 = $this;
+    var$2.$_020 = $this;
     var$1.addEventListener("cut", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$1 = cgxgbtdi_TeaWindow_getDocument(cgxgbtdi_TeaWindow_get());
     var$2 = new cgxgbt_TeaClipboard$_init_$lambda$_0_2;
-    var$2.$_012 = $this;
+    var$2.$_011 = $this;
     var$1.addEventListener("paste", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
 },
 cgxgbt_TeaClipboard__init_0 = () => {
@@ -6109,7 +5957,7 @@ cgxgbt_TeaApplication$2_handleEvent$exported$0 = (var$1, var$2) => {
     var$3 = var$1.$this$01;
     if (var$3.$initState === cgxgbt_TeaApplication$AppState_APP_LOOP) {
         var$3 = $rt_str((cgxgbtdi_TeaWindow_getDocument(var$3.$window)).visibilityState);
-        if (jl_String_equals(var$3, $rt_s(109))) {
+        if (jl_String_equals(var$3, $rt_s(102))) {
             var$1 = var$1.$this$01.$lifecycleListeners;
             jl_Object_monitorEnterSync(var$1);
             a: {
@@ -6148,7 +5996,7 @@ cgxgbt_TeaApplication$2_handleEvent$exported$0 = (var$1, var$2) => {
                 jl_Object_monitorExitSync(var$1);
                 $rt_throw(var$2);
             }
-        } else if (jl_String_equals(var$3, $rt_s(110))) {
+        } else if (jl_String_equals(var$3, $rt_s(103))) {
             var$1 = var$1.$this$01.$lifecycleListeners;
             jl_Object_monitorEnterSync(var$1);
             c: {
@@ -6235,7 +6083,7 @@ cbgu_ObjectSet_tableSize = ($capacity, $loadFactor) => {
         var$3 = new jl_IllegalArgumentException;
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_AbstractStringBuilder_append0(var$4, $rt_s(111));
+        jl_AbstractStringBuilder_append0(var$4, $rt_s(104));
         jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$4, $capacity)));
         $rt_throw(var$3);
     }
@@ -6255,7 +6103,7 @@ cbgu_ObjectSet_tableSize = ($capacity, $loadFactor) => {
     var$3 = new jl_IllegalArgumentException;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_AbstractStringBuilder_append0(var$4, $rt_s(112));
+    jl_AbstractStringBuilder_append0(var$4, $rt_s(105));
     jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$4, $capacity)));
     $rt_throw(var$3);
 },
@@ -6459,7 +6307,7 @@ cgxgbt_TeaGL20_glGetFloatv = ($this, $pname, $params) => {
     let var$3;
     if ($pname != 2931 && $pname != 2849 && $pname != 32824 && $pname != 10752 && $pname != 32938) {
         $params = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_($params, $rt_s(113));
+        jl_RuntimeException__init_($params, $rt_s(106));
         $rt_throw($params);
     }
     var$3 = $this.$gl.getParameter($pname);
@@ -6624,7 +6472,7 @@ cgxgbt_TeaGL30Debug_checkError = $this => {
     var$3 = jl_Integer_toHexString(var$1);
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(114)), var$1), $rt_s(115)), var$3);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(107)), var$1), $rt_s(108)), var$3);
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -6819,8 +6667,8 @@ function cbggg_GLVersion() {
     a.$versionString = null;
     a.$vendorString = null;
     a.$rendererString = null;
-    a.$type1 = null;
-    a.$TAG = $rt_s(86);
+    a.$type0 = null;
+    a.$TAG = $rt_s(79);
 }
 let cbggg_GLVersion_extractVersion = ($this, $patternString, $versionString) => {
     let $matcher, $pattern, $result, $resultSplit, $found;
@@ -6829,14 +6677,14 @@ let cbggg_GLVersion_extractVersion = ($this, $patternString, $versionString) => 
         $pattern = cbg_Gdx_app;
         $patternString = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($patternString);
-        jl_AbstractStringBuilder_append0($patternString, $rt_s(116));
+        jl_AbstractStringBuilder_append0($patternString, $rt_s(109));
         jl_AbstractStringBuilder_append0($patternString, $versionString);
         $result = jl_AbstractStringBuilder_toString($patternString);
         if ($pattern.$logLevel >= 2) {
             $patternString = jl_System_out();
             $versionString = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($versionString);
-            jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($versionString, $rt_s(86)), $rt_s(16)), $result);
+            jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($versionString, $rt_s(79)), $rt_s(9)), $result);
             $versionString = jl_AbstractStringBuilder_toString($versionString);
             otcic_JsConsolePrintStream_println($patternString, $versionString);
         }
@@ -6844,7 +6692,7 @@ let cbggg_GLVersion_extractVersion = ($this, $patternString, $versionString) => 
         $this.$minorVersion = 0;
         $this.$releaseVersion = 0;
     } else {
-        $resultSplit = (jl_String_split(jur_Matcher_group($matcher, 1), $rt_s(117))).data;
+        $resultSplit = (jl_String_split(jur_Matcher_group($matcher, 1), $rt_s(110))).data;
         $this.$majorVersion = cbggg_GLVersion_parseInt($this, $resultSplit[0], 2);
         $found = $resultSplit.length;
         $this.$minorVersion = $found < 2 ? 0 : cbggg_GLVersion_parseInt($this, $resultSplit[1], 0);
@@ -6869,15 +6717,15 @@ cbggg_GLVersion_parseInt = ($this, $v, $defaultValue) => {
     var$4 = cbg_Gdx_app;
     var$5 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$5);
-    jl_AbstractStringBuilder_append0(var$5, $rt_s(118));
+    jl_AbstractStringBuilder_append0(var$5, $rt_s(111));
     jl_AbstractStringBuilder_append0(var$5, $v);
-    jl_AbstractStringBuilder_append0(var$5, $rt_s(119));
+    jl_AbstractStringBuilder_append0(var$5, $rt_s(112));
     var$6 = jl_AbstractStringBuilder_toString(jl_StringBuilder_append0(var$5, $defaultValue));
     if (var$4.$logLevel >= 1) {
         $v = jl_System_err();
         var$5 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$5);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(120)), $rt_s(16)), var$6);
+        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(113)), $rt_s(9)), var$6);
         var$7 = jl_AbstractStringBuilder_toString(var$5);
         otcic_JsConsolePrintStream_println($v, var$7);
     }
@@ -6894,22 +6742,22 @@ cbg_Application$ApplicationType_$VALUES = null,
 cbg_Application$ApplicationType__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(121), 0);
+    jl_Enum__init_(var$1, $rt_s(114), 0);
     cbg_Application$ApplicationType_Android = var$1;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(122), 1);
+    jl_Enum__init_(var$1, $rt_s(115), 1);
     cbg_Application$ApplicationType_Desktop = var$1;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(123), 2);
+    jl_Enum__init_(var$1, $rt_s(116), 2);
     cbg_Application$ApplicationType_HeadlessDesktop = var$1;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(124), 3);
+    jl_Enum__init_(var$1, $rt_s(117), 3);
     cbg_Application$ApplicationType_Applet = var$1;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(125), 4);
+    jl_Enum__init_(var$1, $rt_s(118), 4);
     cbg_Application$ApplicationType_WebGL = var$1;
     var$1 = new cbg_Application$ApplicationType;
-    jl_Enum__init_(var$1, $rt_s(126), 5);
+    jl_Enum__init_(var$1, $rt_s(119), 5);
     cbg_Application$ApplicationType_iOS = var$1;
     var$2 = $rt_createArray(cbg_Application$ApplicationType, 6);
     var$3 = var$2.data;
@@ -6939,7 +6787,7 @@ cgxgbt_TeaGL20Debug_checkError = $this => {
     var$3 = jl_Integer_toHexString(var$1);
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(114)), var$1), $rt_s(115)), var$3);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(107)), var$1), $rt_s(108)), var$3);
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -7396,111 +7244,6 @@ cgxgbtf_MemoryFileStorage__init_0 = () => {
     cgxgbtf_MemoryFileStorage__init_(var_0);
     return var_0;
 },
-cgxgbtf_MemoryFileStorage_read = ($this, $file) => {
-    let $path, $data, $byteArray, $e, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, $$je;
-    $path = cgxgbtf_MemoryFileStorage_fixPath($this, $file.$file);
-    $data = cgxgbtf_MemoryFileStorage_getInternal($this, $path);
-    if ($data === null)
-        return null;
-    $byteArray = $data.$bytes;
-    a: {
-        try {
-            $file = ji_ByteArrayInputStream__init_0($byteArray);
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof jl_RuntimeException) {
-                $e = $$je;
-                break a;
-            } else {
-                throw $$e;
-            }
-        }
-        return $file;
-    }
-    b: {
-        c: {
-            var$6 = $this.$fileMap;
-            $file = var$6.$keys;
-            $byteArray = $file.$items;
-            if ($path === null) {
-                var$7 = 0;
-                var$8 = $file.$size1;
-                while (var$7 < var$8) {
-                    if ($byteArray.data[var$7] === $path) {
-                        cbgu_Array_removeIndex($file, var$7);
-                        break b;
-                    }
-                    var$7 = var$7 + 1 | 0;
-                }
-            } else {
-                var$7 = 0;
-                var$8 = $file.$size1;
-                while (true) {
-                    if (var$7 >= var$8)
-                        break c;
-                    $data = $byteArray.data[var$7];
-                    if (jl_String_equals($path, $data)) {
-                        cbgu_Array_removeIndex($file, var$7);
-                        break b;
-                    }
-                    var$7 = var$7 + 1 | 0;
-                }
-            }
-        }
-    }
-    var$7 = cbgu_ObjectMap_locateKey(var$6, $path);
-    if (var$7 < 0)
-        $file = null;
-    else {
-        $byteArray = var$6.$keyTable;
-        var$9 = var$6.$valueTable.data;
-        $file = var$9[var$7];
-        var$10 = var$6.$mask2;
-        var$11 = (var$7 + 1 | 0) & var$10;
-        while (true) {
-            var$12 = $byteArray.data;
-            $data = var$12[var$11];
-            if ($data === null)
-                break;
-            var$8 = cbgu_ObjectMap_place(var$6, $data);
-            if (((var$11 - var$8 | 0) & var$10) > ((var$7 - var$8 | 0) & var$10)) {
-                var$12[var$7] = $data;
-                var$9[var$7] = var$9[var$11];
-                var$7 = var$11;
-            }
-            var$11 = (var$11 + 1 | 0) & var$10;
-        }
-        var$12[var$7] = null;
-        var$9[var$7] = null;
-        var$6.$size5 = var$6.$size5 - 1 | 0;
-    }
-    var$13 = $file;
-    if ($this.$debug) {
-        $data = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($data);
-        jl_AbstractStringBuilder_append($data, 34);
-        jl_AbstractStringBuilder_append(jl_StringBuilder_append($data, $path), 34);
-        var$14 = jl_AbstractStringBuilder_toString($data);
-        var$6 = var$13 !== null && cgxgbtf_FileData_isDirectory(var$13) ? $rt_s(127) : $rt_s(128);
-        var$15 = jl_System_out();
-        $data = jl_Class_getSimpleName(jl_Object_getClass($this));
-        var$7 = var$13 === null ? 0 : 1;
-        $file = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($file);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append($file, $data), var$6), var$7), $rt_s(129)), var$14);
-        $data = jl_AbstractStringBuilder_toString($file);
-        otcic_JsConsolePrintStream_println(var$15, $data);
-    }
-    if (var$13 !== null)
-        $this.$removeFile($path);
-    $file = new cbgu_GdxRuntimeException;
-    $data = jl_Class_getSimpleName(jl_Object_getClass($this));
-    var$6 = new jl_StringBuilder;
-    jl_AbstractStringBuilder__init_(var$6);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$6, $data), $rt_s(130)), $path);
-    jl_Throwable__init_($file, jl_AbstractStringBuilder_toString(var$6), $e);
-    $rt_throw($file);
-},
 cgxgbtf_MemoryFileStorage_writeInternal = ($this, $file, $data, $append, $expectedLength) => {
     let $path, $oldData, var$7, var$8, $newSize, $oldBytes, $i, $j, $cur, $parentPath;
     $path = cgxgbtf_MemoryFileStorage_fixPath($this, $file.$file);
@@ -7548,70 +7291,38 @@ cgxgbtf_MemoryFileStorage_mkdirs = ($this, $file) => {
     }
 },
 cgxgbtf_MemoryFileStorage_exists = ($this, $file) => {
-    let $path, var$3, var$4, var$5, var$6;
+    let $path, var$3, var$4, var$5, var$6, var$7, var$8;
     $path = cgxgbtf_MemoryFileStorage_fixPath($this, $file.$file);
     if (cgxgbtf_MemoryFileStorage_isRootFolder($this, $file))
         return 1;
     $file = cbgu_ObjectMap_get($this.$fileMap, $path);
     var$3 = $file === null ? 0 : 1;
     if ($this.$debug) {
-        $file = $file !== null && cgxgbtf_FileData_isDirectory($file) ? $rt_s(131) : $rt_s(132);
+        $file = $file !== null && cgxgbtf_FileData_isDirectory($file) ? $rt_s(120) : $rt_s(121);
         var$4 = jl_System_out();
         var$5 = jl_Class_getSimpleName(jl_Object_getClass($this));
         var$6 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$6);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$6, var$5), $file), var$3), $rt_s(129)), $path);
+        var$7 = jl_StringBuilder_append(jl_StringBuilder_append(var$6, var$5), $file);
+        var$8 = var$7.$length0;
+        $file = var$7;
+        var$5 = !var$3 ? $rt_s(122) : $rt_s(123);
+        jl_AbstractStringBuilder_insert($file, var$8, var$5);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$7, $rt_s(124)), $path);
         $file = jl_AbstractStringBuilder_toString(var$6);
         otcic_JsConsolePrintStream_println(var$4, $file);
     }
     return var$3;
 },
-cgxgbtf_MemoryFileStorage_length = ($this, $file) => {
-    let $data;
-    $data = cgxgbtf_MemoryFileStorage_getInternal($this, cgxgbtf_MemoryFileStorage_fixPath($this, $file.$file));
-    if ($data !== null && !cgxgbtf_FileData_isDirectory($data))
-        return Long_fromInt($data.$bytes.data.length);
-    return Long_ZERO;
-},
 cgxgbtf_MemoryFileStorage_isRootFolder = ($this, $cur) => {
     let $path;
     $path = cgxgbtf_MemoryFileStorage_fixPath($this, $cur.$file);
-    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(133)) && !jl_String_equals($path, $rt_s(78)) && !jl_String_equals($path, $rt_s(134)))
+    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(125)) && !jl_String_equals($path, $rt_s(71)) && !jl_String_equals($path, $rt_s(126)))
         return 0;
     return 1;
 },
 cgxgbtf_MemoryFileStorage_putFile = ($this, $key, $data) => {
     return;
-},
-cgxgbtf_MemoryFileStorage_removeFile = ($this, $key) => {
-    return;
-},
-cgxgbtf_MemoryFileStorage_getInternal = ($this, $path) => {
-    let $fileData, $type, var$4, var$5, var$6, var$7, var$8, var$9;
-    $fileData = cbgu_ObjectMap_get($this.$fileMap, $path);
-    if ($this.$debug) {
-        $type = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($type);
-        jl_AbstractStringBuilder_append($type, 34);
-        jl_AbstractStringBuilder_append(jl_StringBuilder_append($type, $path), 34);
-        var$4 = jl_AbstractStringBuilder_toString($type);
-        $type = $fileData !== null && cgxgbtf_FileData_isDirectory($fileData) ? $rt_s(135) : $rt_s(136);
-        $path = jl_System_out();
-        var$5 = jl_Class_getSimpleName(jl_Object_getClass($this));
-        var$6 = $fileData === null ? 0 : 1;
-        if ($fileData === null)
-            var$7 = 0;
-        else {
-            var$8 = $fileData.$bytes;
-            var$7 = var$8 === null ? 0 : var$8.data.length;
-        }
-        var$9 = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_(var$9);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$9, var$5), $type), var$6), $rt_s(137)), var$7), $rt_s(129)), var$4);
-        $type = jl_AbstractStringBuilder_toString(var$9);
-        otcic_JsConsolePrintStream_println($path, $type);
-    }
-    return $fileData;
 },
 cgxgbtf_MemoryFileStorage_putFileInternal = ($this, $path, $bytes, $callMethod) => {
     let var$4, $fileData, var$6, var$7, var$8, var$9;
@@ -7627,11 +7338,11 @@ cgxgbtf_MemoryFileStorage_putFileInternal = ($this, $path, $bytes, $callMethod) 
         var$8 = var$4.length;
         var$9 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$9);
-        jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$9, var$7), $rt_s(138)), var$6), $rt_s(139)), var$8);
+        jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$9, var$7), $rt_s(127)), var$6), $rt_s(128)), var$8);
         var$7 = jl_AbstractStringBuilder_toString(var$9);
         otcic_JsConsolePrintStream_println($fileData, var$7);
     }
-    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(133)) && !jl_String_equals($path, $rt_s(78)) && !jl_String_equals($path, $rt_s(134))) {
+    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(125)) && !jl_String_equals($path, $rt_s(71)) && !jl_String_equals($path, $rt_s(126))) {
         $fileData = cgxgbtf_FileData__init_0($path, $bytes);
         cbgu_OrderedMap_put($this.$fileMap, $path, $fileData);
         if ($callMethod)
@@ -7639,7 +7350,7 @@ cgxgbtf_MemoryFileStorage_putFileInternal = ($this, $path, $bytes, $callMethod) 
         return;
     }
     $fileData = new cbgu_GdxRuntimeException;
-    jl_RuntimeException__init_($fileData, $rt_s(140));
+    jl_RuntimeException__init_($fileData, $rt_s(129));
     $rt_throw($fileData);
 },
 cgxgbtf_MemoryFileStorage_putFolderInternal = ($this, $path) => {
@@ -7657,11 +7368,11 @@ cgxgbtf_MemoryFileStorage_putFolderInternal0 = ($this, $path, $callMethod) => {
         var$5 = jl_Class_getSimpleName(jl_Object_getClass($this));
         $fileData = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($fileData);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($fileData, var$5), $rt_s(141)), var$4);
+        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($fileData, var$5), $rt_s(130)), var$4);
         var$5 = jl_AbstractStringBuilder_toString($fileData);
         otcic_JsConsolePrintStream_println(var$3, var$5);
     }
-    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(133)) && !jl_String_equals($path, $rt_s(78)) && !jl_String_equals($path, $rt_s(134))) {
+    if (!jl_String_isEmpty($path) && !jl_String_equals($path, $rt_s(125)) && !jl_String_equals($path, $rt_s(71)) && !jl_String_equals($path, $rt_s(126))) {
         $fileData = cgxgbtf_FileData__init_1($path);
         cbgu_OrderedMap_put($this.$fileMap, $path, cgxgbtf_FileData__init_1($path));
         if ($callMethod)
@@ -7669,16 +7380,16 @@ cgxgbtf_MemoryFileStorage_putFolderInternal0 = ($this, $path, $callMethod) => {
         return;
     }
     var$3 = new cbgu_GdxRuntimeException;
-    jl_RuntimeException__init_(var$3, $rt_s(140));
+    jl_RuntimeException__init_(var$3, $rt_s(129));
     $rt_throw(var$3);
 },
 cgxgbtf_MemoryFileStorage_fixPath = ($this, $path) => {
     let var$2, var$3, var$4, var$5;
     var$2 = jl_String_trim($path);
-    if (jl_String_startsWith(var$2, $rt_s(134)))
-        var$2 = jl_String_replace(var$2, $rt_s(134), $rt_s(13));
-    if (jl_String_startsWith(var$2, $rt_s(133))) {
-        var$2 = jur_Pattern_matcher(jur_Pattern_compile($rt_s(133)), var$2);
+    if (jl_String_startsWith(var$2, $rt_s(126)))
+        var$2 = jl_String_replace(var$2, $rt_s(126), $rt_s(6));
+    if (jl_String_startsWith(var$2, $rt_s(125))) {
+        var$2 = jur_Pattern_matcher(jur_Pattern_compile($rt_s(125)), var$2);
         var$2.$leftBound0 = 0;
         var$3 = var$2.$string0.$nativeString.length;
         var$2.$rightBound0 = var$3;
@@ -7691,7 +7402,7 @@ cgxgbtf_MemoryFileStorage_fixPath = ($this, $path) => {
         else {
             var$4 = new jl_StringBuffer;
             jl_AbstractStringBuilder__init_(var$4);
-            var$2.$processedRepl = jur_Matcher_processReplacement(var$2, $rt_s(13));
+            var$2.$processedRepl = jur_Matcher_processReplacement(var$2, $rt_s(6));
             $path = var$2.$string0;
             var$5 = var$2.$appendPos;
             var$3 = jur_Matcher_start(var$2);
@@ -7703,14 +7414,14 @@ cgxgbtf_MemoryFileStorage_fixPath = ($this, $path) => {
             var$2 = jl_AbstractStringBuilder_toString(jl_StringBuffer_append(var$4, jl_String_substring($path, var$5, $path.$nativeString.length)));
         }
     }
-    if (!jl_String_startsWith(var$2, $rt_s(78))) {
+    if (!jl_String_startsWith(var$2, $rt_s(71))) {
         $path = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($path);
         jl_AbstractStringBuilder_append($path, 47);
         jl_StringBuilder_append($path, var$2);
         var$2 = jl_AbstractStringBuilder_toString($path);
     }
-    if (!jl_String_endsWith(var$2, $rt_s(78))) {
+    if (!jl_String_endsWith(var$2, $rt_s(71))) {
         $path = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($path);
         jl_AbstractStringBuilder_append(jl_StringBuilder_append($path, var$2), 47);
@@ -7725,9 +7436,9 @@ function cgxgbtft_LocalDBStorage() {
     this.$dataBase = null;
 }
 let cgxgbtft_LocalDBStorage_putFile = ($this, $key, $fileData) => {
-    let $type, $transaction, $objectStore, $dbFileData, $request;
+    let $type, $transaction, $objectStore, $dbFileData, var$7, var$8, var$9, $request;
     if ($this.$debug) {
-        $type = $fileData !== null && cgxgbtf_FileData_isDirectory($fileData) ? $rt_s(142) : $rt_s(143);
+        $type = $fileData !== null && cgxgbtf_FileData_isDirectory($fileData) ? $rt_s(131) : $rt_s(132);
         $transaction = jl_System_out();
         $objectStore = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($objectStore);
@@ -7737,31 +7448,27 @@ let cgxgbtft_LocalDBStorage_putFile = ($this, $key, $fileData) => {
     }
     $objectStore = $this.$dataBase.transaction("FILE_DATA", "readwrite").objectStore("FILE_DATA");
     $dbFileData = cgxgbtfi_IndexedDBFileData_create$js_body$_5($fileData.$type5, new Date());
-    if (!cgxgbtf_FileData_isDirectory($fileData))
-        $dbFileData.contents = otji_JS_wrap($fileData.$bytes);
+    if (!cgxgbtf_FileData_isDirectory($fileData)) {
+        var$7 = $fileData.$bytes;
+        if (var$7 === null)
+            $fileData = null;
+        else {
+            var$7 = var$7.data;
+            var$8 = var$7.length;
+            $fileData = new Int8Array(var$8);
+            var$9 = 0;
+            while (var$9 < var$8) {
+                $fileData[var$9] = var$7[var$9];
+                var$9 = var$9 + 1 | 0;
+            }
+        }
+        $dbFileData.contents = $fileData;
+    }
     $type = $rt_ustr($key);
     $request = $objectStore.put($dbFileData, $type);
     $fileData = new cgxgbtft_LocalDBStorage$putFile$lambda$_2_0;
     $fileData.$_01 = $key;
     $key = otji_JS_function(otji_JSWrapper_unwrap($fileData), "handleEvent");
-    $request.onerror = $key;
-},
-cgxgbtft_LocalDBStorage_removeFile = ($this, $key) => {
-    let $objectStore, $transaction, $request;
-    if ($this.$debug) {
-        $objectStore = jl_System_out();
-        $transaction = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_($transaction);
-        jl_StringBuilder_append(jl_StringBuilder_append($transaction, $rt_s(144)), $key);
-        $transaction = jl_AbstractStringBuilder_toString($transaction);
-        otcic_JsConsolePrintStream_println($objectStore, $transaction);
-    }
-    $objectStore = $this.$dataBase.transaction("FILE_DATA", "readwrite").objectStore("FILE_DATA");
-    $transaction = $rt_ustr($key);
-    $request = $objectStore.delete($transaction);
-    $objectStore = new cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0;
-    $objectStore.$_011 = $key;
-    $key = otji_JS_function(otji_JSWrapper_unwrap($objectStore), "handleEvent");
     $request.onerror = $key;
 },
 cgxgbt_TeaPermissions$TeaPermissionResult = $rt_classWithoutFields(0);
@@ -7796,11 +7503,11 @@ let cgxgbt_TeaClipboard$_init_$lambda$_0_0_handleEvent$exported$0 = (var$1, var$
 };
 function cgxgbt_TeaClipboard$_init_$lambda$_0_1() {
     jl_Object.call(this);
-    this.$_021 = null;
+    this.$_020 = null;
 }
 let cgxgbt_TeaClipboard$_init_$lambda$_0_1_handleEvent$exported$0 = (var$1, var$2) => {
     let var$3;
-    var$1 = var$1.$_021;
+    var$1 = var$1.$_020;
     var$3 = var$2.clipboardData;
     if (var$3 !== null)
         var$3.setData("text/plain", $rt_ustr(var$1.$content));
@@ -7808,11 +7515,11 @@ let cgxgbt_TeaClipboard$_init_$lambda$_0_1_handleEvent$exported$0 = (var$1, var$
 };
 function cgxgbt_TeaClipboard$_init_$lambda$_0_2() {
     jl_Object.call(this);
-    this.$_012 = null;
+    this.$_011 = null;
 }
 let cgxgbt_TeaClipboard$_init_$lambda$_0_2_handleEvent$exported$0 = (var$1, var$2) => {
     let var$3;
-    var$1 = var$1.$_012;
+    var$1 = var$1.$_011;
     var$3 = var$2.clipboardData;
     if (var$3 !== null)
         var$1.$content = $rt_str(var$3.getData("text/plain"));
@@ -7986,16 +7693,16 @@ cbggg_GLVersion$Type_$VALUES = null,
 cbggg_GLVersion$Type__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbggg_GLVersion$Type;
-    jl_Enum__init_(var$1, $rt_s(145), 0);
+    jl_Enum__init_(var$1, $rt_s(133), 0);
     cbggg_GLVersion$Type_OpenGL = var$1;
     var$1 = new cbggg_GLVersion$Type;
-    jl_Enum__init_(var$1, $rt_s(146), 1);
+    jl_Enum__init_(var$1, $rt_s(134), 1);
     cbggg_GLVersion$Type_GLES = var$1;
     var$1 = new cbggg_GLVersion$Type;
-    jl_Enum__init_(var$1, $rt_s(125), 2);
+    jl_Enum__init_(var$1, $rt_s(118), 2);
     cbggg_GLVersion$Type_WebGL = var$1;
     var$1 = new cbggg_GLVersion$Type;
-    jl_Enum__init_(var$1, $rt_s(147), 3);
+    jl_Enum__init_(var$1, $rt_s(135), 3);
     cbggg_GLVersion$Type_NONE = var$1;
     var$2 = $rt_createArray(cbggg_GLVersion$Type, 4);
     var$3 = var$2.data;
@@ -8052,7 +7759,7 @@ let cgxgbta_AssetLoadImpl$3_handleEvent$exported$0 = (var$1, var$2) => {
         }
         var$3 = Promise.all(var$5);
         var$2 = new cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_0;
-        var$2.$_019 = var$1;
+        var$2.$_018 = var$1;
         var$1 = new cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_1;
         var$2 = var$3.then(otji_JS_function(otji_JSWrapper_unwrap(var$2), "apply"), otji_JS_function(otji_JSWrapper_unwrap(var$1), "apply"));
         var$1 = new cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_2;
@@ -8421,7 +8128,7 @@ jur_Pattern_processSubExpression = ($this, $last) => {
                 $cur = new jur_SequenceSet;
                 jur_LeafSet__init_($cur);
                 $cur.$string = jl_AbstractStringBuilder_toString($term);
-                var$4 = $term.$length1;
+                var$4 = $term.$length0;
                 $cur.$charCount0 = var$4;
                 $cur.$leftToRight = jur_SequenceSet$IntHash__init_(var$4);
                 $cur.$rightToLeft = jur_SequenceSet$IntHash__init_($cur.$charCount0);
@@ -8441,7 +8148,7 @@ jur_Pattern_processSubExpression = ($this, $last) => {
             $cur = jur_Pattern_processQuantifier($this, $last, jur_Pattern_processTerminal($this, $last));
         else {
             if ($last instanceof jur_FinalSet)
-                $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $term.$orig, $term.$curToc));
+                $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $term.$orig, $term.$curToc));
             $cur = jur_EmptySet__init_($last);
         }
     }
@@ -8641,7 +8348,7 @@ jur_Pattern_processTerminal = ($this, $last) => {
                     $term = jur_Pattern_processExpression($this, $ch, $newFlags, $last);
                     var$4 = $this.$lexemes;
                     if (var$4.$ch != (-536870871))
-                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), var$4.$orig, var$4.$curToc));
+                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), var$4.$orig, var$4.$curToc));
                     jur_Lexer_next(var$4);
                 }
             } else {
@@ -8722,7 +8429,7 @@ jur_Pattern_processTerminal = ($this, $last) => {
                                 $term.$setNext($last);
                                 var$4 = $this.$lexemes;
                                 if (var$4.$ch != (-536870819))
-                                    $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), var$4.$orig, var$4.$curToc));
+                                    $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), var$4.$orig, var$4.$curToc));
                                 jur_Lexer_setMode(var$4, 1);
                                 jur_Lexer_next($this.$lexemes);
                                 break a;
@@ -8762,7 +8469,7 @@ jur_Pattern_processTerminal = ($this, $last) => {
                     }
                     $number = ($ch & 2147483647) - 48 | 0;
                     if ($this.$globalGroupIndex < $number)
-                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString(var$4), jur_Lexer_getIndex($this.$lexemes)));
+                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString(var$4), jur_Lexer_getIndex($this.$lexemes)));
                     jur_Lexer_next(var$4);
                     $this.$consCount = $this.$consCount + 1 | 0;
                     $term = !jur_Pattern_hasFlag($this, 2) ? jur_BackReferenceSet__init_($number, $this.$consCount) : jur_Pattern_hasFlag($this, 64) ? jur_UCIBackReferenceSet__init_0($number, $this.$consCount) : jur_CIBackReferenceSet__init_0($number, $this.$consCount);
@@ -8786,7 +8493,7 @@ jur_Pattern_processTerminal = ($this, $last) => {
                     if (var$3) {
                         $last = new jur_PatternSyntaxException;
                         var$4 = $this.$lexemes;
-                        jur_PatternSyntaxException__init_0($last, $rt_s(13), var$4.$orig, var$4.$curToc);
+                        jur_PatternSyntaxException__init_0($last, $rt_s(6), var$4.$orig, var$4.$curToc);
                         $rt_throw($last);
                     }
                     $term = jur_EmptySet__init_($last);
@@ -8942,16 +8649,16 @@ jur_Pattern_processRangeExpression = ($this, $alt) => {
                 }
                 $firstInClass = 0;
             }
-            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Pattern_pattern($this), $this.$lexemes.$curToc));
+            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Pattern_pattern($this), $this.$lexemes.$curToc));
         }
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Pattern_pattern($this), $this.$lexemes.$curToc));
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Pattern_pattern($this), $this.$lexemes.$curToc));
     }
     if (!$notClosed) {
         if ($buffer >= 0)
             jur_CharClass_add0($res, $buffer);
         return $res;
     }
-    $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Pattern_pattern($this), $this.$lexemes.$curToc - 1 | 0));
+    $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Pattern_pattern($this), $this.$lexemes.$curToc - 1 | 0));
 },
 jur_Pattern_processCharSet = ($this, $ch) => {
     let $isSupplCodePoint, var$3, var$4;
@@ -9033,7 +8740,7 @@ jur_Pattern_compile = $pattern => {
     let var$2, var$3, var$4, var$5;
     if ($pattern === null) {
         $pattern = new jl_NullPointerException;
-        jl_RuntimeException__init_($pattern, $rt_s(148));
+        jl_RuntimeException__init_($pattern, $rt_s(136));
         $rt_throw($pattern);
     }
     jur_AbstractSet_counter = 1;
@@ -9065,7 +8772,7 @@ jur_Pattern_compile = $pattern => {
     }
     $pattern = new jur_PatternSyntaxException;
     var$2 = var$2.$lexemes;
-    jur_PatternSyntaxException__init_0($pattern, $rt_s(13), var$2.$orig, var$2.$curToc);
+    jur_PatternSyntaxException__init_0($pattern, $rt_s(6), var$2.$orig, var$2.$curToc);
     $rt_throw($pattern);
 },
 jur_Pattern_getSupplement = $ch => {
@@ -9125,7 +8832,7 @@ let jur_Matcher_processReplacement = ($this, $replacement) => {
             if ($index >= $i) {
                 $replacement = $this.$replacementParts;
                 if ($replacement !== null) {
-                    $gr = $res.$length1;
+                    $gr = $res.$length0;
                     if ($replacementPos != $gr)
                         ju_ArrayList_add($replacement, jl_StringBuilder_subSequence($res, $replacementPos, $gr));
                 }
@@ -9170,7 +8877,7 @@ let jur_Matcher_processReplacement = ($this, $replacement) => {
                         ju_ArrayList_add($this.$replacementParts, jur_Matcher$1__init_0($this, $gr));
                         $group = jur_Matcher_group($this, $gr);
                         $replacementPos = $replacementPos + jl_String_length($group) | 0;
-                        jl_StringBuilder_append3($res, $group);
+                        jl_StringBuilder_append2($res, $group);
                         break c;
                     } catch ($$e) {
                         $$je = $rt_wrapException($$e);
@@ -9189,7 +8896,7 @@ let jur_Matcher_processReplacement = ($this, $replacement) => {
         $rt_throw($replacement);
     }
     $replacement = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_($replacement, $rt_s(13));
+    jl_RuntimeException__init_($replacement, $rt_s(6));
     $rt_throw($replacement);
 },
 jur_Matcher_group = ($this, $group) => {
@@ -9277,14 +8984,14 @@ let cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_0_handleEvent$exported$0 = 
 otji_EventHandler = $rt_classWithoutFields(0);
 function cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_1() {
     let a = this; jl_Object.call(a);
-    a.$_018 = null;
+    a.$_017 = null;
     a.$_17 = null;
     a.$_25 = null;
 }
 let cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_1_handleEvent$exported$0 = var$1 => {
     let var$2, var$3, var$4, var$5;
     var$1 = var$1;
-    var$2 = var$1.$_018;
+    var$2 = var$1.$_017;
     var$3 = var$1.$_17;
     var$1 = var$1.$_25;
     var$3 = var$3.result;
@@ -9297,7 +9004,7 @@ let cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_1_handleEvent$exported$0 = 
     var$2 = otji_JS_function(otji_JSWrapper_unwrap(var$3), "handleEvent");
     var$5.onsuccess = var$2;
     var$2 = new cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_1;
-    var$2.$_020 = var$1;
+    var$2.$_019 = var$1;
     var$3 = otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent");
     var$4.oncomplete = var$3;
     var$2 = new cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_2;
@@ -9307,18 +9014,18 @@ let cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_1_handleEvent$exported$0 = 
 };
 function cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_2() {
     let a = this; jl_Object.call(a);
-    a.$_014 = null;
+    a.$_013 = null;
     a.$_16 = null;
 }
 let cgxgbtft_LocalDBStorage$setupIndexedDB$lambda$_1_2_handleEvent$exported$0 = var$1 => {
     let var$2, var$3, var$4;
     var$1 = var$1;
-    var$2 = var$1.$_014;
+    var$2 = var$1.$_013;
     var$1 = var$1.$_16;
     var$3 = jl_System_err();
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(149)), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(137)), var$2);
     var$4 = jl_AbstractStringBuilder_toString(var$4);
     otcic_JsConsolePrintStream_println(var$3, var$4);
     var$1.$delayInitCount = var$1.$delayInitCount - 1 | 0;
@@ -9660,7 +9367,7 @@ jlr_Constructor_toString = $this => {
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
     if (jlr_Modifier_modifierNames === null)
-        jlr_Modifier_modifierNames = $rt_wrapArray(jl_String, [$rt_s(150), $rt_s(151), $rt_s(152), $rt_s(153), $rt_s(154), $rt_s(155), $rt_s(156), $rt_s(157), $rt_s(158), $rt_s(159), $rt_s(160), $rt_s(161)]);
+        jlr_Modifier_modifierNames = $rt_wrapArray(jl_String, [$rt_s(138), $rt_s(139), $rt_s(140), $rt_s(141), $rt_s(142), $rt_s(143), $rt_s(144), $rt_s(145), $rt_s(146), $rt_s(147), $rt_s(148), $rt_s(149)]);
     $parameterTypes = jlr_Modifier_modifierNames;
     var$5 = 0;
     var$6 = jlr_Modifier_canonicalOrder.data;
@@ -9669,7 +9376,7 @@ jlr_Constructor_toString = $this => {
     while (var$8 < var$7) {
         var$9 = var$6[var$8];
         if ($i & var$9) {
-            if (var$3.$length1 > 0)
+            if (var$3.$length0 > 0)
                 jl_AbstractStringBuilder_append(var$3, 32);
             jl_AbstractStringBuilder_append0(var$3, $parameterTypes.data[var$5]);
         }
@@ -9677,7 +9384,7 @@ jlr_Constructor_toString = $this => {
         var$8 = var$8 + 1 | 0;
     }
     jl_AbstractStringBuilder_append0($sb, jl_AbstractStringBuilder_toString(var$3));
-    if ($sb.$length1 > 0)
+    if ($sb.$length0 > 0)
         jl_AbstractStringBuilder_append($sb, 32);
     jl_AbstractStringBuilder_append0($sb, jl_Class_getName($this.$declaringClass));
     jl_AbstractStringBuilder_append($sb, 40);
@@ -9749,7 +9456,7 @@ jur_FSet_getGroupIndex = $this => {
     return $this.$groupIndex0;
 },
 jur_FSet_getName = $this => {
-    return $rt_s(162);
+    return $rt_s(150);
 },
 jur_FSet_hasConsumed = ($this, $mr) => {
     return 0;
@@ -9867,7 +9574,7 @@ jur_Lexer_movePointer = $this => {
                                                 jur_Lexer_nextIndex($this);
                                                 break b;
                                             default:
-                                                $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString($this), $this.$index));
+                                                $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString($this), $this.$index));
                                         }
                                         $this.$lookAhead = (-67108824);
                                         jur_Lexer_nextIndex($this);
@@ -9983,7 +9690,7 @@ jur_Lexer_movePointer = $this => {
                     $this.$lookAhead = $nonCap;
                     switch ($nonCap) {
                         case -1:
-                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString($this), $this.$index));
+                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString($this), $this.$index));
                         case 0:
                         case 1:
                         case 2:
@@ -10096,7 +9803,7 @@ jur_Lexer_movePointer = $this => {
                         case 111:
                         case 113:
                         case 121:
-                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString($this), $this.$index));
+                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString($this), $this.$index));
                         case 68:
                         case 83:
                         case 87:
@@ -10130,7 +9837,7 @@ jur_Lexer_movePointer = $this => {
                             $nonCap = $this.$index;
                             var$3 = $this.$pattern0.data;
                             if ($nonCap >= (var$3.length - 2 | 0))
-                                $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString($this), $this.$index));
+                                $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString($this), $this.$index));
                             $this.$lookAhead = var$3[jur_Lexer_nextIndex($this)] & 31;
                             break a;
                         case 101:
@@ -10170,7 +9877,7 @@ jur_Lexer_movePointer = $this => {
                 } catch ($$e) {
                     $$je = $rt_wrapException($$e);
                     if ($$je instanceof ju_MissingResourceException) {
-                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), jur_Lexer_toString($this), $this.$index));
+                        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), jur_Lexer_toString($this), $this.$index));
                     } else {
                         throw $$e;
                     }
@@ -10196,7 +9903,7 @@ jur_Lexer_parseCharClassName = $this => {
             $sb = jl_String__init_0(var$3, jur_Lexer_nextIndex($this), 1);
             $res = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_($res);
-            jl_StringBuilder_append(jl_StringBuilder_append($res, $rt_s(163)), $sb);
+            jl_StringBuilder_append(jl_StringBuilder_append($res, $rt_s(151)), $sb);
             return jl_AbstractStringBuilder_toString($res);
         }
         jur_Lexer_nextIndex($this);
@@ -10214,23 +9921,23 @@ jur_Lexer_parseCharClassName = $this => {
             }
         }
         if ($ch != 125)
-            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
     }
-    if (!$sb.$length1)
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+    if (!$sb.$length0)
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
     $res = jl_AbstractStringBuilder_toString($sb);
     if ($res.$nativeString.length == 1) {
         $sb = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($sb);
-        jl_StringBuilder_append(jl_StringBuilder_append($sb, $rt_s(163)), $res);
+        jl_StringBuilder_append(jl_StringBuilder_append($sb, $rt_s(151)), $res);
         return jl_AbstractStringBuilder_toString($sb);
     }
     b: {
         c: {
             if ($res.$nativeString.length > 3) {
-                if (jl_String_startsWith($res, $rt_s(163)))
+                if (jl_String_startsWith($res, $rt_s(151)))
                     break c;
-                if (jl_String_startsWith($res, $rt_s(164)))
+                if (jl_String_startsWith($res, $rt_s(152)))
                     break c;
             }
             break b;
@@ -10269,11 +9976,11 @@ jur_Lexer_processQuantifier = ($this, $ch) => {
                 }
             jl_AbstractStringBuilder_append($sb, $ch & 65535);
         }
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
     }
     if ($ch != 125)
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
-    if ($sb.$length1 > 0)
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
+    if ($sb.$length0 > 0)
         b: {
             try {
                 $max = jl_Integer_parseInt(jl_StringBuilder_toString($sb), 10);
@@ -10288,12 +9995,12 @@ jur_Lexer_processQuantifier = ($this, $ch) => {
                     throw $$e;
                 }
             }
-            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
         }
     else if ($min < 0)
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
     if (($min | $max | ($max - $min | 0)) < 0)
-        $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+        $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
     $ch = $this.$index;
     var$6 = $this.$pattern0.data;
     $mod = $ch >= var$6.length ? 42 : var$6[$ch];
@@ -10373,7 +10080,7 @@ jur_Lexer_readHex = ($this, $max) => {
             }
             return $max;
         }
-    $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+    $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
 },
 jur_Lexer_readOctals = $this => {
     let $max, $i, var$3, $length, $res, var$6;
@@ -10406,7 +10113,7 @@ jur_Lexer_readOctals = $this => {
             }
             return $res;
     }
-    $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, $this.$index));
+    $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, $this.$index));
 },
 jur_Lexer_readFlags = $this => {
     let $pos, $res, var$3, var$4;
@@ -10416,7 +10123,7 @@ jur_Lexer_readFlags = $this => {
         var$3 = $this.$index;
         var$4 = $this.$pattern0.data;
         if (var$3 >= var$4.length)
-            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, var$3));
+            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, var$3));
         b: {
             c: {
                 switch (var$4[var$3]) {
@@ -10425,7 +10132,7 @@ jur_Lexer_readFlags = $this => {
                         return $res | 256;
                     case 45:
                         if (!$pos)
-                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(13), $this.$orig, var$3));
+                            $rt_throw(jur_PatternSyntaxException__init_($rt_s(6), $this.$orig, var$3));
                         $pos = 0;
                         break b;
                     case 58:
@@ -10535,7 +10242,7 @@ jur_PatternSyntaxException__init_ = (var_0, var_1, var_2) => {
 },
 jur_PatternSyntaxException_getMessage = $this => {
     let $filler, var$2, $temp, var$4, var$5, var$6, var$7, var$8, var$9, var$10;
-    $filler = $rt_s(13);
+    $filler = $rt_s(6);
     var$2 = $this.$index1;
     if (var$2 >= 1) {
         $temp = $rt_createCharArray(var$2);
@@ -10561,10 +10268,10 @@ jur_PatternSyntaxException_getMessage = $this => {
         var$8 = $this.$pattern1;
         var$10 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$10);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(var$10, var$9), $rt_s(115)), var$8), $rt_s(115)), $filler);
+        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(var$10, var$9), $rt_s(108)), var$8), $rt_s(108)), $filler);
         $filler = jl_AbstractStringBuilder_toString(var$10);
     } else
-        $filler = $rt_s(13);
+        $filler = $rt_s(6);
     var$8 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$8);
     jl_StringBuilder_append(jl_StringBuilder_append(var$8, var$7), $filler);
@@ -10605,7 +10312,7 @@ jlr_Array_newInstanceImpl = (var$1, var$2) => {
 jl_CloneNotSupportedException = $rt_classWithoutFields(jl_Exception);
 function otcir_MethodCaller$forJs$lambda$_1_0() {
     jl_Object.call(this);
-    this.$_023 = null;
+    this.$_022 = null;
 }
 let ju_SequencedCollection = $rt_classWithoutFields(0),
 ju_List = $rt_classWithoutFields(0);
@@ -10619,7 +10326,7 @@ let ju_AbstractList_iterator = $this => {
     var$1.$this$08 = $this;
     var$1.$modCount1 = $this.$modCount;
     var$1.$size8 = $this.$size0;
-    var$1.$removeIndex0 = (-1);
+    var$1.$removeIndex = (-1);
     return var$1;
 },
 ju_RandomAccess = $rt_classWithoutFields(0);
@@ -10690,7 +10397,7 @@ jur_NonCapFSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $this.$next1.$matches($stringIndex, $testString, $matchResult);
 },
 jur_NonCapFSet_getName = $this => {
-    return $rt_s(165);
+    return $rt_s(153);
 },
 jur_NonCapFSet_hasConsumed = ($this, $mr) => {
     return 0;
@@ -10700,7 +10407,7 @@ jur_AheadFSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $stringIndex;
 },
 jur_AheadFSet_getName = $this => {
-    return $rt_s(166);
+    return $rt_s(154);
 },
 jur_BehindFSet = $rt_classWithoutFields(jur_FSet),
 jur_BehindFSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -10709,7 +10416,7 @@ jur_BehindFSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $stringIndex;
 },
 jur_BehindFSet_getName = $this => {
-    return $rt_s(167);
+    return $rt_s(155);
 };
 function jur_AtomicFSet() {
     jur_FSet.call(this);
@@ -10723,7 +10430,7 @@ let jur_AtomicFSet_matches = ($this, $stringIndex, $testString, $matchResult) =>
     return $stringIndex;
 },
 jur_AtomicFSet_getName = $this => {
-    return $rt_s(168);
+    return $rt_s(156);
 },
 jur_AtomicFSet_hasConsumed = ($this, $mr) => {
     return 0;
@@ -10737,7 +10444,7 @@ jur_FinalSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $stringIndex;
 },
 jur_FinalSet_getName = $this => {
-    return $rt_s(169);
+    return $rt_s(157);
 };
 function jur_LeafSet() {
     jur_AbstractSet.call(this);
@@ -10817,7 +10524,7 @@ jur_EmptySet_findBack = ($this, $stringIndex, $startSearch, $testString, $matchR
     return $startSearch;
 },
 jur_EmptySet_getName = $this => {
-    return $rt_s(170);
+    return $rt_s(158);
 },
 jur_EmptySet_hasConsumed = ($this, $mr) => {
     return 0;
@@ -10863,7 +10570,7 @@ jur_JointSet_setNext = ($this, $next) => {
     $this.$fSet.$next1 = $next;
 },
 jur_JointSet_getName = $this => {
-    return $rt_s(171);
+    return $rt_s(159);
 },
 jur_JointSet_first = ($this, $set) => {
     let $i, var$3;
@@ -10957,7 +10664,7 @@ jur_NonCapJointSet_matches = ($this, $stringIndex, $testString, $matchResult) =>
     return $shift;
 },
 jur_NonCapJointSet_getName = $this => {
-    return $rt_s(172);
+    return $rt_s(160);
 },
 jur_NonCapJointSet_hasConsumed = ($this, $matchResult) => {
     return !jur_MatchResultImpl_getConsumed($matchResult, $this.$groupIndex) ? 0 : 1;
@@ -10981,7 +10688,7 @@ jur_AtomicJointSet_setNext = ($this, $next) => {
     $this.$next1 = $next;
 },
 jur_AtomicJointSet_getName = $this => {
-    return $rt_s(172);
+    return $rt_s(160);
 },
 jur_PositiveLookAhead = $rt_classWithoutFields(jur_AtomicJointSet),
 jur_PositiveLookAhead_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -10999,7 +10706,7 @@ jur_PositiveLookAhead_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_PositiveLookAhead_getName = $this => {
-    return $rt_s(173);
+    return $rt_s(161);
 },
 jur_NegativeLookAhead = $rt_classWithoutFields(jur_AtomicJointSet),
 jur_NegativeLookAhead_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -11019,7 +10726,7 @@ jur_NegativeLookAhead_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_NegativeLookAhead_getName = $this => {
-    return $rt_s(174);
+    return $rt_s(162);
 },
 jur_PositiveLookBehind = $rt_classWithoutFields(jur_AtomicJointSet),
 jur_PositiveLookBehind_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -11048,7 +10755,7 @@ jur_PositiveLookBehind_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_PositiveLookBehind_getName = $this => {
-    return $rt_s(175);
+    return $rt_s(163);
 },
 jur_NegativeLookBehind = $rt_classWithoutFields(jur_AtomicJointSet),
 jur_NegativeLookBehind_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -11069,7 +10776,7 @@ jur_NegativeLookBehind_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_NegativeLookBehind_getName = $this => {
-    return $rt_s(176);
+    return $rt_s(164);
 };
 function jur_SingleSet() {
     jur_JointSet.call(this);
@@ -11169,7 +10876,7 @@ jur_AbstractCharClass_hasLowHighSurrogates = $this => {
         a: {
             var$2 = $this.$lowHighSurrogates;
             var$1 = 0;
-            var$3 = var$2.$length2;
+            var$3 = var$2.$length1;
             if (var$1 < var$3) {
                 var$4 = var$2.$data.data;
                 var$5 = (var$4[0] ^ (-1)) >>> 0 | 0;
@@ -11272,8 +10979,8 @@ jur_AbstractCharClass_getPredefinedClass = ($name, $negative) => {
         var$4 = jur_AbstractCharClass$PredefinedCharacterClasses_contents.data;
         if (var$3 >= var$4.length) {
             var$5 = new ju_MissingResourceException;
-            jl_RuntimeException__init_(var$5, $rt_s(13));
-            var$5.$className = $rt_s(13);
+            jl_RuntimeException__init_(var$5, $rt_s(6));
+            var$5.$className = $rt_s(6);
             var$5.$key1 = $name;
             $rt_throw(var$5);
         }
@@ -11468,7 +11175,7 @@ jur_CharClass_add = ($this, $i, $end) => {
             var$3 = $this.$bits;
             $end = $end + 1 | 0;
             if ($i >= 0 && $i <= $end) {
-                var$4 = var$3.$length2;
+                var$4 = var$3.$length1;
                 if ($i < var$4) {
                     var$5 = jl_Math_min(var$4, $end);
                     if ($i != var$5) {
@@ -11716,7 +11423,7 @@ jur_CharClass_toString = $this => {
         jl_AbstractStringBuilder_append($temp, 124);
         $i = ju_BitSet_nextSetBit($this.$bits, $i + 1 | 0);
     }
-    var$3 = $temp.$length1;
+    var$3 = $temp.$length0;
     if (var$3 > 0)
         jl_StringBuilder_deleteCharAt($temp, var$3 - 1 | 0);
     return jl_AbstractStringBuilder_toString($temp);
@@ -11804,7 +11511,7 @@ jur_LeafQuantifierSet_matches = ($this, $stringIndex, $testString, $matchResult)
     return var$5;
 },
 jur_LeafQuantifierSet_getName = $this => {
-    return $rt_s(177);
+    return $rt_s(165);
 };
 function jur_CompositeQuantifierSet() {
     jur_LeafQuantifierSet.call(this);
@@ -11875,7 +11582,7 @@ jur_GroupQuantifierSet_matches = ($this, $stringIndex, $testString, $matchResult
     return $this.$next1.$matches($stringIndex, $testString, $matchResult);
 },
 jur_GroupQuantifierSet_getName = $this => {
-    return $rt_s(178);
+    return $rt_s(166);
 },
 jur_AltQuantifierSet = $rt_classWithoutFields(jur_LeafQuantifierSet),
 jur_AltQuantifierSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -11921,972 +11628,972 @@ jur_AbstractCharClass$PredefinedCharacterClasses__clinit_ = () => {
     var$2 = var$1.data;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(179);
+    var$4[0] = $rt_s(167);
     var$4[1] = jur_AbstractCharClass$LazyLower__init_0();
     var$2[0] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(180);
+    var$4[0] = $rt_s(168);
     var$4[1] = jur_AbstractCharClass$LazyUpper__init_();
     var$2[1] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(181);
+    var$4[0] = $rt_s(169);
     var$4[1] = jur_AbstractCharClass$LazyASCII__init_0();
     var$2[2] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(182);
+    var$4[0] = $rt_s(170);
     var$4[1] = jur_AbstractCharClass$LazyAlpha__init_0();
     var$2[3] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(183);
+    var$4[0] = $rt_s(171);
     var$4[1] = jur_AbstractCharClass$PredefinedCharacterClasses_digit;
     var$2[4] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(184);
+    var$4[0] = $rt_s(172);
     var$4[1] = jur_AbstractCharClass$LazyAlnum__init_0();
     var$2[5] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(185);
+    var$4[0] = $rt_s(173);
     var$4[1] = jur_AbstractCharClass$LazyPunct__init_();
     var$2[6] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(186);
+    var$4[0] = $rt_s(174);
     var$4[1] = jur_AbstractCharClass$LazyGraph__init_();
     var$2[7] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(187);
+    var$4[0] = $rt_s(175);
     var$4[1] = jur_AbstractCharClass$LazyPrint__init_();
     var$2[8] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(188);
+    var$4[0] = $rt_s(176);
     var$4[1] = jur_AbstractCharClass$LazyBlank__init_();
     var$2[9] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(189);
+    var$4[0] = $rt_s(177);
     var$4[1] = jur_AbstractCharClass$LazyCntrl__init_();
     var$2[10] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(190);
+    var$4[0] = $rt_s(178);
     var$4[1] = jur_AbstractCharClass$LazyXDigit__init_();
     var$2[11] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(191);
+    var$4[0] = $rt_s(179);
     var$4[1] = jur_AbstractCharClass$LazyJavaLowerCase__init_0();
     var$2[12] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(192);
+    var$4[0] = $rt_s(180);
     var$4[1] = jur_AbstractCharClass$LazyJavaUpperCase__init_();
     var$2[13] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(193);
+    var$4[0] = $rt_s(181);
     var$4[1] = jur_AbstractCharClass$LazyJavaWhitespace__init_0();
     var$2[14] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(194);
+    var$4[0] = $rt_s(182);
     var$4[1] = jur_AbstractCharClass$LazyJavaMirrored__init_();
     var$2[15] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(195);
+    var$4[0] = $rt_s(183);
     var$4[1] = jur_AbstractCharClass$LazyJavaDefined__init_0();
     var$2[16] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(196);
+    var$4[0] = $rt_s(184);
     var$4[1] = jur_AbstractCharClass$LazyJavaDigit__init_0();
     var$2[17] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(197);
+    var$4[0] = $rt_s(185);
     var$4[1] = jur_AbstractCharClass$LazyJavaIdentifierIgnorable__init_0();
     var$2[18] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(198);
+    var$4[0] = $rt_s(186);
     var$4[1] = jur_AbstractCharClass$LazyJavaISOControl__init_();
     var$2[19] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(199);
+    var$4[0] = $rt_s(187);
     var$4[1] = jur_AbstractCharClass$LazyJavaJavaIdentifierPart__init_0();
     var$2[20] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(200);
+    var$4[0] = $rt_s(188);
     var$4[1] = jur_AbstractCharClass$LazyJavaJavaIdentifierStart__init_0();
     var$2[21] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(201);
+    var$4[0] = $rt_s(189);
     var$4[1] = jur_AbstractCharClass$LazyJavaLetter__init_0();
     var$2[22] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(202);
+    var$4[0] = $rt_s(190);
     var$4[1] = jur_AbstractCharClass$LazyJavaLetterOrDigit__init_0();
     var$2[23] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(203);
+    var$4[0] = $rt_s(191);
     var$4[1] = jur_AbstractCharClass$LazyJavaSpaceChar__init_0();
     var$2[24] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(204);
+    var$4[0] = $rt_s(192);
     var$4[1] = jur_AbstractCharClass$LazyJavaTitleCase__init_0();
     var$2[25] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(205);
+    var$4[0] = $rt_s(193);
     var$4[1] = jur_AbstractCharClass$LazyJavaUnicodeIdentifierPart__init_();
     var$2[26] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(206);
+    var$4[0] = $rt_s(194);
     var$4[1] = jur_AbstractCharClass$LazyJavaUnicodeIdentifierStart__init_0();
     var$2[27] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(207);
+    var$4[0] = $rt_s(195);
     var$4[1] = jur_AbstractCharClass$PredefinedCharacterClasses_space;
     var$2[28] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(208);
+    var$4[0] = $rt_s(196);
     var$4[1] = jur_AbstractCharClass$LazyWord__init_0();
     var$2[29] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(209);
+    var$4[0] = $rt_s(197);
     var$4[1] = jur_AbstractCharClass$LazyNonWord__init_();
     var$2[30] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(210);
+    var$4[0] = $rt_s(198);
     var$4[1] = jur_AbstractCharClass$PredefinedCharacterClasses_space;
     var$2[31] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(211);
+    var$4[0] = $rt_s(199);
     var$4[1] = jur_AbstractCharClass$LazyNonSpace__init_();
     var$2[32] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(212);
+    var$4[0] = $rt_s(200);
     var$4[1] = jur_AbstractCharClass$PredefinedCharacterClasses_digit;
     var$2[33] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(213);
+    var$4[0] = $rt_s(201);
     var$4[1] = jur_AbstractCharClass$LazyNonDigit__init_();
     var$2[34] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(214);
+    var$4[0] = $rt_s(202);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(0, 127);
     var$2[35] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(215);
+    var$4[0] = $rt_s(203);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(128, 255);
     var$2[36] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(216);
+    var$4[0] = $rt_s(204);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(256, 383);
     var$2[37] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(217);
+    var$4[0] = $rt_s(205);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(384, 591);
     var$2[38] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(218);
+    var$4[0] = $rt_s(206);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(592, 687);
     var$2[39] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(219);
+    var$4[0] = $rt_s(207);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(688, 767);
     var$2[40] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(220);
+    var$4[0] = $rt_s(208);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(768, 879);
     var$2[41] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(221);
+    var$4[0] = $rt_s(209);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(880, 1023);
     var$2[42] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(222);
+    var$4[0] = $rt_s(210);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1024, 1279);
     var$2[43] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(223);
+    var$4[0] = $rt_s(211);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1280, 1327);
     var$2[44] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(224);
+    var$4[0] = $rt_s(212);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1328, 1423);
     var$2[45] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(225);
+    var$4[0] = $rt_s(213);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1424, 1535);
     var$2[46] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(226);
+    var$4[0] = $rt_s(214);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1536, 1791);
     var$2[47] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(227);
+    var$4[0] = $rt_s(215);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1792, 1871);
     var$2[48] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(228);
+    var$4[0] = $rt_s(216);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1872, 1919);
     var$2[49] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(229);
+    var$4[0] = $rt_s(217);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(1920, 1983);
     var$2[50] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(230);
+    var$4[0] = $rt_s(218);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2304, 2431);
     var$2[51] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(231);
+    var$4[0] = $rt_s(219);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2432, 2559);
     var$2[52] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(232);
+    var$4[0] = $rt_s(220);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2560, 2687);
     var$2[53] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(233);
+    var$4[0] = $rt_s(221);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2688, 2815);
     var$2[54] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(234);
+    var$4[0] = $rt_s(222);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2816, 2943);
     var$2[55] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(235);
+    var$4[0] = $rt_s(223);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(2944, 3071);
     var$2[56] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(236);
+    var$4[0] = $rt_s(224);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3072, 3199);
     var$2[57] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(237);
+    var$4[0] = $rt_s(225);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3200, 3327);
     var$2[58] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(238);
+    var$4[0] = $rt_s(226);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3328, 3455);
     var$2[59] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(239);
+    var$4[0] = $rt_s(227);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3456, 3583);
     var$2[60] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(240);
+    var$4[0] = $rt_s(228);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3584, 3711);
     var$2[61] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(241);
+    var$4[0] = $rt_s(229);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3712, 3839);
     var$2[62] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(242);
+    var$4[0] = $rt_s(230);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(3840, 4095);
     var$2[63] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(243);
+    var$4[0] = $rt_s(231);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(4096, 4255);
     var$2[64] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(244);
+    var$4[0] = $rt_s(232);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(4256, 4351);
     var$2[65] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(245);
+    var$4[0] = $rt_s(233);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(4352, 4607);
     var$2[66] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(246);
+    var$4[0] = $rt_s(234);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(4608, 4991);
     var$2[67] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(247);
+    var$4[0] = $rt_s(235);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(4992, 5023);
     var$2[68] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(248);
+    var$4[0] = $rt_s(236);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5024, 5119);
     var$2[69] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(249);
+    var$4[0] = $rt_s(237);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5120, 5759);
     var$2[70] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(250);
+    var$4[0] = $rt_s(238);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5760, 5791);
     var$2[71] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(251);
+    var$4[0] = $rt_s(239);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5792, 5887);
     var$2[72] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(252);
+    var$4[0] = $rt_s(240);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5888, 5919);
     var$2[73] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(253);
+    var$4[0] = $rt_s(241);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5920, 5951);
     var$2[74] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(254);
+    var$4[0] = $rt_s(242);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5952, 5983);
     var$2[75] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(255);
+    var$4[0] = $rt_s(243);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(5984, 6015);
     var$2[76] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(256);
+    var$4[0] = $rt_s(244);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6016, 6143);
     var$2[77] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(257);
+    var$4[0] = $rt_s(245);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6144, 6319);
     var$2[78] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(258);
+    var$4[0] = $rt_s(246);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6400, 6479);
     var$2[79] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(259);
+    var$4[0] = $rt_s(247);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6480, 6527);
     var$2[80] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(260);
+    var$4[0] = $rt_s(248);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6528, 6623);
     var$2[81] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(261);
+    var$4[0] = $rt_s(249);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6624, 6655);
     var$2[82] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(262);
+    var$4[0] = $rt_s(250);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(6656, 6687);
     var$2[83] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(263);
+    var$4[0] = $rt_s(251);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(7424, 7551);
     var$2[84] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(264);
+    var$4[0] = $rt_s(252);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(7552, 7615);
     var$2[85] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(265);
+    var$4[0] = $rt_s(253);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(7616, 7679);
     var$2[86] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(266);
+    var$4[0] = $rt_s(254);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(7680, 7935);
     var$2[87] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(267);
+    var$4[0] = $rt_s(255);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(7936, 8191);
     var$2[88] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(268);
+    var$4[0] = $rt_s(256);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8192, 8303);
     var$2[89] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(269);
+    var$4[0] = $rt_s(257);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8304, 8351);
     var$2[90] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(270);
+    var$4[0] = $rt_s(258);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8352, 8399);
     var$2[91] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(271);
+    var$4[0] = $rt_s(259);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8400, 8447);
     var$2[92] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(272);
+    var$4[0] = $rt_s(260);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8448, 8527);
     var$2[93] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(273);
+    var$4[0] = $rt_s(261);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8528, 8591);
     var$2[94] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(274);
+    var$4[0] = $rt_s(262);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8592, 8703);
     var$2[95] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(275);
+    var$4[0] = $rt_s(263);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8704, 8959);
     var$2[96] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(276);
+    var$4[0] = $rt_s(264);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(8960, 9215);
     var$2[97] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(277);
+    var$4[0] = $rt_s(265);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9216, 9279);
     var$2[98] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(278);
+    var$4[0] = $rt_s(266);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9280, 9311);
     var$2[99] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(279);
+    var$4[0] = $rt_s(267);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9312, 9471);
     var$2[100] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(280);
+    var$4[0] = $rt_s(268);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9472, 9599);
     var$2[101] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(281);
+    var$4[0] = $rt_s(269);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9600, 9631);
     var$2[102] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(282);
+    var$4[0] = $rt_s(270);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9632, 9727);
     var$2[103] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(283);
+    var$4[0] = $rt_s(271);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9728, 9983);
     var$2[104] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(284);
+    var$4[0] = $rt_s(272);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(9984, 10175);
     var$2[105] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(285);
+    var$4[0] = $rt_s(273);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10176, 10223);
     var$2[106] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(286);
+    var$4[0] = $rt_s(274);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10224, 10239);
     var$2[107] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(287);
+    var$4[0] = $rt_s(275);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10240, 10495);
     var$2[108] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(288);
+    var$4[0] = $rt_s(276);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10496, 10623);
     var$2[109] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(289);
+    var$4[0] = $rt_s(277);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10624, 10751);
     var$2[110] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(290);
+    var$4[0] = $rt_s(278);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(10752, 11007);
     var$2[111] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(291);
+    var$4[0] = $rt_s(279);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11008, 11263);
     var$2[112] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(292);
+    var$4[0] = $rt_s(280);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11264, 11359);
     var$2[113] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(293);
+    var$4[0] = $rt_s(281);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11392, 11519);
     var$2[114] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(294);
+    var$4[0] = $rt_s(282);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11520, 11567);
     var$2[115] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(295);
+    var$4[0] = $rt_s(283);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11568, 11647);
     var$2[116] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(296);
+    var$4[0] = $rt_s(284);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11648, 11743);
     var$2[117] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(297);
+    var$4[0] = $rt_s(285);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11776, 11903);
     var$2[118] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(298);
+    var$4[0] = $rt_s(286);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(11904, 12031);
     var$2[119] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(299);
+    var$4[0] = $rt_s(287);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12032, 12255);
     var$2[120] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(300);
+    var$4[0] = $rt_s(288);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12272, 12287);
     var$2[121] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(301);
+    var$4[0] = $rt_s(289);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12288, 12351);
     var$2[122] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(302);
+    var$4[0] = $rt_s(290);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12352, 12447);
     var$2[123] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(303);
+    var$4[0] = $rt_s(291);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12448, 12543);
     var$2[124] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(304);
+    var$4[0] = $rt_s(292);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12544, 12591);
     var$2[125] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(305);
+    var$4[0] = $rt_s(293);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12592, 12687);
     var$2[126] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(306);
+    var$4[0] = $rt_s(294);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12688, 12703);
     var$2[127] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(307);
+    var$4[0] = $rt_s(295);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12704, 12735);
     var$2[128] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(308);
+    var$4[0] = $rt_s(296);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12736, 12783);
     var$2[129] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(309);
+    var$4[0] = $rt_s(297);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12784, 12799);
     var$2[130] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(310);
+    var$4[0] = $rt_s(298);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(12800, 13055);
     var$2[131] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(311);
+    var$4[0] = $rt_s(299);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(13056, 13311);
     var$2[132] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(312);
+    var$4[0] = $rt_s(300);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(13312, 19893);
     var$2[133] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(313);
+    var$4[0] = $rt_s(301);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(19904, 19967);
     var$2[134] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(314);
+    var$4[0] = $rt_s(302);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(19968, 40959);
     var$2[135] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(315);
+    var$4[0] = $rt_s(303);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(40960, 42127);
     var$2[136] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(316);
+    var$4[0] = $rt_s(304);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(42128, 42191);
     var$2[137] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(317);
+    var$4[0] = $rt_s(305);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(42752, 42783);
     var$2[138] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(318);
+    var$4[0] = $rt_s(306);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(43008, 43055);
     var$2[139] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(319);
+    var$4[0] = $rt_s(307);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(44032, 55203);
     var$2[140] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(320);
+    var$4[0] = $rt_s(308);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(55296, 56191);
     var$2[141] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(321);
+    var$4[0] = $rt_s(309);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(56192, 56319);
     var$2[142] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(322);
+    var$4[0] = $rt_s(310);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(56320, 57343);
     var$2[143] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(323);
+    var$4[0] = $rt_s(311);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(57344, 63743);
     var$2[144] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(324);
+    var$4[0] = $rt_s(312);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(63744, 64255);
     var$2[145] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(325);
+    var$4[0] = $rt_s(313);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(64256, 64335);
     var$2[146] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(326);
+    var$4[0] = $rt_s(314);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(64336, 65023);
     var$2[147] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(327);
+    var$4[0] = $rt_s(315);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65024, 65039);
     var$2[148] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(328);
+    var$4[0] = $rt_s(316);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65040, 65055);
     var$2[149] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(329);
+    var$4[0] = $rt_s(317);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65056, 65071);
     var$2[150] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(330);
+    var$4[0] = $rt_s(318);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65072, 65103);
     var$2[151] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(331);
+    var$4[0] = $rt_s(319);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65104, 65135);
     var$2[152] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(332);
+    var$4[0] = $rt_s(320);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65136, 65279);
     var$2[153] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(333);
+    var$4[0] = $rt_s(321);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(65280, 65519);
     var$2[154] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(334);
+    var$4[0] = $rt_s(322);
     var$4[1] = jur_AbstractCharClass$LazyRange__init_(0, 1114111);
     var$2[155] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(335);
+    var$4[0] = $rt_s(323);
     var$4[1] = jur_AbstractCharClass$LazySpecialsBlock__init_();
     var$2[156] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(336);
+    var$4[0] = $rt_s(324);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(0, 1);
     var$2[157] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(337);
+    var$4[0] = $rt_s(325);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(62, 1);
     var$2[158] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(338);
+    var$4[0] = $rt_s(326);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(1, 1);
     var$2[159] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(339);
+    var$4[0] = $rt_s(327);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(2, 1);
     var$2[160] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(340);
+    var$4[0] = $rt_s(328);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(3, 0);
     var$2[161] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(341);
+    var$4[0] = $rt_s(329);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(4, 0);
     var$2[162] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(342);
+    var$4[0] = $rt_s(330);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(5, 1);
     var$2[163] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(343);
+    var$4[0] = $rt_s(331);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(448, 1);
     var$2[164] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(344);
+    var$4[0] = $rt_s(332);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(6, 1);
     var$2[165] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(345);
+    var$4[0] = $rt_s(333);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(7, 0);
     var$2[166] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(346);
+    var$4[0] = $rt_s(334);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(8, 1);
     var$2[167] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(347);
+    var$4[0] = $rt_s(335);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(3584, 1);
     var$2[168] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(348);
+    var$4[0] = $rt_s(336);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(9, 1);
     var$2[169] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(349);
+    var$4[0] = $rt_s(337);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(10, 1);
     var$2[170] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(350);
+    var$4[0] = $rt_s(338);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(11, 1);
     var$2[171] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(351);
+    var$4[0] = $rt_s(339);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(28672, 0);
     var$2[172] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(352);
+    var$4[0] = $rt_s(340);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(12, 0);
     var$2[173] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(353);
+    var$4[0] = $rt_s(341);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(13, 0);
     var$2[174] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(354);
+    var$4[0] = $rt_s(342);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(14, 0);
     var$2[175] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(355);
+    var$4[0] = $rt_s(343);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_2(983040, 1, 1);
     var$2[176] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(356);
+    var$4[0] = $rt_s(344);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(15, 0);
     var$2[177] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(357);
+    var$4[0] = $rt_s(345);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(16, 1);
     var$2[178] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(358);
+    var$4[0] = $rt_s(346);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(18, 1);
     var$2[179] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(359);
+    var$4[0] = $rt_s(347);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_1(19, 0, 1);
     var$2[180] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(360);
+    var$4[0] = $rt_s(348);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(1643118592, 1);
     var$2[181] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(361);
+    var$4[0] = $rt_s(349);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(20, 0);
     var$2[182] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(362);
+    var$4[0] = $rt_s(350);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(21, 0);
     var$2[183] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(363);
+    var$4[0] = $rt_s(351);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(22, 0);
     var$2[184] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(364);
+    var$4[0] = $rt_s(352);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(23, 0);
     var$2[185] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(365);
+    var$4[0] = $rt_s(353);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(24, 1);
     var$2[186] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(366);
+    var$4[0] = $rt_s(354);
     var$4[1] = jur_AbstractCharClass$LazyCategoryScope__init_(2113929216, 1);
     var$2[187] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(367);
+    var$4[0] = $rt_s(355);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(25, 1);
     var$2[188] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(368);
+    var$4[0] = $rt_s(356);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(26, 0);
     var$2[189] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(369);
+    var$4[0] = $rt_s(357);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(27, 0);
     var$2[190] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(370);
+    var$4[0] = $rt_s(358);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(28, 1);
     var$2[191] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(371);
+    var$4[0] = $rt_s(359);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(29, 0);
     var$2[192] = var$3;
     var$3 = $rt_createArray(jl_Object, 2);
     var$4 = var$3.data;
-    var$4[0] = $rt_s(372);
+    var$4[0] = $rt_s(360);
     var$4[1] = jur_AbstractCharClass$LazyCategory__init_(30, 0);
     var$2[193] = var$3;
     jur_AbstractCharClass$PredefinedCharacterClasses_contents = var$1;
@@ -12914,7 +12621,7 @@ let jur_Quantifier_toString = $this => {
     let var$1, var$2, var$3, var$4, var$5;
     var$1 = $this.$min0;
     var$2 = $this.$max0;
-    var$3 = var$2 != 2147483647 ? jl_Integer_toString(var$2) : $rt_s(13);
+    var$3 = var$2 != 2147483647 ? jl_Integer_toString(var$2) : $rt_s(6);
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
     jl_AbstractStringBuilder_append(var$4, 123);
@@ -12928,7 +12635,7 @@ jur_FSet$PossessiveFSet_matches = ($this, $stringIndex, $testString, $matchResul
     return $stringIndex;
 },
 jur_FSet$PossessiveFSet_getName = $this => {
-    return $rt_s(373);
+    return $rt_s(361);
 },
 jur_FSet$PossessiveFSet_hasConsumed = ($this, $mr) => {
     return 0;
@@ -12936,7 +12643,7 @@ jur_FSet$PossessiveFSet_hasConsumed = ($this, $mr) => {
 function ju_BitSet() {
     let a = this; jl_Object.call(a);
     a.$data = null;
-    a.$length2 = 0;
+    a.$length1 = 0;
 }
 let ju_BitSet__init_0 = $this => {
     $this.$data = $rt_createIntArray(2);
@@ -12954,9 +12661,9 @@ ju_BitSet_set0 = ($this, $bitIndex) => {
         $rt_throw(var$2);
     }
     $index = $bitIndex / 32 | 0;
-    if ($bitIndex >= $this.$length2) {
+    if ($bitIndex >= $this.$length1) {
         ju_BitSet_ensureCapacity($this, $index + 1 | 0);
-        $this.$length2 = $bitIndex + 1 | 0;
+        $this.$length1 = $bitIndex + 1 | 0;
     }
     var$4 = $this.$data.data;
     var$4[$index] = var$4[$index] | 1 << ($bitIndex % 32 | 0);
@@ -12970,9 +12677,9 @@ ju_BitSet_set = ($this, $fromIndex, $toIndex) => {
                 return;
             $fromDataIndex = $fromIndex / 32 | 0;
             $toDataIndex = $toIndex / 32 | 0;
-            if ($toIndex > $this.$length2) {
+            if ($toIndex > $this.$length1) {
                 ju_BitSet_ensureCapacity($this, $toDataIndex + 1 | 0);
-                $this.$length2 = $toIndex;
+                $this.$length1 = $toIndex;
             }
             if ($fromDataIndex == $toDataIndex) {
                 var$5 = $this.$data.data;
@@ -13017,7 +12724,7 @@ ju_BitSet_clear = ($this, $bitIndex) => {
         var$5 = var$4[$index];
         var$6 = ($bitIndex % 32 | 0) & 31;
         var$4[$index] = var$5 & ((-2) << var$6 | ((-2) >>> (32 - var$6 | 0) | 0));
-        if ($bitIndex == ($this.$length2 - 1 | 0))
+        if ($bitIndex == ($this.$length1 - 1 | 0))
             ju_BitSet_recalculateLength($this);
     }
 },
@@ -13039,7 +12746,7 @@ ju_BitSet_nextSetBit = ($this, $fromIndex) => {
         jl_Exception__init_(var$2);
         $rt_throw(var$2);
     }
-    $top = $this.$length2;
+    $top = $this.$length1;
     if ($fromIndex >= $top)
         return (-1);
     $index = $fromIndex / 32 | 0;
@@ -13075,8 +12782,8 @@ ju_BitSet_ensureCapacity = ($this, $capacity) => {
 },
 ju_BitSet_recalculateLength = $this => {
     let $top, $i, $sz;
-    $top = ($this.$length2 + 31 | 0) / 32 | 0;
-    $this.$length2 = $top * 32 | 0;
+    $top = ($this.$length1 + 31 | 0) / 32 | 0;
+    $this.$length1 = $top * 32 | 0;
     $i = $top - 1 | 0;
     a: {
         while (true) {
@@ -13086,9 +12793,9 @@ ju_BitSet_recalculateLength = $this => {
             if ($sz < 32)
                 break;
             $i = $i + (-1) | 0;
-            $this.$length2 = $this.$length2 - 32 | 0;
+            $this.$length1 = $this.$length1 - 32 | 0;
         }
-        $this.$length2 = $this.$length2 - $sz | 0;
+        $this.$length1 = $this.$length1 - $sz | 0;
     }
 },
 ju_BitSet_and = ($this, $set) => {
@@ -13107,7 +12814,7 @@ ju_BitSet_and = ($this, $set) => {
         var$5[$i] = 0;
         $i = $i + 1 | 0;
     }
-    $this.$length2 = jl_Math_min($this.$length2, $set.$length2);
+    $this.$length1 = jl_Math_min($this.$length1, $set.$length1);
     ju_BitSet_recalculateLength($this);
 },
 ju_BitSet_andNot = ($this, $set) => {
@@ -13123,8 +12830,8 @@ ju_BitSet_andNot = ($this, $set) => {
 },
 ju_BitSet_or = ($this, $set) => {
     let $sz, $i, var$4;
-    $sz = jl_Math_max($this.$length2, $set.$length2);
-    $this.$length2 = $sz;
+    $sz = jl_Math_max($this.$length1, $set.$length1);
+    $this.$length1 = $sz;
     ju_BitSet_ensureCapacity($this, ($sz + 31 | 0) / 32 | 0);
     $sz = jl_Math_min($this.$data.data.length, $set.$data.data.length);
     $i = 0;
@@ -13136,8 +12843,8 @@ ju_BitSet_or = ($this, $set) => {
 },
 ju_BitSet_xor = ($this, $set) => {
     let $sz, $i, var$4;
-    $sz = jl_Math_max($this.$length2, $set.$length2);
-    $this.$length2 = $sz;
+    $sz = jl_Math_max($this.$length1, $set.$length1);
+    $this.$length1 = $sz;
     ju_BitSet_ensureCapacity($this, ($sz + 31 | 0) / 32 | 0);
     $sz = jl_Math_min($this.$data.data.length, $set.$data.data.length);
     $i = 0;
@@ -13149,7 +12856,7 @@ ju_BitSet_xor = ($this, $set) => {
     ju_BitSet_recalculateLength($this);
 },
 ju_BitSet_isEmpty = $this => {
-    return $this.$length2 ? 0 : 1;
+    return $this.$length1 ? 0 : 1;
 };
 function jur_LowHighSurrogateRangeSet() {
     let a = this; jur_JointSet.call(a);
@@ -13158,11 +12865,11 @@ function jur_LowHighSurrogateRangeSet() {
 }
 let jur_LowHighSurrogateRangeSet_getName = $this => {
     let var$1, var$2, var$3;
-    var$1 = !$this.$alt1 ? $rt_s(374) : $rt_s(375);
+    var$1 = !$this.$alt1 ? $rt_s(362) : $rt_s(363);
     var$2 = $this.$surrChars.$toString();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(376)), var$1), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(364)), var$1), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 };
 function jur_CompositeRangeSet() {
@@ -13227,7 +12934,7 @@ jur_CompositeRangeSet_getName = $this => {
     var$2 = jl_String_valueOf($this.$withSurrogates);
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(377)), var$1), $rt_s(378)), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(365)), var$1), $rt_s(366)), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 },
 jur_CompositeRangeSet_hasConsumed = ($this, $matchResult) => {
@@ -13274,11 +12981,11 @@ jur_SupplRangeSet_matches = ($this, $stringIndex, $testString, $matchResult) => 
 },
 jur_SupplRangeSet_getName = $this => {
     let var$1, var$2, var$3;
-    var$1 = !$this.$alt0 ? $rt_s(374) : $rt_s(375);
+    var$1 = !$this.$alt0 ? $rt_s(362) : $rt_s(363);
     var$2 = $this.$chars.$toString();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(376)), var$1), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(364)), var$1), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 },
 jur_SupplRangeSet_contains = ($this, $ch) => {
@@ -13310,11 +13017,11 @@ jur_UCISupplRangeSet_contains = ($this, $ch) => {
 },
 jur_UCISupplRangeSet_getName = $this => {
     let var$1, var$2, var$3;
-    var$1 = !$this.$alt0 ? $rt_s(374) : $rt_s(375);
+    var$1 = !$this.$alt0 ? $rt_s(362) : $rt_s(363);
     var$2 = $this.$chars.$toString();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(379)), var$1), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(367)), var$1), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 };
 function jur_UCIRangeSet() {
@@ -13337,11 +13044,11 @@ jur_UCIRangeSet_accepts = ($this, $strIndex, $testString) => {
 },
 jur_UCIRangeSet_getName = $this => {
     let var$1, var$2, var$3;
-    var$1 = !$this.$alt2 ? $rt_s(374) : $rt_s(375);
+    var$1 = !$this.$alt2 ? $rt_s(362) : $rt_s(363);
     var$2 = $this.$chars1.$toString();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(379)), var$1), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(367)), var$1), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 };
 function jur_RangeSet() {
@@ -13364,11 +13071,11 @@ jur_RangeSet_accepts = ($this, $strIndex, $testString) => {
 },
 jur_RangeSet_getName = $this => {
     let var$1, var$2, var$3;
-    var$1 = !$this.$alt3 ? $rt_s(374) : $rt_s(375);
+    var$1 = !$this.$alt3 ? $rt_s(362) : $rt_s(363);
     var$2 = $this.$chars0.$toString();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(376)), var$1), var$2);
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(364)), var$1), var$2);
     return jl_AbstractStringBuilder_toString(var$3);
 },
 jur_RangeSet_first = ($this, $set) => {
@@ -13412,7 +13119,7 @@ jur_HangulDecomposedCharSet_getName = $this => {
     var$1 = jur_HangulDecomposedCharSet_getDecomposedChar($this);
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(380)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(368)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 jur_HangulDecomposedCharSet_matches = ($this, $strIndex, $testString, $matchResult) => {
@@ -13605,7 +13312,7 @@ jur_UCICharSet_getName = $this => {
     var$1 = $this.$ch2;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(381)), var$1);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(369)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_CICharSet() {
@@ -13634,7 +13341,7 @@ jur_CICharSet_getName = $this => {
     var$1 = $this.$ch4;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(382)), var$1);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(370)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_DecomposedCharSet() {
@@ -13738,7 +13445,7 @@ jur_DecomposedCharSet_getName = $this => {
     var$1 = jur_DecomposedCharSet_getDecomposedChar($this);
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(383)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(371)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 jur_DecomposedCharSet_codePointAt = ($this, $strIndex, $testString, $rightBound) => {
@@ -13951,7 +13658,7 @@ jur_DotAllQuantifierSet_find = ($this, $stringIndex, $testString, $matchResult) 
     return (-1);
 },
 jur_DotAllQuantifierSet_getName = $this => {
-    return $rt_s(384);
+    return $rt_s(372);
 };
 function jur_DotQuantifierSet() {
     jur_QuantifierSet.call(this);
@@ -14011,7 +13718,7 @@ jur_DotQuantifierSet_findLineTerminator = ($this, $i, $to, $testString) => {
     return $i;
 },
 jur_DotQuantifierSet_getName = $this => {
-    return $rt_s(385);
+    return $rt_s(373);
 },
 jur_AbstractLineTerminator = $rt_classWithoutFields(),
 jur_AbstractLineTerminator_unixLT = null,
@@ -14168,7 +13875,7 @@ jur_SOLSet_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_SOLSet_getName = $this => {
-    return $rt_s(386);
+    return $rt_s(374);
 };
 function jur_WordBoundary() {
     jur_AbstractSet.call(this);
@@ -14199,7 +13906,7 @@ jur_WordBoundary_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_WordBoundary_getName = $this => {
-    return $rt_s(387);
+    return $rt_s(375);
 },
 jur_WordBoundary_isSpace = ($this, $ch, $index, $leftBound, $testString) => {
     if (!jl_Character_isLetterOrDigit($ch) && $ch != 95) {
@@ -14232,7 +13939,7 @@ jur_PreviousMatch_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_PreviousMatch_getName = $this => {
-    return $rt_s(388);
+    return $rt_s(376);
 };
 function jur_EOLSet() {
     jur_AbstractSet.call(this);
@@ -14286,7 +13993,7 @@ jur_EOLSet_hasConsumed = ($this, $matchResult) => {
     return $res;
 },
 jur_EOLSet_getName = $this => {
-    return $rt_s(389);
+    return $rt_s(377);
 },
 jur_EOISet = $rt_classWithoutFields(jur_AbstractSet),
 jur_EOISet_matches = ($this, $stringIndex, $testString, $matchResult) => {
@@ -14300,7 +14007,7 @@ jur_EOISet_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_EOISet_getName = $this => {
-    return $rt_s(390);
+    return $rt_s(378);
 };
 function jur_MultiLineSOLSet() {
     jur_AbstractSet.call(this);
@@ -14328,7 +14035,7 @@ jur_MultiLineSOLSet_hasConsumed = ($this, $matchResult) => {
     return 0;
 },
 jur_MultiLineSOLSet_getName = $this => {
-    return $rt_s(391);
+    return $rt_s(379);
 },
 jur_DotAllSet = $rt_classWithoutFields(jur_JointSet),
 jur_DotAllSet__init_ = $this => {
@@ -14357,7 +14064,7 @@ jur_DotAllSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $this.$next1.$matches(var$5, $testString, $matchResult);
 },
 jur_DotAllSet_getName = $this => {
-    return $rt_s(392);
+    return $rt_s(380);
 },
 jur_DotAllSet_setNext = ($this, $next) => {
     $this.$next1 = $next;
@@ -14402,7 +14109,7 @@ jur_DotSet_matches = ($this, $stringIndex, $testString, $matchResult) => {
     return $this.$lt0.$isLineTerminator($high) ? (-1) : $this.$next1.$matches(var$5, $testString, $matchResult);
 },
 jur_DotSet_getName = $this => {
-    return $rt_s(133);
+    return $rt_s(125);
 },
 jur_DotSet_setNext = ($this, $next) => {
     $this.$next1 = $next;
@@ -14446,7 +14153,7 @@ jur_UEOLSet_hasConsumed = ($this, $matchResult) => {
     return $res;
 },
 jur_UEOLSet_getName = $this => {
-    return $rt_s(389);
+    return $rt_s(377);
 };
 function jur_UMultiLineEOLSet() {
     jur_AbstractSet.call(this);
@@ -14478,7 +14185,7 @@ jur_UMultiLineEOLSet_hasConsumed = ($this, $matchResult) => {
     return $res;
 },
 jur_UMultiLineEOLSet_getName = $this => {
-    return $rt_s(393);
+    return $rt_s(381);
 };
 function jur_MultiLineEOLSet() {
     jur_AbstractSet.call(this);
@@ -14533,7 +14240,7 @@ jur_MultiLineEOLSet_hasConsumed = ($this, $matchResult) => {
     return $res;
 },
 jur_MultiLineEOLSet_getName = $this => {
-    return $rt_s(394);
+    return $rt_s(382);
 };
 function jur_CIBackReferenceSet() {
     let a = this; jur_JointSet.call(a);
@@ -14586,7 +14293,7 @@ jur_CIBackReferenceSet_getName = $this => {
     var$1 = $this.$groupIndex;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(395)), var$1);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(383)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 jur_CIBackReferenceSet_hasConsumed = ($this, $matchResult) => {
@@ -14667,7 +14374,7 @@ jur_BackReferenceSet_getName = $this => {
     var$1 = $this.$groupIndex;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(396)), var$1);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(384)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_UCIBackReferenceSet() {
@@ -14706,7 +14413,7 @@ jur_UCIBackReferenceSet_getName = $this => {
     var$1 = $this.$groupIndex1;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(397)), var$1);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(385)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 jl_StringBuffer = $rt_classWithoutFields(jl_AbstractStringBuilder),
@@ -14716,7 +14423,7 @@ jl_StringBuffer_append = ($this, $s) => {
     $s = $s;
     var$3 = $s.$nativeString.length;
     var$4 = $this;
-    var$5 = var$4.$length1;
+    var$5 = var$4.$length0;
     var$4 = var$4;
     if (var$2 <= var$3 && var$3 <= $s.$nativeString.length) {
         jl_AbstractStringBuilder_insertSpace(var$4, var$5, (var$5 + var$3 | 0) - var$2 | 0);
@@ -14825,7 +14532,7 @@ jur_SequenceSet_getName = $this => {
     var$1 = $this.$string;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(398)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(386)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 jur_SequenceSet_first = ($this, $set) => {
@@ -14877,10 +14584,10 @@ let jur_UCISequenceSet__init_ = ($this, $substring) => {
     jl_AbstractStringBuilder__init_($res);
     $i = 0;
     while (true) {
-        var$4 = $rt_compare($i, $substring.$length1);
+        var$4 = $rt_compare($i, $substring.$length0);
         if (var$4 >= 0) {
             $this.$string2 = jl_AbstractStringBuilder_toString($res);
-            $this.$charCount0 = $res.$length1;
+            $this.$charCount0 = $res.$length0;
             return;
         }
         if ($i < 0)
@@ -14917,7 +14624,7 @@ jur_UCISequenceSet_getName = $this => {
     var$1 = $this.$string2;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(399)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(387)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_CISequenceSet() {
@@ -14927,7 +14634,7 @@ function jur_CISequenceSet() {
 let jur_CISequenceSet__init_ = ($this, $substring) => {
     jur_LeafSet__init_($this);
     $this.$string1 = jl_AbstractStringBuilder_toString($substring);
-    $this.$charCount0 = $substring.$length1;
+    $this.$charCount0 = $substring.$length0;
 },
 jur_CISequenceSet__init_0 = var_0 => {
     let var_1 = new jur_CISequenceSet();
@@ -14954,7 +14661,7 @@ jur_CISequenceSet_getName = $this => {
     var$1 = $this.$string1;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(400)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(388)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_UCISupplCharSet() {
@@ -14974,7 +14681,7 @@ jur_UCISupplCharSet_getName = $this => {
     var$1 = jl_String__init_(jl_Character_toChars($this.$ch3));
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(381)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$2, $rt_s(369)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 };
 function jur_LowSurrogateCharSet() {
@@ -16077,31 +15784,31 @@ cgxgbtd_StyleWrapper$Unit__init_ = ($this, var$1, var$2) => {
 cgxgbtd_StyleWrapper$Unit__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cgxgbtd_StyleWrapper$Unit$1;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(401), 0);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(389), 0);
     cgxgbtd_StyleWrapper$Unit_PX = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$2;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(402), 1);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(390), 1);
     cgxgbtd_StyleWrapper$Unit_PCT = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$3;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(403), 2);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(391), 2);
     cgxgbtd_StyleWrapper$Unit_EM = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$4;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(404), 3);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(392), 3);
     cgxgbtd_StyleWrapper$Unit_EX = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$5;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(405), 4);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(393), 4);
     cgxgbtd_StyleWrapper$Unit_PT = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$6;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(406), 5);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(394), 5);
     cgxgbtd_StyleWrapper$Unit_PC = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$7;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(407), 6);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(395), 6);
     cgxgbtd_StyleWrapper$Unit_IN = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$8;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(408), 7);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(396), 7);
     cgxgbtd_StyleWrapper$Unit_CM = var$1;
     var$1 = new cgxgbtd_StyleWrapper$Unit$9;
-    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(409), 8);
+    cgxgbtd_StyleWrapper$Unit__init_(var$1, $rt_s(397), 8);
     cgxgbtd_StyleWrapper$Unit_MM = var$1;
     var$2 = $rt_createArray(cgxgbtd_StyleWrapper$Unit, 9);
     var$3 = var$2.data;
@@ -16162,7 +15869,7 @@ jur_CharClass$18_toString = $this => {
         jl_AbstractStringBuilder_append($temp, 124);
         $i = ju_BitSet_nextSetBit($this.$val$bs, $i + 1 | 0);
     }
-    var$3 = $temp.$length1;
+    var$3 = $temp.$length0;
     if (var$3 > 0)
         jl_StringBuilder_deleteCharAt($temp, var$3 - 1 | 0);
     return jl_AbstractStringBuilder_toString($temp);
@@ -16533,7 +16240,7 @@ jl_Thread_getUncaughtExceptionHandler = $this => {
 },
 jl_Thread__clinit_ = () => {
     let var$1;
-    var$1 = jl_Thread__init_(null, $rt_s(410));
+    var$1 = jl_Thread__init_(null, $rt_s(398));
     jl_Thread_mainThread = var$1;
     jl_Thread_currentThread = var$1;
     jl_Thread_nextId = 1;
@@ -16585,14 +16292,14 @@ let jl_IllegalMonitorStateException = $rt_classWithoutFields(jl_RuntimeException
 otjf_JSMapping = $rt_classWithoutFields(0);
 function cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_0() {
     jl_Object.call(this);
-    this.$_019 = null;
+    this.$_018 = null;
 }
 let cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_0_apply$exported$0 = (var$1, var$2) => {
     let var$3, var$4, var$5, var$6;
     var$2 = otji_JSWrapper_jsToJava(var$2);
     var$1 = var$1;
     var$2 = otji_JSWrapper_unwrap(var$2);
-    var$1 = var$1.$_019;
+    var$1 = var$1.$_018;
     var$3 = var$2.length;
     var$4 = $rt_createArray(cgxgbtf_FileData, var$3);
     var$5 = var$4.data;
@@ -16602,13 +16309,13 @@ let cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_0_apply$exported$0 = (va
         var$6 = var$6 + 1 | 0;
     }
     var$1.$windowListener.$filesDropped(var$4);
-    return otji_JSWrapper_javaToJs($rt_s(411));
+    return otji_JSWrapper_javaToJs($rt_s(399));
 },
 cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_1 = $rt_classWithoutFields(),
 cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_1_apply$exported$0 = (var$1, var$2) => {
     otji_JSWrapper_jsToJava(var$2);
     var$1;
-    return otji_JSWrapper_javaToJs($rt_s(412));
+    return otji_JSWrapper_javaToJs($rt_s(400));
 },
 otjf_JSSupplier = $rt_classWithoutFields(0),
 cgxgbta_AssetLoadImpl$downloadDroppedFile$lambda$_3_2 = $rt_classWithoutFields(),
@@ -17044,10 +16751,10 @@ let cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_0_handleEvent$exported$0
 };
 function cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_1() {
     jl_Object.call(this);
-    this.$_020 = null;
+    this.$_019 = null;
 }
 let cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_1_handleEvent$exported$0 = var$1 => {
-    var$1 = var$1.$_020;
+    var$1 = var$1.$_019;
     var$1.$delayInitCount = var$1.$delayInitCount - 1 | 0;
 };
 function cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_2() {
@@ -17056,7 +16763,7 @@ function cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_2() {
 }
 let cgxgbtft_LocalDBStorage$readAllFilesAsync$lambda$_4_2_handleEvent$exported$0 = var$1 => {
     var$1 = var$1.$_0;
-    otcic_JsConsolePrintStream_println(jl_System_err(), $rt_s(413));
+    otcic_JsConsolePrintStream_println(jl_System_err(), $rt_s(401));
     var$1.$delayInitCount = var$1.$delayInitCount - 1 | 0;
 },
 jl_AutoCloseable = $rt_classWithoutFields(0),
@@ -17089,12 +16796,12 @@ otcic_JsConsolePrintStream__init_ = $this => {
 },
 otcic_JsConsolePrintStream_println = ($this, $s) => {
     $this.$print($s);
-    $this.$print($rt_s(17));
+    $this.$print($rt_s(10));
 },
 otcic_JSStderrPrintStream = $rt_classWithoutFields(otcic_JsConsolePrintStream),
 otcic_JSStderrPrintStream_print = ($this, $s) => {
     if ($s === null)
-        $s = $rt_s(19);
+        $s = $rt_s(12);
     $rt_putStderr($rt_ustr($s));
 },
 cgxgbtd_StyleWrapper$Unit$1 = $rt_classWithoutFields(cgxgbtd_StyleWrapper$Unit),
@@ -17613,7 +17320,7 @@ function ju_AbstractList$1() {
     a.$index3 = 0;
     a.$modCount1 = 0;
     a.$size8 = 0;
-    a.$removeIndex0 = 0;
+    a.$removeIndex = 0;
     a.$this$08 = null;
 }
 let ju_AbstractList$1_hasNext = $this => {
@@ -17629,7 +17336,7 @@ ju_AbstractList$1_next = $this => {
         $rt_throw(var$2);
     }
     var$3 = $this.$index3;
-    $this.$removeIndex0 = var$3;
+    $this.$removeIndex = var$3;
     $this.$index3 = var$3 + 1 | 0;
     return ju_ArrayList_get(var$2, var$3);
 };
@@ -17648,7 +17355,7 @@ let cgxgbta_AssetDownloadImpl$2_handleEvent$exported$0 = (var$1, var$2) => {
         var$3 = var$1.$val$url;
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(414)), var$3);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(402)), var$3);
         var$3 = jl_AbstractStringBuilder_toString(var$4);
         otcic_JsConsolePrintStream_println(var$2, var$3);
     }
@@ -17670,7 +17377,7 @@ let cgxgbta_AssetDownloadImpl$loadScript$lambda$_5_0_handleEvent$exported$0 = (v
         var$2 = jl_System_err();
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(415)), var$3);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(403)), var$3);
         var$3 = jl_AbstractStringBuilder_toString(var$4);
         otcic_JsConsolePrintStream_println(var$2, var$3);
     }
@@ -17698,7 +17405,7 @@ cbgu_Array$ArrayIterator_hasNext = $this => {
     let var$1;
     if (!$this.$valid) {
         var$1 = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_(var$1, $rt_s(416));
+        jl_RuntimeException__init_(var$1, $rt_s(404));
         $rt_throw(var$1);
     }
     return $this.$index0 >= $this.$array5.$size1 ? 0 : 1;
@@ -17714,7 +17421,7 @@ cbgu_Array$ArrayIterator_next = $this => {
     }
     if (!$this.$valid) {
         var$2 = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_(var$2, $rt_s(416));
+        jl_RuntimeException__init_(var$2, $rt_s(404));
         $rt_throw(var$2);
     }
     var$3 = var$2.$items.data;
@@ -17731,7 +17438,7 @@ function cbgu_Array$ArrayIterable() {
 let otcic_JSStdoutPrintStream = $rt_classWithoutFields(otcic_JsConsolePrintStream),
 otcic_JSStdoutPrintStream_print = ($this, $s) => {
     if ($s === null)
-        $s = $rt_s(19);
+        $s = $rt_s(12);
     $rt_putStdout($rt_ustr($s));
 },
 cgxgbtd_EventTargetWrapper = $rt_classWithoutFields(0),
@@ -17771,7 +17478,7 @@ cgxgbtdt_TypedArrays_getTypedArray = $buffer => {
                 $buffer = jl_String_valueOf(jl_Object_getClass($buffer));
                 var$3 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$3);
-                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(417)), $buffer);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(405)), $buffer);
                 jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$3));
                 $rt_throw(var$2);
             }
@@ -17817,7 +17524,7 @@ cgxgbtf_FileData__init_0 = (var_0, var_1) => {
     return var_2;
 },
 cgxgbtf_FileData__init_ = ($this, $path, $type, $bytes) => {
-    if ($bytes !== null && jl_String_endsWith($path, $rt_s(78)))
+    if ($bytes !== null && jl_String_endsWith($path, $rt_s(71)))
         $path = jl_String_substring($path, 0, $path.$nativeString.length - 1 | 0);
     $this.$path = $path;
     $this.$bytes = $bytes;
@@ -17835,10 +17542,18 @@ otjt_ArrayBufferView = $rt_classWithoutFields(),
 otjt_TypedArray = $rt_classWithoutFields(otjt_ArrayBufferView),
 otjt_Int8Array = $rt_classWithoutFields(otjt_TypedArray),
 cbgu_GdxRuntimeException = $rt_classWithoutFields(jl_RuntimeException),
+cbgu_GdxRuntimeException__init_1 = ($this, $message) => {
+    jl_RuntimeException__init_($this, $message);
+},
+cbgu_GdxRuntimeException__init_0 = var_0 => {
+    let var_1 = new cbgu_GdxRuntimeException();
+    cbgu_GdxRuntimeException__init_1(var_1, var_0);
+    return var_1;
+},
 cbgu_GdxRuntimeException__init_ = ($this, $message, $t) => {
     jl_Throwable__init_($this, $message, $t);
 },
-cbgu_GdxRuntimeException__init_0 = (var_0, var_1) => {
+cbgu_GdxRuntimeException__init_2 = (var_0, var_1) => {
     let var_2 = new cbgu_GdxRuntimeException();
     cbgu_GdxRuntimeException__init_(var_2, var_0, var_1);
     return var_2;
@@ -17851,7 +17566,7 @@ function cgxgbta_AssetLoadImpl$5() {
     a.$this$02 = null;
 }
 let cgxgbta_AssetLoadImpl$5_onSuccess = ($this, var$1, var$2) => {
-    let var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, $$je;
+    let var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, $$je;
     var$3 = cgxgbtdt_TypedArrays_toByteArray(var$2.$data9);
     var$4 = var$3.data;
     var$1 = new jl_String;
@@ -17872,7 +17587,7 @@ let cgxgbta_AssetLoadImpl$5_onSuccess = ($this, var$1, var$2) => {
             }
         }
         var$6 = new jl_AssertionError;
-        jl_Throwable__init_(var$6, $rt_s(418), var$2);
+        jl_Throwable__init_(var$6, $rt_s(406), var$2);
         $rt_throw(var$6);
     }
     var$7 = var$2.$array6 === null ? 0 : 1;
@@ -17883,88 +17598,106 @@ let cgxgbta_AssetLoadImpl$5_onSuccess = ($this, var$1, var$2) => {
         jn_CharBuffer_get(var$2, var$3, 0, var$3.data.length);
     }
     var$1.$nativeString = $rt_fullArrayToString(var$3.data);
-    var$3 = (jl_String_split(var$1, $rt_s(17))).data;
+    var$3 = (jl_String_split(var$1, $rt_s(10))).data;
     var$1 = $this.$this$02;
-    var$7 = var$3.length;
-    var$1.$assetTotal = var$7;
+    var$5 = var$3.length;
+    var$1.$assetTotal = var$5;
     var$8 = 0;
-    while (var$8 < var$7) {
+    while (var$8 < var$5) {
         var$1 = var$3[var$8];
-        var$4 = (jl_String_split(var$1, $rt_s(80))).data;
-        var$5 = var$4.length;
-        if (var$5 != 5) {
+        var$4 = (jl_String_split(var$1, $rt_s(73))).data;
+        var$7 = var$4.length;
+        if (var$7 != 5) {
             var$2 = new cbgu_GdxRuntimeException;
             var$6 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$6);
-            var$9 = jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(419)), var$5);
+            var$9 = jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(407)), var$7);
             jl_AbstractStringBuilder_append(var$9, 32);
             jl_StringBuilder_append(var$9, var$1);
             jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$6));
             $rt_throw(var$2);
         }
-        var$10 = var$4[0];
-        var$1 = var$4[1];
+        var$1 = var$4[0];
+        var$10 = var$4[1];
         var$2 = jl_String_trim(var$4[2]);
-        var$5 = jl_String_equals(var$4[4], $rt_s(420));
+        var$11 = jl_String_equals(var$4[4], $rt_s(408));
         var$2 = jl_String_trim(var$2);
         if (!jl_String_isEmpty(var$2)) {
             var$6 = cbg_Files$FileType_Internal;
-            if (jl_String_equals(var$10, $rt_s(421)))
+            if (jl_String_equals(var$1, $rt_s(409)))
                 var$6 = cbg_Files$FileType_Classpath;
-            else if (jl_String_equals(var$10, $rt_s(422)))
+            else if (jl_String_equals(var$1, $rt_s(410)))
                 var$6 = cbg_Files$FileType_Local;
             var$9 = cgxgbta_AssetType_Binary;
-            if (jl_String_equals(var$1, $rt_s(212)))
+            if (jl_String_equals(var$10, $rt_s(200)))
                 var$9 = cgxgbta_AssetType_Directory;
             if (!(!$this.$val$config.$preloadAssets && var$6 !== cbg_Files$FileType_Classpath)) {
-                var$10 = $this.$this$02;
+                var$12 = $this.$this$02;
                 var$1 = null;
-                var$11 = jl_String_replace(jl_String_trim(var$2), $rt_s(423), $rt_s(78));
-                if (jl_String_startsWith(var$11, $rt_s(78)))
-                    var$11 = jl_String_substring0(var$11, 1);
-                if (!jl_String_isEmpty(var$11) && !(ju_HashMap_entryByKey(var$10.$assetInQueue.$backingMap, var$11) === null ? 0 : 1)) {
-                    var$2 = cbg_Gdx_files;
-                    if (var$6 === cbg_Files$FileType_Internal)
-                        var$6 = cgxgbt_TeaFiles_internal(var$2, var$11);
+                var$10 = jl_String_replace(jl_String_trim(var$2), $rt_s(411), $rt_s(71));
+                if (jl_String_startsWith(var$10, $rt_s(71)))
+                    var$10 = jl_String_substring0(var$10, 1);
+                if (!jl_String_isEmpty(var$10) && !(ju_HashMap_entryByKey(var$12.$assetInQueue.$backingMap, var$10) === null ? 0 : 1)) {
+                    var$13 = cbg_Gdx_files;
+                    var$2 = cbg_Files$FileType_Internal;
+                    if (var$6 === var$2)
+                        var$6 = cgxgbt_TeaFileHandle__init_(var$13, var$10, var$2);
                     else {
-                        var$12 = cbg_Files$FileType_Classpath;
-                        if (var$6 === var$12)
-                            var$6 = cgxgbt_TeaFileHandle__init_(var$2, var$11, var$12);
+                        var$2 = cbg_Files$FileType_Classpath;
+                        if (var$6 === var$2)
+                            var$6 = cgxgbt_TeaFileHandle__init_(var$13, var$10, var$2);
                         else {
-                            var$12 = cbg_Files$FileType_Local;
-                            if (var$6 !== var$12) {
+                            var$2 = cbg_Files$FileType_Local;
+                            if (var$6 !== var$2) {
                                 var$1 = new cbgu_GdxRuntimeException;
                                 var$2 = jl_String_valueOf(var$6);
                                 var$6 = new jl_StringBuilder;
                                 jl_AbstractStringBuilder__init_(var$6);
-                                jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(424)), var$2), $rt_s(425));
+                                jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(412)), var$2), $rt_s(413));
                                 jl_RuntimeException__init_(var$1, jl_AbstractStringBuilder_toString(var$6));
                                 $rt_throw(var$1);
                             }
-                            var$6 = cgxgbt_TeaFileHandle__init_(var$2, var$11, var$12);
+                            var$6 = cgxgbt_TeaFileHandle__init_(var$13, var$10, var$2);
                         }
                     }
-                    var$12 = var$6;
-                    var$13 = cgxgbt_TeaFileHandle_exists(var$12);
-                    if (!(!var$5 && var$13)) {
+                    b: {
+                        c: {
+                            var$13 = var$6;
+                            var$14 = cgxgbtf_MemoryFileStorage_exists(cgxgbt_TeaFiles_getFileDB(var$13.$teaFiles, var$13.$type2), var$13);
+                            cgxgbt_TeaFileHandle$1_$callClinit();
+                            switch (cgxgbt_TeaFileHandle$1_$SwitchMap$com$badlogic$gdx$Files$FileType.data[var$13.$type2.$ordinal0]) {
+                                case 1:
+                                    if (!var$14)
+                                        break c;
+                                    var$14 = 1;
+                                    break b;
+                                case 2:
+                                    break c;
+                                default:
+                            }
+                            break b;
+                        }
+                        var$14 = cgxgbtf_MemoryFileStorage_exists(cgxgbt_TeaFiles_getFileDB(var$13.$teaFiles, cbg_Files$FileType_Classpath), var$13);
+                    }
+                    if (!(!var$11 && var$14)) {
                         if (var$9 !== cgxgbta_AssetType_Directory) {
-                            var$6 = var$10.$assetInQueue;
-                            ju_HashMap_put(var$6.$backingMap, var$11, var$6);
-                            var$9 = var$10.$assetDownloader;
-                            var$6 = cgxgbta_AssetLoadImpl_getAssetUrl(var$10);
-                            var$2 = new jl_StringBuilder;
-                            jl_AbstractStringBuilder__init_(var$2);
-                            jl_StringBuilder_append(jl_StringBuilder_append(var$2, var$6), var$11);
-                            var$2 = jl_AbstractStringBuilder_toString(var$2);
-                            var$14 = cgxgbta_AssetType_Binary;
-                            var$6 = new cgxgbta_AssetLoadImpl$6;
-                            var$6.$this$09 = var$10;
-                            var$6.$val$listener0 = var$1;
-                            var$6.$val$path1 = var$11;
-                            var$6.$val$fileHandle = var$12;
-                            cgxgbta_AssetDownloadImpl_load(var$9, 1, var$2, var$14, var$6);
-                        } else if (!var$13)
-                            cgxgbtf_MemoryFileStorage_mkdirs(cgxgbt_TeaFiles_getFileDB(var$12.$teaFiles, var$12.$type0), var$12);
+                            var$2 = var$12.$assetInQueue;
+                            ju_HashMap_put(var$2.$backingMap, var$10, var$2);
+                            var$6 = var$12.$assetDownloader;
+                            var$2 = cgxgbta_AssetLoadImpl_getAssetUrl(var$12);
+                            var$9 = new jl_StringBuilder;
+                            jl_AbstractStringBuilder__init_(var$9);
+                            jl_StringBuilder_append(jl_StringBuilder_append(var$9, var$2), var$10);
+                            var$15 = jl_AbstractStringBuilder_toString(var$9);
+                            var$9 = cgxgbta_AssetType_Binary;
+                            var$2 = new cgxgbta_AssetLoadImpl$6;
+                            var$2.$this$09 = var$12;
+                            var$2.$val$listener0 = var$1;
+                            var$2.$val$path1 = var$10;
+                            var$2.$val$fileHandle = var$13;
+                            cgxgbta_AssetDownloadImpl_load(var$6, 1, var$15, var$9, var$2);
+                        } else if (!var$14)
+                            cgxgbtf_MemoryFileStorage_mkdirs(cgxgbt_TeaFiles_getFileDB(var$13.$teaFiles, var$13.$type2), var$13);
                     }
                 }
             }
@@ -17990,8 +17723,8 @@ cgxgbta_AssetType__init_ = (var_0, var_1, var_2) => {
 },
 cgxgbta_AssetType__clinit_ = () => {
     let var$1, var$2, var$3;
-    cgxgbta_AssetType_Binary = cgxgbta_AssetType__init_($rt_s(426), 0, $rt_s(427));
-    var$1 = cgxgbta_AssetType__init_($rt_s(428), 1, $rt_s(212));
+    cgxgbta_AssetType_Binary = cgxgbta_AssetType__init_($rt_s(414), 0, $rt_s(415));
+    var$1 = cgxgbta_AssetType__init_($rt_s(416), 1, $rt_s(200));
     cgxgbta_AssetType_Directory = var$1;
     var$2 = $rt_createArray(cgxgbta_AssetType, 2);
     var$3 = var$2.data;
@@ -18013,7 +17746,7 @@ let cgxgbtft_LocalDBStorage$putFile$lambda$_2_0_handleEvent$exported$0 = var$1 =
     var$2 = jl_System_err();
     var$3 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(429)), var$1);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(417)), var$1);
     var$1 = jl_AbstractStringBuilder_toString(var$3);
     otcic_JsConsolePrintStream_println(var$2, var$1);
 },
@@ -18138,7 +17871,7 @@ dcgbs_SceneManager_addScene = $scene => {
     var$3 = $scene.$name;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(430)), var$3);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(418)), var$3);
     var$3 = jl_AbstractStringBuilder_toString(var$4);
     otcic_JsConsolePrintStream_println(var$2, var$3);
     ju_HashMap_put(dcgbs_SceneManager_scenes, $scene.$name, $scene);
@@ -18165,7 +17898,7 @@ dcgbs_SceneManager_pushToScene = $name => {
                 $scene = $lastScene.$name;
                 var$7 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$7);
-                jl_StringBuilder_append(jl_StringBuilder_append(var$7, $rt_s(431)), $scene);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$7, $rt_s(419)), $scene);
                 $scene = jl_AbstractStringBuilder_toString(var$7);
                 otcic_JsConsolePrintStream_println($name, $scene);
                 var$3 = $lastScene.$gameObjects.data;
@@ -18253,7 +17986,7 @@ dcgbs_SceneManager_pushToScene = $name => {
     $name = new jl_IndexOutOfBoundsException;
     $scene = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_($scene);
-    jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append($scene, $rt_s(432)), var$9), $rt_s(433)), var$13);
+    jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append($scene, $rt_s(420)), var$9), $rt_s(421)), var$13);
     jl_RuntimeException__init_($name, jl_AbstractStringBuilder_toString($scene));
     $rt_throw($name);
 },
@@ -18320,7 +18053,7 @@ cbggg_SpriteBatch__init_ = ($this, $size, $defaultShader) => {
         $defaultShader = new jl_IllegalArgumentException;
         $vertexDataType = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($vertexDataType);
-        jl_AbstractStringBuilder_append0($vertexDataType, $rt_s(434));
+        jl_AbstractStringBuilder_append0($vertexDataType, $rt_s(422));
         jl_RuntimeException__init_($defaultShader, jl_AbstractStringBuilder_toString(jl_StringBuilder_append0($vertexDataType, $size)));
         $rt_throw($defaultShader);
     }
@@ -18333,9 +18066,9 @@ cbggg_SpriteBatch__init_ = ($this, $size, $defaultShader) => {
     $i = $size * 4 | 0;
     var$7 = $size * 6 | 0;
     $indices = $rt_createArray(cbgg_VertexAttribute, 3).data;
-    $indices[0] = cbgg_VertexAttribute__init_(1, 2, $rt_s(435));
-    $indices[1] = cbgg_VertexAttribute__init_(4, 4, $rt_s(436));
-    $indices[2] = cbgg_VertexAttribute__init_(16, 2, $rt_s(437));
+    $indices[0] = cbgg_VertexAttribute__init_(1, 2, $rt_s(423));
+    $indices[1] = cbgg_VertexAttribute__init_(4, 4, $rt_s(424));
+    $indices[2] = cbgg_VertexAttribute__init_(16, 2, $rt_s(425));
     cbgg_Mesh_$callClinit();
     $vertexDataType = new cbgg_VertexAttributes;
     $vertexDataType.$mask4 = Long_fromInt(-1);
@@ -18344,7 +18077,7 @@ cbggg_SpriteBatch__init_ = ($this, $size, $defaultShader) => {
     $j = $indices.length;
     if (!$j) {
         $defaultShader = new jl_IllegalArgumentException;
-        jl_RuntimeException__init_($defaultShader, $rt_s(438));
+        jl_RuntimeException__init_($defaultShader, $rt_s(426));
         $rt_throw($defaultShader);
     }
     var$10 = $rt_createArray(cbgg_VertexAttribute, $j);
@@ -18471,11 +18204,11 @@ cbggg_SpriteBatch__init_0 = (var_0, var_1) => {
 cbggg_SpriteBatch_createDefaultShader = () => {
     let $vertexShader, $fragmentShader, $shader, var$4, var$5, var$6, var$7;
     cbggg_SpriteBatch_$callClinit();
-    $vertexShader = $rt_s(439);
-    $fragmentShader = $rt_s(440);
+    $vertexShader = $rt_s(427);
+    $fragmentShader = $rt_s(428);
     $shader = new cbggg_ShaderProgram;
     cbggg_ShaderProgram_$callClinit();
-    $shader.$log = $rt_s(13);
+    $shader.$log = $rt_s(6);
     $shader.$uniforms = cbgu_ObjectIntMap__init_();
     $shader.$uniformTypes = cbgu_ObjectIntMap__init_();
     $shader.$uniformSizes = cbgu_ObjectIntMap__init_();
@@ -18484,7 +18217,7 @@ cbggg_SpriteBatch_createDefaultShader = () => {
     $shader.$attributeSizes = cbgu_ObjectIntMap__init_();
     $shader.$refCount = 0;
     $shader.$params = cbgu_BufferUtils_newIntBuffer(1);
-    $shader.$type2 = cbgu_BufferUtils_newIntBuffer(1);
+    $shader.$type1 = cbgu_BufferUtils_newIntBuffer(1);
     var$4 = cbggg_ShaderProgram_prependVertexCode;
     if (var$4 !== null && var$4.$nativeString.length > 0) {
         var$4 = new jl_StringBuilder;
@@ -18514,11 +18247,11 @@ cbggg_SpriteBatch_createDefaultShader = () => {
         while (var$6 < var$5) {
             jn_Buffer_clear($shader.$params);
             jn_IntBufferImpl_put($shader.$params, 0, 1);
-            jn_Buffer_clear($shader.$type2);
-            $vertexShader = cbg_Gdx_gl20.$glGetActiveAttrib($shader.$program, var$6, $shader.$params, $shader.$type2);
+            jn_Buffer_clear($shader.$type1);
+            $vertexShader = cbg_Gdx_gl20.$glGetActiveAttrib($shader.$program, var$6, $shader.$params, $shader.$type1);
             var$7 = cbg_Gdx_gl20.$glGetAttribLocation($shader.$program, $vertexShader);
             cbgu_ObjectIntMap_put($shader.$attributes2, $vertexShader, var$7);
-            cbgu_ObjectIntMap_put($shader.$attributeTypes, $vertexShader, jn_IntBufferImpl_get($shader.$type2, 0));
+            cbgu_ObjectIntMap_put($shader.$attributeTypes, $vertexShader, jn_IntBufferImpl_get($shader.$type1, 0));
             cbgu_ObjectIntMap_put($shader.$attributeSizes, $vertexShader, jn_IntBufferImpl_get($shader.$params, 0));
             $shader.$attributeNames.data[var$6] = $vertexShader;
             var$6 = var$6 + 1 | 0;
@@ -18531,11 +18264,11 @@ cbggg_SpriteBatch_createDefaultShader = () => {
         while (var$6 < var$5) {
             jn_Buffer_clear($shader.$params);
             jn_IntBufferImpl_put($shader.$params, 0, 1);
-            jn_Buffer_clear($shader.$type2);
-            $vertexShader = cbg_Gdx_gl20.$glGetActiveUniform($shader.$program, var$6, $shader.$params, $shader.$type2);
+            jn_Buffer_clear($shader.$type1);
+            $vertexShader = cbg_Gdx_gl20.$glGetActiveUniform($shader.$program, var$6, $shader.$params, $shader.$type1);
             var$7 = cbg_Gdx_gl20.$glGetUniformLocation($shader.$program, $vertexShader);
             cbgu_ObjectIntMap_put($shader.$uniforms, $vertexShader, var$7);
-            cbgu_ObjectIntMap_put($shader.$uniformTypes, $vertexShader, jn_IntBufferImpl_get($shader.$type2, 0));
+            cbgu_ObjectIntMap_put($shader.$uniformTypes, $vertexShader, jn_IntBufferImpl_get($shader.$type1, 0));
             cbgu_ObjectIntMap_put($shader.$uniformSizes, $vertexShader, jn_IntBufferImpl_get($shader.$params, 0));
             $shader.$uniformNames.data[var$6] = $vertexShader;
             var$6 = var$6 + 1 | 0;
@@ -18552,7 +18285,7 @@ cbggg_SpriteBatch_createDefaultShader = () => {
     $vertexShader = new jl_IllegalArgumentException;
     $fragmentShader = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_($fragmentShader);
-    jl_AbstractStringBuilder_append0($fragmentShader, $rt_s(441));
+    jl_AbstractStringBuilder_append0($fragmentShader, $rt_s(429));
     jl_AbstractStringBuilder_append0($fragmentShader, cbggg_ShaderProgram_getLog($shader));
     jl_RuntimeException__init_($vertexShader, jl_AbstractStringBuilder_toString($fragmentShader));
     $rt_throw($vertexShader);
@@ -18561,7 +18294,7 @@ cbggg_SpriteBatch_end = $this => {
     let var$1, $gl;
     if (!$this.$drawing) {
         var$1 = new jl_IllegalStateException;
-        jl_RuntimeException__init_(var$1, $rt_s(442));
+        jl_RuntimeException__init_(var$1, $rt_s(430));
         $rt_throw(var$1);
     }
     if ($this.$idx > 0)
@@ -18642,13 +18375,13 @@ cbggg_SpriteBatch_flush = $this => {
                     var$9 = new cbgu_GdxRuntimeException;
                     $indicesBuffer = new jl_StringBuilder;
                     jl_AbstractStringBuilder__init_($indicesBuffer);
-                    jl_AbstractStringBuilder_append0($indicesBuffer, $rt_s(443));
+                    jl_AbstractStringBuilder_append0($indicesBuffer, $rt_s(431));
                     $indicesBuffer = jl_StringBuilder_append0($indicesBuffer, $count);
-                    jl_AbstractStringBuilder_append0($indicesBuffer, $rt_s(444));
+                    jl_AbstractStringBuilder_append0($indicesBuffer, $rt_s(432));
                     var$10 = jl_StringBuilder_append0($indicesBuffer, 0);
-                    jl_AbstractStringBuilder_append0(var$10, $rt_s(445));
+                    jl_AbstractStringBuilder_append0(var$10, $rt_s(433));
                     $mesh = jl_StringBuilder_append0(var$10, $mesh.$indices.$getNumMaxIndices());
-                    jl_AbstractStringBuilder_append0($mesh, $rt_s(446));
+                    jl_AbstractStringBuilder_append0($mesh, $rt_s(434));
                     jl_RuntimeException__init_(var$9, jl_AbstractStringBuilder_toString($mesh));
                     $rt_throw(var$9);
                 }
@@ -18683,14 +18416,14 @@ function dcgbmc_SizeComponent() {
 function dcgbmc_DrawableComponent() {
     let a = this; dcgbmc_SizeComponent.call(a);
     a.$texture = null;
-    a.$pixmap0 = null;
+    a.$pixmap = null;
 }
 let dcgbmc_DrawableComponent_init = $this => {
-    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15, var$16, $$je;
+    let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12, var$13, var$14, var$15;
     var$1 = $this;
     var$2 = cgxgbt_TeaGraphics_getWidth(cbg_Gdx_graphics);
     var$3 = cgxgbt_TeaGraphics_getHeight(cbg_Gdx_graphics);
-    var$1.$pixmap0 = cbgg_Pixmap__init_(var$2, var$3, cbgg_Pixmap$Format_RGBA8888);
+    var$1.$pixmap = cbgg_Pixmap__init_(var$2, var$3, cbgg_Pixmap$Format_RGBA8888);
     var$4 = cbgg_Color_LIGHT_GRAY;
     var$5 = cbgg_Color_DARK_GRAY;
     var$6 = 0;
@@ -18699,10 +18432,10 @@ let dcgbmc_DrawableComponent_init = $this => {
         while (var$7 < var$2) {
             var$8 = var$1.$gridSize;
             if (((var$7 / var$8 | 0) + (var$6 / var$8 | 0) | 0) % 2 | 0)
-                cbgg_Pixmap_setColor(var$1.$pixmap0, var$5);
+                cbgg_Pixmap_setColor(var$1.$pixmap, var$5);
             else
-                cbgg_Pixmap_setColor(var$1.$pixmap0, var$4);
-            var$9 = var$1.$pixmap0;
+                cbgg_Pixmap_setColor(var$1.$pixmap, var$4);
+            var$9 = var$1.$pixmap;
             var$8 = var$1.$gridSize;
             var$10 = var$9.$nativePixmap;
             var$11 = var$9.$color;
@@ -18713,111 +18446,82 @@ let dcgbmc_DrawableComponent_init = $this => {
         }
         var$6 = var$6 + var$1.$gridSize | 0;
     }
-    var$4 = new cbgg_Texture;
-    var$12 = new cbgg_Pixmap;
-    dcgbd_Data_$callClinit();
-    a: {
-        try {
-            var$9 = cgxgbt_TeaFiles_internal(cbg_Gdx_files, $rt_s(447));
-            break a;
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            if ($$je instanceof jl_Exception) {
-                var$5 = $$je;
-            } else {
-                throw $$e;
-            }
-        }
-        var$9 = cbg_Gdx_app;
-        var$13 = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_(var$13);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$13, $rt_s(448)), $rt_s(447));
-        var$14 = jl_AbstractStringBuilder_toString(var$13);
-        if (var$9.$logLevel >= 1) {
-            var$9 = jl_System_err();
-            var$13 = new jl_StringBuilder;
-            jl_AbstractStringBuilder__init_(var$13);
-            jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$13, $rt_s(449)), $rt_s(16)), var$14);
-            var$10 = jl_AbstractStringBuilder_toString(var$13);
-            otcic_JsConsolePrintStream_println(var$9, var$10);
-            jl_Throwable_printStackTrace(var$5);
-        }
-        var$9 = null;
-    }
-    var$12.$blending = cbgg_Pixmap$Blending_SourceOver;
-    var$12.$filter = cbgg_Pixmap$Filter_BiLinear;
-    var$12.$color = 0;
-    var$10 = var$9;
-    var$5 = var$10.$file;
-    if (!cgxgbt_TeaFileHandle_exists(var$10)) {
-        var$1 = new cbgu_GdxRuntimeException;
-        var$4 = new jl_StringBuilder;
-        jl_AbstractStringBuilder__init_(var$4);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(450)), var$5);
-        jl_RuntimeException__init_(var$1, jl_AbstractStringBuilder_toString(var$4));
-        $rt_throw(var$1);
-    }
-    var$6 = cgxgbtf_MemoryFileStorage_exists(cgxgbt_TeaFiles_getFileDB(var$10.$teaFiles, var$10.$type0), var$10);
-    var$5 = var$10.$type0;
-    var$13 = cbg_Files$FileType_Classpath;
-    if (var$5 !== var$13 && !(var$5 === cbg_Files$FileType_Internal && !var$6) && !(var$5 === cbg_Files$FileType_Local && !var$6))
-        var$5 = cgxgbtf_MemoryFileStorage_read(cgxgbt_TeaFiles_getFileDB(var$10.$teaFiles, var$5), var$10);
-    else {
-        var$5 = cgxgbtf_MemoryFileStorage_read(cgxgbt_TeaFiles_getFileDB(var$10.$teaFiles, var$13), var$10);
-        if (var$5 === null) {
-            var$1 = new cbgu_GdxRuntimeException;
-            var$4 = var$10.$file;
-            var$5 = jl_String_valueOf(var$10.$type0);
-            var$9 = new jl_StringBuilder;
-            jl_AbstractStringBuilder__init_(var$9);
-            jl_AbstractStringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$9, $rt_s(451)), var$4), $rt_s(452)), var$5), 41);
-            jl_RuntimeException__init_(var$1, jl_AbstractStringBuilder_toString(var$9));
-            $rt_throw(var$1);
-        }
-    }
-    b: {
-        try {
-            try {
-                var$15 = cbgu_StreamUtils_copyStreamToByteArray(var$5, cbgf_FileHandle_estimateLength(var$9));
-                break b;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof ji_IOException) {
-                    var$4 = $$je;
-                } else {
-                    throw $$e;
-                }
-            }
-            $rt_throw(cbgu_GdxRuntimeException__init_0(jl_StringBuilder_toString(jl_StringBuilder_append(jl_StringBuilder_append3(jl_StringBuilder__init_(), $rt_s(453)), var$9)), var$4));
-        } catch ($$e) {
-            $$je = $rt_wrapException($$e);
-            var$1 = $$je;
-
-        }
-        cbgu_StreamUtils_closeQuietly(var$5);
-        $rt_throw(var$1);
-    }
-    var$16 = var$15.data;
-    cbgu_StreamUtils_closeQuietly(var$5);
-    var$5 = new cbggg_Gdx2DPixmap;
-    var$7 = var$16.length;
-    var$9 = new cbggg_Gdx2DPixmapNative;
-    var$9.$nativeData = cbggg_Gdx2DPixmapNative_loadNative$js_body$_26(otji_JS_wrap(var$15), 0, var$7);
-    cbggg_Gdx2DPixmapNative_updateNativeData(var$9);
-    var$5.$nativePixmap0 = var$9;
-    var$12.$nativePixmap = var$5;
-    var$5 = cbgg_Pixmap__init_(75, 75, cbgg_Pixmap_getFormat(var$12));
-    var$9 = cbgg_Pixmap$Filter_BiLinear;
-    var$5.$filter = var$9;
-    var$13 = var$5.$nativePixmap;
-    var$2 = var$9 !== cbgg_Pixmap$Filter_NearestNeighbour ? 1 : 0;
-    var$9 = var$13.$nativePixmap0;
-    Gdx.Gdx.prototype.g2d_set_scale(var$9.$basePtr, var$2);
-    cbggg_Gdx2DPixmapNative_copyHeapToBuffer(var$9);
-    cbgg_Pixmap_drawPixmap(var$5, var$12, 0, 0, cbgg_Pixmap_getWidth(var$12), cbgg_Pixmap_getHeight(var$12), 0, 0, cbgg_Pixmap_getWidth(var$5), cbgg_Pixmap_getHeight(var$5));
+    var$1 = new cbgg_Texture;
+    var$4 = $this.$pixmap;
     cbgg_Texture_$callClinit();
-    cbgg_Texture__init_(var$4, cbggg_PixmapTextureData__init_0(var$5, null, 0, 0));
-    var$1.$texture = var$4;
+    var$5 = new cbggg_PixmapTextureData;
+    var$5.$pixmap0 = var$4;
+    var$5.$format0 = cbgg_Pixmap_getFormat(var$4);
+    var$5.$useMipMaps = 0;
+    var$5.$disposePixmap = 0;
+    var$5.$managed = 0;
+    var$3 = cgxgbt_TeaGL20_glGenTexture(cbg_Gdx_gl);
+    var$4 = cbgg_Texture$TextureFilter_Nearest;
+    var$1.$minFilter = var$4;
+    var$1.$magFilter = var$4;
+    var$4 = cbgg_Texture$TextureWrap_ClampToEdge;
+    var$1.$uWrap = var$4;
+    var$1.$vWrap = var$4;
+    var$1.$anisotropicFilterLevel = 1.0;
+    var$1.$glTarget = 3553;
+    var$1.$glHandle = var$3;
+    var$4 = var$1.$data4;
+    if (var$4 !== null && var$5.$managed != var$4.$managed) {
+        var$1 = new cbgu_GdxRuntimeException;
+        jl_RuntimeException__init_(var$1, $rt_s(435));
+        $rt_throw(var$1);
+    }
+    var$1.$data4 = var$5;
+    var$10 = var$1;
+    cbgg_GLTexture_bind(var$10);
+    if (cbgg_TextureData$TextureDataType_Pixmap === cbgg_TextureData$TextureDataType_Custom)
+        $rt_throw(cbgu_GdxRuntimeException__init_0($rt_s(436)));
+    var$12 = var$5;
+    var$13 = var$12.$pixmap0;
+    var$7 = var$12.$disposePixmap;
+    if (var$12.$format0 === cbgg_Pixmap_getFormat(var$13))
+        var$4 = var$13;
+    else {
+        var$4 = cbgg_Pixmap__init_(cbgg_Pixmap_getWidth(var$13), cbgg_Pixmap_getHeight(var$13), var$12.$format0);
+        cbgg_Pixmap_setBlending(var$4, cbgg_Pixmap$Blending_None);
+        var$14 = cbgg_Pixmap_getWidth(var$13);
+        var$15 = cbgg_Pixmap_getHeight(var$13);
+        cbggg_Gdx2DPixmap_drawPixmap(var$4.$nativePixmap, var$13.$nativePixmap, 0, 0, 0, 0, var$14, var$15);
+        if (var$12.$disposePixmap)
+            cbgg_Pixmap_dispose(var$13);
+        var$7 = 1;
+    }
+    cbg_Gdx_gl.$glPixelStorei(3317, 1);
+    if (!var$12.$useMipMaps)
+        cbg_Gdx_gl.$glTexImage2D(3553, 0, cbgg_Pixmap_getGLInternalFormat(var$4), cbgg_Pixmap_getWidth(var$4), cbgg_Pixmap_getHeight(var$4), 0, cbgg_Pixmap_getGLFormat(var$4), cbgg_Pixmap_getGLType(var$4), cbgg_Pixmap_getPixels(var$4));
+    else {
+        var$2 = cbgg_Pixmap_getWidth(var$4);
+        var$6 = cbgg_Pixmap_getHeight(var$4);
+        if (!cbggg_MipMapGenerator_useHWMipMap)
+            cbggg_MipMapGenerator_generateMipMapCPU(3553, var$4, var$2, var$6);
+        else if (cgxgbt_TeaApplication_getType(cbg_Gdx_app) !== cbg_Application$ApplicationType_Android && cgxgbt_TeaApplication_getType(cbg_Gdx_app) !== cbg_Application$ApplicationType_WebGL && cgxgbt_TeaApplication_getType(cbg_Gdx_app) !== cbg_Application$ApplicationType_iOS)
+            cbggg_MipMapGenerator_generateMipMapDesktop(3553, var$4, var$2, var$6);
+        else
+            cbggg_MipMapGenerator_generateMipMapGLES20(3553, var$4);
+    }
+    if (var$7)
+        cbgg_Pixmap_dispose(var$4);
+    var$4 = var$1.$minFilter;
+    var$5 = var$1.$magFilter;
+    if (var$4 !== null) {
+        cbg_Gdx_gl.$glTexParameteri(var$10.$glTarget, 10241, var$4.$glEnum);
+        var$10.$minFilter = var$4;
+    }
+    if (var$5 !== null) {
+        cbg_Gdx_gl.$glTexParameteri(var$10.$glTarget, 10240, var$5.$glEnum);
+        var$10.$magFilter = var$5;
+    }
+    cbgg_GLTexture_unsafeSetWrap(var$10, var$1.$uWrap, var$1.$vWrap, 1);
+    cbgg_GLTexture_unsafeSetAnisotropicFilter(var$10, var$1.$anisotropicFilterLevel, 1);
+    cbg_Gdx_gl.$glBindTexture(var$1.$glTarget, 0);
+    if (var$12.$managed)
+        cbgg_Texture_addManagedTexture(cbg_Gdx_app, var$1);
+    $this.$texture = var$1;
 },
 dcgbmc_DrawableComponent_render = $this => {
     let var$1, var$2, var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12;
@@ -18831,7 +18535,7 @@ dcgbmc_DrawableComponent_render = $this => {
     var$7 = cbgg_Texture_getHeight(var$2);
     if (!var$1.$drawing) {
         var$1 = new jl_IllegalStateException;
-        jl_RuntimeException__init_(var$1, $rt_s(454));
+        jl_RuntimeException__init_(var$1, $rt_s(437));
         $rt_throw(var$1);
     }
     var$8 = var$1.$vertices0;
@@ -18885,16 +18589,16 @@ cbgg_Mesh$VertexDataType_$VALUES = null,
 cbgg_Mesh$VertexDataType__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbgg_Mesh$VertexDataType;
-    jl_Enum__init_(var$1, $rt_s(455), 0);
+    jl_Enum__init_(var$1, $rt_s(438), 0);
     cbgg_Mesh$VertexDataType_VertexArray = var$1;
     var$1 = new cbgg_Mesh$VertexDataType;
-    jl_Enum__init_(var$1, $rt_s(456), 1);
+    jl_Enum__init_(var$1, $rt_s(439), 1);
     cbgg_Mesh$VertexDataType_VertexBufferObject = var$1;
     var$1 = new cbgg_Mesh$VertexDataType;
-    jl_Enum__init_(var$1, $rt_s(457), 2);
+    jl_Enum__init_(var$1, $rt_s(440), 2);
     cbgg_Mesh$VertexDataType_VertexBufferObjectSubData = var$1;
     var$1 = new cbgg_Mesh$VertexDataType;
-    jl_Enum__init_(var$1, $rt_s(458), 3);
+    jl_Enum__init_(var$1, $rt_s(441), 3);
     cbgg_Mesh$VertexDataType_VertexBufferObjectWithVAO = var$1;
     var$2 = $rt_createArray(cbgg_Mesh$VertexDataType, 4);
     var$3 = var$2.data;
@@ -19154,7 +18858,7 @@ function cbggg_ShaderProgram() {
     a.$invalidated = 0;
     a.$refCount = 0;
     a.$params = null;
-    a.$type2 = null;
+    a.$type1 = null;
 }
 let cbggg_ShaderProgram_pedantic = 0,
 cbggg_ShaderProgram_prependVertexCode = null,
@@ -19216,7 +18920,7 @@ cbggg_ShaderProgram_loadShader = ($this, $type, $source) => {
     $gl = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_($gl);
     jl_AbstractStringBuilder_append0($gl, $this.$log);
-    jl_AbstractStringBuilder_append0($gl, $type != 35633 ? $rt_s(459) : $rt_s(460));
+    jl_AbstractStringBuilder_append0($gl, $type != 35633 ? $rt_s(442) : $rt_s(443));
     $this.$log = jl_AbstractStringBuilder_toString($gl);
     $source = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_($source);
@@ -19245,7 +18949,7 @@ cbggg_ShaderProgram_fetchUniformLocation = ($this, $name) => {
                 $name = new jl_IllegalStateException;
                 var$4 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$4);
-                jl_AbstractStringBuilder_append0(var$4, $rt_s(461));
+                jl_AbstractStringBuilder_append0(var$4, $rt_s(444));
                 jl_AbstractStringBuilder_append0(var$4, cbggg_ShaderProgram_getLog($this));
                 jl_RuntimeException__init_($name, jl_AbstractStringBuilder_toString(var$4));
                 $rt_throw($name);
@@ -19253,9 +18957,9 @@ cbggg_ShaderProgram_fetchUniformLocation = ($this, $name) => {
             var$4 = new jl_IllegalArgumentException;
             var$5 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$5);
-            jl_AbstractStringBuilder_append0(var$5, $rt_s(462));
+            jl_AbstractStringBuilder_append0(var$5, $rt_s(445));
             jl_AbstractStringBuilder_append0(var$5, $name);
-            jl_AbstractStringBuilder_append0(var$5, $rt_s(463));
+            jl_AbstractStringBuilder_append0(var$5, $rt_s(446));
             jl_RuntimeException__init_(var$4, jl_AbstractStringBuilder_toString(var$5));
             $rt_throw(var$4);
         }
@@ -19312,8 +19016,8 @@ cbggg_ShaderProgram_getAttributeLocation = ($this, $name) => {
 },
 cbggg_ShaderProgram__clinit_ = () => {
     cbggg_ShaderProgram_pedantic = 1;
-    cbggg_ShaderProgram_prependVertexCode = $rt_s(13);
-    cbggg_ShaderProgram_prependFragmentCode = $rt_s(13);
+    cbggg_ShaderProgram_prependVertexCode = $rt_s(6);
+    cbggg_ShaderProgram_prependFragmentCode = $rt_s(6);
     cbggg_ShaderProgram_shaders = cbgu_ObjectMap__init_();
     cbggg_ShaderProgram_intbuf = cbgu_BufferUtils_newIntBuffer(1);
 };
@@ -19601,7 +19305,7 @@ cbggg_IndexBufferObject_bind = $this => {
     var$1 = $this.$bufferHandle;
     if (!var$1) {
         var$2 = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_(var$2, $rt_s(464));
+        jl_RuntimeException__init_(var$2, $rt_s(447));
         $rt_throw(var$2);
     }
     cbg_Gdx_gl20.$glBindBuffer(34963, var$1);
@@ -19808,7 +19512,7 @@ cbggg_IndexBufferObjectSubData_bind = $this => {
     var$1 = $this.$bufferHandle3;
     if (!var$1) {
         var$2 = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_(var$2, $rt_s(465));
+        jl_RuntimeException__init_(var$2, $rt_s(448));
         $rt_throw(var$2);
     }
     cbg_Gdx_gl20.$glBindBuffer(34963, var$1);
@@ -19994,7 +19698,7 @@ cbgu_ObjectIntMap_locateKey = ($this, $key) => {
     let $other, $keyTable, $i;
     if ($key === null) {
         $other = new jl_IllegalArgumentException;
-        jl_RuntimeException__init_($other, $rt_s(10));
+        jl_RuntimeException__init_($other, $rt_s(3));
         $rt_throw($other);
     }
     $keyTable = $this.$keyTable2;
@@ -20078,7 +19782,7 @@ cbgu_BufferUtils_copy = ($src, $dst, $numFloats, $offset) => {
         $floatBuffer = $dst;
     if ($floatBuffer === null) {
         $floatBuffer = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_($floatBuffer, $rt_s(466));
+        jl_RuntimeException__init_($floatBuffer, $rt_s(449));
         $rt_throw($floatBuffer);
     }
     jn_Buffer_clear($floatBuffer);
@@ -20182,14 +19886,14 @@ jl_Object$NotifyListenerImpl_interrupted = $this => {
         $this.$timerId = (-1);
     }
     var$2 = new jl_Object$NotifyListenerImpl$interrupted$lambda$_4_0;
-    var$2.$_022 = $this;
+    var$2.$_021 = $this;
     otp_Platform_postpone(var$2);
 },
 jl_Object$NotifyListenerImpl_onTimer$exported$0 = var$1 => {
     let var$2;
     var$1 = var$1;
     var$2 = new jl_Object$NotifyListenerImpl$onTimer$lambda$_2_0;
-    var$2.$_015 = var$1;
+    var$2.$_014 = var$1;
     otp_Platform_postpone(var$2);
 };
 function jn_Buffer() {
@@ -20213,7 +19917,7 @@ jn_Buffer_position = ($this, $newPosition) => {
     var$3 = $this.$limit0;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(467)), $newPosition), $rt_s(468)), var$3), 93);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(450)), $newPosition), $rt_s(451)), var$3), 93);
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -20361,7 +20065,7 @@ let jn_ByteBuffer_allocateDirect = $capacity => {
         $result = new jl_IllegalArgumentException;
         var$3 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$3);
-        jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(469)), $capacity);
+        jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(452)), $capacity);
         jl_RuntimeException__init_($result, jl_AbstractStringBuilder_toString(var$3));
         $rt_throw($result);
     }
@@ -20380,7 +20084,7 @@ jn_ByteBuffer_allocate = $capacity => {
     $result = new jl_IllegalArgumentException;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(469)), $capacity);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(452)), $capacity);
     jl_RuntimeException__init_($result, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw($result);
 },
@@ -20457,16 +20161,16 @@ jn_ByteBuffer_toString = $this => {
     var$3 = $this.$capacityImpl();
     var$4 = $this.$mark;
     if (var$4 < 0)
-        var$5 = $rt_s(470);
+        var$5 = $rt_s(453);
     else {
         var$5 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$5);
-        jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(471)), var$4);
+        jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(454)), var$4);
         var$5 = jl_AbstractStringBuilder_toString(var$5);
     }
     var$6 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$6);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(472)), var$1), $rt_s(473)), var$2), $rt_s(474)), var$3), $rt_s(475)), var$5), 93);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(455)), var$1), $rt_s(456)), var$2), $rt_s(457)), var$3), $rt_s(458)), var$5), 93);
     return jl_AbstractStringBuilder_toString(var$6);
 },
 jn_ByteBuffer_order = ($this, $bo) => {
@@ -20506,8 +20210,8 @@ jn_ByteOrder_nativeOrder = () => {
     return jn_ByteOrder_nativeOrder0;
 },
 jn_ByteOrder__clinit_ = () => {
-    jn_ByteOrder_BIG_ENDIAN = jn_ByteOrder__init_($rt_s(476));
-    jn_ByteOrder_LITTLE_ENDIAN = jn_ByteOrder__init_($rt_s(477));
+    jn_ByteOrder_BIG_ENDIAN = jn_ByteOrder__init_($rt_s(459));
+    jn_ByteOrder_LITTLE_ENDIAN = jn_ByteOrder__init_($rt_s(460));
 },
 jn_ArrayBufferViewProvider = $rt_classWithoutFields(0);
 function jn_ByteBufferJsImpl() {
@@ -20614,7 +20318,7 @@ jn_IntBufferImpl_get = ($this, $index) => {
     var$3 = $this.$limit0;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(478)), $index), $rt_s(468)), var$3), 41);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(461)), $index), $rt_s(451)), var$3), 41);
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -20633,7 +20337,7 @@ jn_IntBufferImpl_put = ($this, $index, $b) => {
     $b = $this.$limit0;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(478)), $index), $rt_s(468)), $b), 41);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(461)), $index), $rt_s(451)), $b), 41);
     jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$3);
 },
@@ -20684,7 +20388,7 @@ jn_FloatBufferImpl_get = ($this, $index) => {
     var$3 = $this.$limit0;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(478)), $index), $rt_s(468)), var$3), 41);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(461)), $index), $rt_s(451)), var$3), 41);
     jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -20703,7 +20407,7 @@ jn_FloatBufferImpl_put = ($this, $index, $b) => {
     var$4 = $this.$limit0;
     var$5 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$5);
-    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(478)), $index), $rt_s(468)), var$4), 41);
+    jl_AbstractStringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(461)), $index), $rt_s(451)), var$4), 41);
     jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(var$5));
     $rt_throw(var$3);
 },
@@ -20905,7 +20609,7 @@ let cgxgbta_AssetDownloadImpl$1_onFailure = ($this, $url) => {
         var$2 = jl_System_err();
         var$3 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$3);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(479)), $url);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(462)), $url);
         $url = jl_AbstractStringBuilder_toString(var$3);
         otcic_JsConsolePrintStream_println(var$2, $url);
     }
@@ -20917,7 +20621,7 @@ cgxgbta_AssetDownloadImpl$1_onSuccess = ($this, var$1, var$2) => {
         var$3 = jl_System_out();
         var$4 = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_(var$4);
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(480)), var$1);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(463)), var$1);
         var$4 = jl_AbstractStringBuilder_toString(var$4);
         otcic_JsConsolePrintStream_println(var$3, var$4);
     }
@@ -21095,11 +20799,11 @@ let jl_Thread$start$lambda$_4_0_run = var$0 => {
 };
 function jl_Object$NotifyListenerImpl$onTimer$lambda$_2_0() {
     jl_Object.call(this);
-    this.$_015 = null;
+    this.$_014 = null;
 }
 let jl_Object$NotifyListenerImpl$onTimer$lambda$_2_0_run = var$0 => {
     let var$1;
-    var$1 = var$0.$_015;
+    var$1 = var$0.$_014;
     if (!jl_Object$NotifyListenerImpl_expired(var$1))
         jl_Object$NotifyListenerImpl_run(var$1);
 };
@@ -21244,7 +20948,7 @@ function otcit_FloatAnalyzer$Result() {
 }
 function cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0() {
     let a = this; jl_Object.call(a);
-    a.$_013 = null;
+    a.$_012 = null;
     a.$_15 = null;
     a.$_24 = null;
     a.$_32 = null;
@@ -21254,7 +20958,7 @@ function cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0() {
 let cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0_handleEvent$exported$0 = (var$1, var$2) => {
     let var$3, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, $$je;
     var$1 = var$1;
-    var$2 = var$1.$_013;
+    var$2 = var$1.$_012;
     var$3 = var$1.$_15;
     var$4 = var$1.$_24;
     var$5 = var$1.$_32;
@@ -21299,7 +21003,7 @@ let cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0_handleEvent$expor
                         }
                     }
                     var$3 = new jl_AssertionError;
-                    jl_Throwable__init_(var$3, $rt_s(418), var$2);
+                    jl_Throwable__init_(var$3, $rt_s(406), var$2);
                     $rt_throw(var$3);
                 }
                 var$8 = var$3.$array4 === null ? 0 : 1;
@@ -21324,11 +21028,11 @@ let cgxgbta_AssetDownloadImpl$loadBinaryInternally$lambda$_7_0_handleEvent$expor
 };
 function cgxgbta_AssetDownloadImpl$setOnProgress$lambda$_8_0() {
     jl_Object.call(this);
-    this.$_017 = null;
+    this.$_016 = null;
 }
 let cgxgbta_AssetDownloadImpl$setOnProgress$lambda$_8_0_handleEvent$exported$0 = (var$1, var$2) => {
     let var$3, var$4;
-    var$1 = var$1.$_017;
+    var$1 = var$1.$_016;
     var$3 = var$2.loaded;
     var$4 = var$2.total;
     if (var$1 !== null) {
@@ -21365,7 +21069,7 @@ jn_JSBufferHelper_getArrayBufferView = $buffer => {
     if ($rt_isInstance($buffer, jn_ArrayBufferViewProvider))
         return $buffer.$getArrayBufferView0();
     $provider = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_($provider, $rt_s(481));
+    jl_RuntimeException__init_($provider, $rt_s(464));
     $rt_throw($provider);
 },
 jn_JSBufferHelper_toInt8Array = $view => {
@@ -21403,7 +21107,7 @@ juc_CopyOnWriteArrayList$ListIteratorImpl_next = $this => {
     var$2 = $this.$size7;
     var$5 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$5);
-    jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(482)), var$4), $rt_s(433)), var$2);
+    jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(465)), var$4), $rt_s(421)), var$2);
     jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(var$5));
     $rt_throw(var$3);
 },
@@ -21415,11 +21119,11 @@ function cgxgbta_TeaBlob() {
 }
 function jl_Object$NotifyListenerImpl$interrupted$lambda$_4_0() {
     jl_Object.call(this);
-    this.$_022 = null;
+    this.$_021 = null;
 }
 let jl_Object$NotifyListenerImpl$interrupted$lambda$_4_0_run = var$0 => {
     let var$1, var$2;
-    var$1 = var$0.$_022.$callback;
+    var$1 = var$0.$_021.$callback;
     var$2 = new jl_InterruptedException;
     jl_Exception__init_(var$2);
     otpp_AsyncCallbackWrapper_error(var$1, var$2);
@@ -21446,7 +21150,7 @@ jnci_UTF8Charset_$callClinit = () => {
 jnci_UTF8Charset_newDecoder = $this => {
     let var$1, var$2;
     var$1 = new jnci_UTF8Decoder;
-    var$1.$replacement = $rt_s(483);
+    var$1.$replacement = $rt_s(466);
     var$2 = jnc_CodingErrorAction_REPORT;
     var$1.$malformedAction = var$2;
     var$1.$unmappableAction0 = var$2;
@@ -21477,7 +21181,7 @@ jnci_UTF8Charset_newEncoder = $this => {
         return var$1;
     }
     var$4 = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_(var$4, $rt_s(484));
+    jl_RuntimeException__init_(var$4, $rt_s(467));
     $rt_throw(var$4);
 },
 jnci_UTF8Charset__clinit_ = () => {
@@ -21486,14 +21190,14 @@ jnci_UTF8Charset__clinit_ = () => {
     jnci_UTF8Charset_$callClinit();
     var$2 = $rt_createArray(jl_String, 0);
     var$3 = var$2.data;
-    jnc_Charset_checkCanonicalName($rt_s(485));
+    jnc_Charset_checkCanonicalName($rt_s(468));
     var$4 = var$3.length;
     var$5 = 0;
     while (var$5 < var$4) {
         jnc_Charset_checkCanonicalName(var$3[var$5]);
         var$5 = var$5 + 1 | 0;
     }
-    var$1.$canonicalName = $rt_s(485);
+    var$1.$canonicalName = $rt_s(468);
     var$1.$aliases = var$2.$clone0();
     jnci_UTF8Charset_INSTANCE = var$1;
 };
@@ -21521,7 +21225,7 @@ jn_CharBuffer_allocate = $capacity => {
     var$3 = new jl_IllegalArgumentException;
     var$4 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$4);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(469)), $capacity);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(452)), $capacity);
     jl_RuntimeException__init_(var$3, jl_AbstractStringBuilder_toString(var$4));
     $rt_throw(var$3);
 },
@@ -21622,9 +21326,9 @@ jnc_CodingErrorAction__init_ = var_0 => {
     return var_1;
 },
 jnc_CodingErrorAction__clinit_ = () => {
-    jnc_CodingErrorAction_IGNORE = jnc_CodingErrorAction__init_($rt_s(486));
-    jnc_CodingErrorAction_REPLACE = jnc_CodingErrorAction__init_($rt_s(487));
-    jnc_CodingErrorAction_REPORT = jnc_CodingErrorAction__init_($rt_s(488));
+    jnc_CodingErrorAction_IGNORE = jnc_CodingErrorAction__init_($rt_s(469));
+    jnc_CodingErrorAction_REPLACE = jnc_CodingErrorAction__init_($rt_s(470));
+    jnc_CodingErrorAction_REPORT = jnc_CodingErrorAction__init_($rt_s(471));
 };
 function jnc_CharsetEncoder() {
     let a = this; jl_Object.call(a);
@@ -21643,7 +21347,7 @@ let jnc_CharsetEncoder_onMalformedInput = ($this, $newAction) => {
         return $this;
     }
     var$2 = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_(var$2, $rt_s(489));
+    jl_RuntimeException__init_(var$2, $rt_s(472));
     $rt_throw(var$2);
 },
 jnc_CharsetEncoder_onUnmappableCharacter = ($this, $newAction) => {
@@ -21653,7 +21357,7 @@ jnc_CharsetEncoder_onUnmappableCharacter = ($this, $newAction) => {
         return $this;
     }
     var$2 = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_(var$2, $rt_s(489));
+    jl_RuntimeException__init_(var$2, $rt_s(472));
     $rt_throw(var$2);
 },
 jnc_CharsetEncoder_encode = ($this, $in, $out, $endOfInput) => {
@@ -21792,13 +21496,13 @@ jn_CharBufferOverTypedArray_capacityImpl = $this => {
 function jnc_CoderResult() {
     let a = this; jl_Object.call(a);
     a.$kind = 0;
-    a.$length3 = 0;
+    a.$length2 = 0;
 }
 let jnc_CoderResult_UNDERFLOW = null,
 jnc_CoderResult_OVERFLOW = null,
 jnc_CoderResult__init_0 = ($this, $kind, $length) => {
     $this.$kind = $kind;
-    $this.$length3 = $length;
+    $this.$length2 = $length;
 },
 jnc_CoderResult__init_ = (var_0, var_1) => {
     let var_2 = new jnc_CoderResult();
@@ -21823,7 +21527,7 @@ jnc_CoderResult_isUnmappable = $this => {
 jnc_CoderResult_length = $this => {
     let var$1;
     if (jnc_CoderResult_isError($this))
-        return $this.$length3;
+        return $this.$length2;
     var$1 = new jl_UnsupportedOperationException;
     jl_Exception__init_(var$1);
     $rt_throw(var$1);
@@ -21844,15 +21548,15 @@ jnc_CoderResult_throwException = $this => {
             $rt_throw(var$1);
         case 2:
             var$1 = new jnc_MalformedInputException;
-            var$2 = $this.$length3;
+            var$2 = $this.$length2;
             jl_Exception__init_(var$1);
-            var$1.$length5 = var$2;
+            var$1.$length4 = var$2;
             $rt_throw(var$1);
         case 3:
             var$1 = new jnc_UnmappableCharacterException;
-            var$2 = $this.$length3;
+            var$2 = $this.$length2;
             jl_Exception__init_(var$1);
-            var$1.$length4 = var$2;
+            var$1.$length3 = var$2;
             $rt_throw(var$1);
         default:
     }
@@ -21874,7 +21578,7 @@ let jl_Thread$SleepHandler_interrupted = $this => {
     $this.$isInterrupted = 1;
     otp_Platform_killSchedule($this.$scheduleId);
     var$1 = new jl_Thread$SleepHandler$interrupted$lambda$_1_0;
-    var$1.$_016 = $this;
+    var$1.$_015 = $this;
     otp_Platform_postpone(var$1);
 },
 jl_Thread$SleepHandler_run = $this => {
@@ -21903,11 +21607,11 @@ jnc_CoderMalfunctionError__init_ = var_0 => {
 };
 function jl_Thread$SleepHandler$interrupted$lambda$_1_0() {
     jl_Object.call(this);
-    this.$_016 = null;
+    this.$_015 = null;
 }
 let jl_Thread$SleepHandler$interrupted$lambda$_1_0_run = var$0 => {
     let var$1, var$2;
-    var$1 = var$0.$_016.$callback0;
+    var$1 = var$0.$_015.$callback0;
     var$2 = new jl_InterruptedException;
     jl_Exception__init_(var$2);
     otpp_AsyncCallbackWrapper_error(var$1, var$2);
@@ -21916,26 +21620,26 @@ jnc_BufferUnderflowException = $rt_classWithoutFields(jl_RuntimeException),
 jnc_BufferOverflowException = $rt_classWithoutFields(jl_RuntimeException);
 function jnc_MalformedInputException() {
     jnc_CharacterCodingException.call(this);
-    this.$length5 = 0;
-}
-let jnc_MalformedInputException_getMessage = $this => {
-    let var$1, var$2;
-    var$1 = $this.$length5;
-    var$2 = new jl_StringBuilder;
-    jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(490)), var$1);
-    return jl_AbstractStringBuilder_toString(var$2);
-};
-function jnc_UnmappableCharacterException() {
-    jnc_CharacterCodingException.call(this);
     this.$length4 = 0;
 }
-let jnc_UnmappableCharacterException_getMessage = $this => {
+let jnc_MalformedInputException_getMessage = $this => {
     let var$1, var$2;
     var$1 = $this.$length4;
     var$2 = new jl_StringBuilder;
     jl_AbstractStringBuilder__init_(var$2);
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(491)), var$1);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(473)), var$1);
+    return jl_AbstractStringBuilder_toString(var$2);
+};
+function jnc_UnmappableCharacterException() {
+    jnc_CharacterCodingException.call(this);
+    this.$length3 = 0;
+}
+let jnc_UnmappableCharacterException_getMessage = $this => {
+    let var$1, var$2;
+    var$1 = $this.$length3;
+    var$2 = new jl_StringBuilder;
+    jl_AbstractStringBuilder__init_(var$2);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(474)), var$1);
     return jl_AbstractStringBuilder_toString(var$2);
 },
 cbggg_PixmapNativeInterface = $rt_classWithoutFields(0);
@@ -21971,13 +21675,23 @@ let cbgg_Pixmap__init_0 = ($this, $width, $height, $format) => {
             $format = jl_String_valueOf($format);
             var$6 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$6);
-            jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(492)), $format);
+            jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(475)), $format);
             jl_RuntimeException__init_(var$4, jl_AbstractStringBuilder_toString(var$6));
             $rt_throw(var$4);
         }
         var$5 = 4;
     }
-    var$4.$nativePixmap0 = cbggg_Gdx2DPixmapNative__init_0($width, $height, var$5);
+    $format = new cbggg_Gdx2DPixmapNative;
+    var$6 = cbggg_Gdx2DPixmapNative_newPixmapNative$js_body$_27($width, $height, var$5);
+    $format.$nativeData = var$6;
+    $format.$basePtr = var$6[0];
+    $format.$width0 = $format.$nativeData[1];
+    $format.$height0 = $format.$nativeData[2];
+    $format.$format = $format.$nativeData[3];
+    $format.$heapStartIndex = $format.$nativeData[4];
+    $format.$heapEndIndex = $format.$nativeData[5];
+    cbggg_Gdx2DPixmapNative_copyHeapToBuffer($format);
+    var$4.$nativePixmap0 = $format;
     $this.$nativePixmap = var$4;
     cbgg_Pixmap_setColor0($this, 0.0, 0.0, 0.0, 0.0);
     $format = $this.$nativePixmap;
@@ -21997,16 +21711,6 @@ cbgg_Pixmap_setColor0 = ($this, $r, $g, $b, $a) => {
 cbgg_Pixmap_setColor = ($this, $color) => {
     cbgg_Pixmap_setColor0($this, $color.$r, $color.$g, $color.$b, $color.$a);
 },
-cbgg_Pixmap_drawPixmap = ($this, $pixmap, $srcx, $srcy, $srcWidth, $srcHeight, $dstx, $dsty, $dstWidth, $dstHeight) => {
-    let var$10, var$11, var$12, var$13;
-    var$10 = $this.$nativePixmap;
-    $pixmap = $pixmap.$nativePixmap;
-    var$11 = var$10.$nativePixmap0;
-    var$12 = $pixmap.$nativePixmap0.$basePtr;
-    var$13 = var$11.$basePtr;
-    Gdx.Gdx.prototype.g2d_draw_pixmap(var$12, var$13, $srcx, $srcy, $srcWidth, $srcHeight, $dstx, $dsty, $dstWidth, $dstHeight);
-    cbggg_Gdx2DPixmapNative_copyHeapToBuffer(var$11);
-},
 cbgg_Pixmap_getWidth = $this => {
     return $this.$nativePixmap.$nativePixmap0.$width0;
 },
@@ -22014,13 +21718,26 @@ cbgg_Pixmap_getHeight = $this => {
     return $this.$nativePixmap.$nativePixmap0.$height0;
 },
 cbgg_Pixmap_dispose = $this => {
-    let var$1;
+    let var$1, var$2;
     if ($this.$disposed) {
         var$1 = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_(var$1, $rt_s(493));
+        jl_RuntimeException__init_(var$1, $rt_s(476));
         $rt_throw(var$1);
     }
-    cbggg_Gdx2DPixmapNative_dispose($this.$nativePixmap.$nativePixmap0);
+    var$2 = $this.$nativePixmap.$nativePixmap0;
+    Gdx.Gdx.prototype.g2d_free(var$2.$basePtr);
+    var$1 = var$2.$buffer4;
+    if (var$1 !== null) {
+        if (!var$1.$direct) {
+            var$1 = new jl_IllegalArgumentException;
+            jl_RuntimeException__init_(var$1, $rt_s(477));
+            $rt_throw(var$1);
+        }
+        if ($rt_isInstance(var$1, jn_NativeBuffer))
+            var$1.$release();
+        var$2.$buffer4 = null;
+    }
+    var$2.$nativeData = null;
     $this.$disposed = 1;
 },
 cbgg_Pixmap_getGLFormat = $this => {
@@ -22049,7 +21766,7 @@ cbgg_Pixmap_getGLType = $this => {
                 var$2 = new cbgu_GdxRuntimeException;
                 var$3 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$3);
-                jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(494)), var$1);
+                jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(478)), var$1);
                 jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$3));
                 $rt_throw(var$2);
         }
@@ -22078,7 +21795,7 @@ cbgg_Pixmap_getFormat = $this => {
             var$2 = new cbgu_GdxRuntimeException;
             var$3 = new jl_StringBuilder;
             jl_AbstractStringBuilder__init_(var$3);
-            jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(495)), var$1);
+            jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(479)), var$1);
             jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$3));
             $rt_throw(var$2);
         }
@@ -22091,7 +21808,9 @@ cbgg_Pixmap_setBlending = ($this, $blending) => {
     $this.$blending = $blending;
     var$2 = $this.$nativePixmap;
     var$3 = $blending !== cbgg_Pixmap$Blending_None ? 1 : 0;
-    cbggg_Gdx2DPixmapNative_setBlend(var$2.$nativePixmap0, var$3);
+    $blending = var$2.$nativePixmap0;
+    Gdx.Gdx.prototype.g2d_set_blend($blending.$basePtr, var$3);
+    cbggg_Gdx2DPixmapNative_copyHeapToBuffer($blending);
 },
 cbgg_Pixmap$Format = $rt_classWithoutFields(jl_Enum),
 cbgg_Pixmap$Format_Alpha = null,
@@ -22105,25 +21824,25 @@ cbgg_Pixmap$Format_$VALUES = null,
 cbgg_Pixmap$Format__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(182), 0);
+    jl_Enum__init_(var$1, $rt_s(170), 0);
     cbgg_Pixmap$Format_Alpha = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(496), 1);
+    jl_Enum__init_(var$1, $rt_s(480), 1);
     cbgg_Pixmap$Format_Intensity = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(497), 2);
+    jl_Enum__init_(var$1, $rt_s(481), 2);
     cbgg_Pixmap$Format_LuminanceAlpha = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(498), 3);
+    jl_Enum__init_(var$1, $rt_s(482), 3);
     cbgg_Pixmap$Format_RGB565 = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(499), 4);
+    jl_Enum__init_(var$1, $rt_s(483), 4);
     cbgg_Pixmap$Format_RGBA4444 = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(500), 5);
+    jl_Enum__init_(var$1, $rt_s(484), 5);
     cbgg_Pixmap$Format_RGB888 = var$1;
     var$1 = new cbgg_Pixmap$Format;
-    jl_Enum__init_(var$1, $rt_s(501), 6);
+    jl_Enum__init_(var$1, $rt_s(485), 6);
     cbgg_Pixmap$Format_RGBA8888 = var$1;
     var$2 = $rt_createArray(cbgg_Pixmap$Format, 7);
     var$3 = var$2.data;
@@ -22136,45 +21855,6 @@ cbgg_Pixmap$Format__clinit_ = () => {
     var$3[6] = var$1;
     cbgg_Pixmap$Format_$VALUES = var$2;
 },
-dcgbd_Data = $rt_classWithoutFields(),
-dcgbd_Data_executor = null,
-dcgbd_Data_json = null,
-dcgbd_Data_fileLocks = null,
-dcgbd_Data_$callClinit = () => {
-    dcgbd_Data_$callClinit = $rt_eraseClinit(dcgbd_Data);
-    dcgbd_Data__clinit_();
-},
-dcgbd_Data__clinit_ = () => {
-    let var$1, var$2, var$3;
-    dcgbd_Data_executor = new cbgua_AsyncExecutor;
-    var$1 = new cbgu_Json;
-    var$1.$typeName = $rt_s(502);
-    var$1.$usePrototypes = 1;
-    var$1.$enumNames = 1;
-    var$1.$typeToFields = cbgu_ObjectMap__init_();
-    var$1.$tagToClass = cbgu_ObjectMap__init_();
-    var$1.$classToTag = cbgu_ObjectMap__init_();
-    var$1.$classToSerializer = cbgu_ObjectMap__init_();
-    var$1.$classToDefaultValues = cbgu_ObjectMap__init_();
-    var$2 = $rt_createArray(jl_Object, 1);
-    var$2.data[0] = null;
-    var$1.$equals1 = var$2;
-    var$2 = $rt_createArray(jl_Object, 1);
-    var$2.data[0] = null;
-    var$1.$equals2 = var$2;
-    cbgu_JsonWriter$OutputType_$callClinit();
-    var$1.$outputType = cbgu_JsonWriter$OutputType_minimal;
-    dcgbd_Data_json = var$1;
-    var$1 = new juc_ConcurrentHashMap;
-    var$1.$elementCount1 = 0;
-    var$3 = $rt_createArray(juc_ConcurrentHashMap$HashEntry, 16);
-    var$2 = var$3.data;
-    var$1.$elementData1 = var$3;
-    var$1.$loadFactor5 = 0.75;
-    var$1.$threshold5 = var$2.length * 0.75 | 0;
-    dcgbd_Data_fileLocks = var$1;
-},
-dcgbu_GraphicUtil = $rt_classWithoutFields(),
 cbg_Files$FileType = $rt_classWithoutFields(jl_Enum),
 cbg_Files$FileType_Classpath = null,
 cbg_Files$FileType_Internal = null,
@@ -22185,19 +21865,19 @@ cbg_Files$FileType_$VALUES = null,
 cbg_Files$FileType__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbg_Files$FileType;
-    jl_Enum__init_(var$1, $rt_s(503), 0);
+    jl_Enum__init_(var$1, $rt_s(486), 0);
     cbg_Files$FileType_Classpath = var$1;
     var$1 = new cbg_Files$FileType;
-    jl_Enum__init_(var$1, $rt_s(504), 1);
+    jl_Enum__init_(var$1, $rt_s(487), 1);
     cbg_Files$FileType_Internal = var$1;
     var$1 = new cbg_Files$FileType;
-    jl_Enum__init_(var$1, $rt_s(505), 2);
+    jl_Enum__init_(var$1, $rt_s(488), 2);
     cbg_Files$FileType_External = var$1;
     var$1 = new cbg_Files$FileType;
-    jl_Enum__init_(var$1, $rt_s(506), 3);
+    jl_Enum__init_(var$1, $rt_s(489), 3);
     cbg_Files$FileType_Absolute = var$1;
     var$1 = new cbg_Files$FileType;
-    jl_Enum__init_(var$1, $rt_s(507), 4);
+    jl_Enum__init_(var$1, $rt_s(490), 4);
     cbg_Files$FileType_Local = var$1;
     var$2 = $rt_createArray(cbg_Files$FileType, 5);
     var$3 = var$2.data;
@@ -22359,10 +22039,10 @@ cbgg_Pixmap$Blending_$VALUES = null,
 cbgg_Pixmap$Blending__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbgg_Pixmap$Blending;
-    jl_Enum__init_(var$1, $rt_s(508), 0);
+    jl_Enum__init_(var$1, $rt_s(491), 0);
     cbgg_Pixmap$Blending_None = var$1;
     var$1 = new cbgg_Pixmap$Blending;
-    jl_Enum__init_(var$1, $rt_s(509), 1);
+    jl_Enum__init_(var$1, $rt_s(492), 1);
     cbgg_Pixmap$Blending_SourceOver = var$1;
     var$2 = $rt_createArray(cbgg_Pixmap$Blending, 2);
     var$3 = var$2.data;
@@ -22377,10 +22057,10 @@ cbgg_Pixmap$Filter_$VALUES = null,
 cbgg_Pixmap$Filter__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbgg_Pixmap$Filter;
-    jl_Enum__init_(var$1, $rt_s(510), 0);
+    jl_Enum__init_(var$1, $rt_s(493), 0);
     cbgg_Pixmap$Filter_NearestNeighbour = var$1;
     var$1 = new cbgg_Pixmap$Filter;
-    jl_Enum__init_(var$1, $rt_s(511), 1);
+    jl_Enum__init_(var$1, $rt_s(494), 1);
     cbgg_Pixmap$Filter_BiLinear = var$1;
     var$2 = $rt_createArray(cbgg_Pixmap$Filter, 2);
     var$3 = var$2.data;
@@ -22392,7 +22072,15 @@ function cbggg_Gdx2DPixmap() {
     jl_Object.call(this);
     this.$nativePixmap0 = null;
 }
-let cbggg_Gdx2DPixmap_getGLInternalFormat = $this => {
+let cbggg_Gdx2DPixmap_drawPixmap = ($this, $src, $srcX, $srcY, $dstX, $dstY, $width, $height) => {
+    let var$8, var$9, var$10;
+    var$8 = $this.$nativePixmap0;
+    var$9 = $src.$nativePixmap0.$basePtr;
+    var$10 = var$8.$basePtr;
+    Gdx.Gdx.prototype.g2d_draw_pixmap(var$9, var$10, $srcX, $srcY, $width, $height, $dstX, $dstY, $width, $height);
+    cbggg_Gdx2DPixmapNative_copyHeapToBuffer(var$8);
+},
+cbggg_Gdx2DPixmap_getGLInternalFormat = $this => {
     let var$1, var$2, var$3;
     a: {
         var$1 = $this.$nativePixmap0.$format;
@@ -22414,7 +22102,7 @@ let cbggg_Gdx2DPixmap_getGLInternalFormat = $this => {
                 var$2 = new cbgu_GdxRuntimeException;
                 var$3 = new jl_StringBuilder;
                 jl_AbstractStringBuilder__init_(var$3);
-                jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(494)), var$1);
+                jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(478)), var$1);
                 jl_RuntimeException__init_(var$2, jl_AbstractStringBuilder_toString(var$3));
                 $rt_throw(var$2);
         }
@@ -22425,45 +22113,23 @@ let cbggg_Gdx2DPixmap_getGLInternalFormat = $this => {
 cbgg_TextureData = $rt_classWithoutFields(0);
 function cbggg_PixmapTextureData() {
     let a = this; jl_Object.call(a);
-    a.$pixmap = null;
+    a.$pixmap0 = null;
     a.$format0 = null;
     a.$useMipMaps = 0;
     a.$disposePixmap = 0;
     a.$managed = 0;
 }
-let cbggg_PixmapTextureData__init_ = ($this, $pixmap, $format, $useMipMaps, $disposePixmap) => {
-    $this.$pixmap = $pixmap;
-    if ($format === null)
-        $format = cbgg_Pixmap_getFormat($pixmap);
-    $this.$format0 = $format;
-    $this.$useMipMaps = $useMipMaps;
-    $this.$disposePixmap = $disposePixmap;
-    $this.$managed = 0;
-},
-cbggg_PixmapTextureData__init_0 = (var_0, var_1, var_2, var_3) => {
-    let var_4 = new cbggg_PixmapTextureData();
-    cbggg_PixmapTextureData__init_(var_4, var_0, var_1, var_2, var_3);
-    return var_4;
-},
-cbggg_PixmapTextureData_prepare = $this => {
+let cbggg_PixmapTextureData_prepare = $this => {
     let var$1;
     var$1 = new cbgu_GdxRuntimeException;
-    jl_RuntimeException__init_(var$1, $rt_s(512));
+    jl_RuntimeException__init_(var$1, $rt_s(495));
     $rt_throw(var$1);
 },
-cbgf_FileHandle = $rt_classWithoutFields(),
-cbgf_FileHandle_estimateLength = $this => {
-    let var$1, $length;
-    var$1 = $this;
-    $length = Long_lo((cgxgbtf_MemoryFileStorage_length(cgxgbt_TeaFiles_getFileDB(var$1.$teaFiles, var$1.$type0), var$1)));
-    if (!$length)
-        $length = 512;
-    return $length;
-};
+cbgf_FileHandle = $rt_classWithoutFields();
 function cgxgbt_TeaFileHandle() {
     let a = this; cbgf_FileHandle.call(a);
     a.$file = null;
-    a.$type0 = null;
+    a.$type2 = null;
     a.$teaFiles = null;
 }
 let cgxgbt_TeaFileHandle__init_0 = ($this, $teaFiles, $fileName, $type) => {
@@ -22472,15 +22138,15 @@ let cgxgbt_TeaFileHandle__init_0 = ($this, $teaFiles, $fileName, $type) => {
         $fileName = jl_String_valueOf($type);
         $type = new jl_StringBuilder;
         jl_AbstractStringBuilder__init_($type);
-        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($type, $rt_s(513)), $fileName), $rt_s(514));
+        jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append($type, $rt_s(496)), $fileName), $rt_s(497));
         jl_RuntimeException__init_($teaFiles, jl_AbstractStringBuilder_toString($type));
         $rt_throw($teaFiles);
     }
-    $fileName = jl_String_replace($fileName, $rt_s(423), $rt_s(78));
-    if (jl_String_endsWith($fileName, $rt_s(78)))
+    $fileName = jl_String_replace($fileName, $rt_s(411), $rt_s(71));
+    if (jl_String_endsWith($fileName, $rt_s(71)))
         $fileName = jl_String_substring($fileName, 0, $fileName.$nativeString.length - 1 | 0);
     $this.$file = $fileName;
-    $this.$type0 = $type;
+    $this.$type2 = $type;
     $this.$teaFiles = $teaFiles;
 },
 cgxgbt_TeaFileHandle__init_ = (var_0, var_1, var_2) => {
@@ -22489,34 +22155,16 @@ cgxgbt_TeaFileHandle__init_ = (var_0, var_1, var_2) => {
     return var_3;
 },
 cgxgbt_TeaFileHandle_type = $this => {
-    return $this.$type0;
+    return $this.$type2;
 },
 cgxgbt_TeaFileHandle_parent = $this => {
     let var$1, $index, $dir;
     var$1 = $this.$file;
-    $index = jl_String_lastIndexOf0(var$1, $rt_s(78), var$1.$nativeString.length);
-    $dir = $rt_s(13);
+    $index = jl_String_lastIndexOf0(var$1, $rt_s(71), var$1.$nativeString.length);
+    $dir = $rt_s(6);
     if ($index > 0)
         $dir = jl_String_substring($this.$file, 0, $index);
-    return cgxgbt_TeaFileHandle__init_($this.$teaFiles, $dir, $this.$type0);
-},
-cgxgbt_TeaFileHandle_exists = $this => {
-    let $exists;
-    a: {
-        $exists = cgxgbtf_MemoryFileStorage_exists(cgxgbt_TeaFiles_getFileDB($this.$teaFiles, $this.$type0), $this);
-        cgxgbt_TeaFileHandle$1_$callClinit();
-        switch (cgxgbt_TeaFileHandle$1_$SwitchMap$com$badlogic$gdx$Files$FileType.data[$this.$type0.$ordinal0]) {
-            case 1:
-                if (!$exists)
-                    break a;
-                return 1;
-            case 2:
-                break a;
-            default:
-        }
-        return $exists;
-    }
-    return cgxgbtf_MemoryFileStorage_exists(cgxgbt_TeaFiles_getFileDB($this.$teaFiles, cbg_Files$FileType_Classpath), $this);
+    return cgxgbt_TeaFileHandle__init_($this.$teaFiles, $dir, $this.$type2);
 },
 cgxgbt_TeaFileHandle_toString = $this => {
     return $this.$file;
@@ -22576,8 +22224,9 @@ cgxgbta_AssetLoadImpl$6_onSuccess = ($this, var$1, var$2) => {
     }
     var$8 = cgxgbtdt_TypedArrays_toByteArray(var$1.$data9);
     var$2 = $this.$val$fileHandle;
-    var$3 = cgxgbt_TeaFiles_getFileDB(var$2.$teaFiles, var$2.$type0);
-    var$6 = ji_ByteArrayOutputStream__init_0(jl_Math_max(512, jl_Math_min(4096, 8192)));
+    var$3 = cgxgbt_TeaFiles_getFileDB(var$2.$teaFiles, var$2.$type2);
+    var$6 = new ji_ByteArrayOutputStream;
+    var$6.$buf = $rt_createByteArray(jl_Math_max(512, jl_Math_min(4096, 8192)));
     var$5 = new cgxgbtf_FileDB$1;
     var$5.$this$013 = var$3;
     var$5.$val$buffer = var$6;
@@ -22609,7 +22258,7 @@ cgxgbta_AssetLoadImpl$6_onSuccess = ($this, var$1, var$2) => {
             var$3 = jl_String_valueOf($this.$val$fileHandle);
             var$6 = jl_String_valueOf(cgxgbt_TeaFileHandle_type($this.$val$fileHandle));
             var$9 = jl_StringBuilder__init_();
-            jl_StringBuilder_append2(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$9, $rt_s(515)), var$3), $rt_s(452)), var$6), 41);
+            jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$9, $rt_s(498)), var$3), $rt_s(499)), var$6), 41);
             cbgu_GdxRuntimeException__init_(var$2, jl_StringBuilder_toString(var$9), var$1);
             $rt_throw(var$2);
         } catch ($$e) {
@@ -22632,57 +22281,13 @@ function cbggg_Gdx2DPixmapNative() {
     a.$nativeData = null;
     a.$buffer4 = null;
 }
-let cbggg_Gdx2DPixmapNative__init_ = ($this, $width, $height, $format) => {
-    $this.$nativeData = cbggg_Gdx2DPixmapNative_newPixmapNative$js_body$_27($width, $height, $format);
-    cbggg_Gdx2DPixmapNative_updateNativeData($this);
-},
-cbggg_Gdx2DPixmapNative__init_0 = (var_0, var_1, var_2) => {
-    let var_3 = new cbggg_Gdx2DPixmapNative();
-    cbggg_Gdx2DPixmapNative__init_(var_3, var_0, var_1, var_2);
-    return var_3;
-},
-cbggg_Gdx2DPixmapNative_updateNativeData = $this => {
-    $this.$basePtr = $this.$nativeData[0];
-    $this.$width0 = $this.$nativeData[1];
-    $this.$height0 = $this.$nativeData[2];
-    $this.$format = $this.$nativeData[3];
-    $this.$heapStartIndex = $this.$nativeData[4];
-    $this.$heapEndIndex = $this.$nativeData[5];
-    cbggg_Gdx2DPixmapNative_copyHeapToBuffer($this);
-},
-cbggg_Gdx2DPixmapNative_copyHeapToBuffer = $this => {
+let cbggg_Gdx2DPixmapNative_copyHeapToBuffer = $this => {
     let var$1, $heapData;
     var$1 = $this.$heapStartIndex;
     $heapData = !var$1 && !$this.$heapEndIndex ? null : cbggg_Gdx2DPixmapNative_getHeapDataNative$js_body$_25(!!0, var$1, $this.$heapEndIndex);
     if ($this.$buffer4 === null)
         $this.$buffer4 = jn_ByteBuffer_allocateDirect($heapData.length);
     (jn_JSBufferHelper_toInt8Array(jn_JSBufferHelper_getArrayBufferView($this.$buffer4))).set($heapData);
-},
-cbggg_Gdx2DPixmapNative_dispose = $this => {
-    let var$1, var$2;
-    Gdx.Gdx.prototype.g2d_free($this.$basePtr);
-    var$1 = $this.$buffer4;
-    if (var$1 !== null) {
-        if (!var$1.$direct) {
-            var$2 = new jl_IllegalArgumentException;
-            jl_RuntimeException__init_(var$2, $rt_s(516));
-            $rt_throw(var$2);
-        }
-        if ($rt_isInstance(var$1, jn_NativeBuffer))
-            var$1.$release();
-        $this.$buffer4 = null;
-    }
-    $this.$nativeData = null;
-},
-cbggg_Gdx2DPixmapNative_drawPixmap = ($this, $basePtr, $srcX, $srcY, $dstX, $dstY, $width, $height) => {
-    let var$8;
-    var$8 = $this.$basePtr;
-    Gdx.Gdx.prototype.g2d_draw_pixmap($basePtr, var$8, $srcX, $srcY, $width, $height, $dstX, $dstY, $width, $height);
-    cbggg_Gdx2DPixmapNative_copyHeapToBuffer($this);
-},
-cbggg_Gdx2DPixmapNative_setBlend = ($this, $blend) => {
-    Gdx.Gdx.prototype.g2d_set_blend($this.$basePtr, $blend);
-    cbggg_Gdx2DPixmapNative_copyHeapToBuffer($this);
 },
 cbggg_Gdx2DPixmapNative_getHeapDataNative$js_body$_25 = (var$1, var$2, var$3) => {
     var heapArray = Gdx.HEAP8.subarray(var$2, var$3);
@@ -22691,30 +22296,6 @@ cbggg_Gdx2DPixmapNative_getHeapDataNative$js_body$_25 = (var$1, var$2, var$3) =>
         return newArray;
     }
     return heapArray;
-},
-cbggg_Gdx2DPixmapNative_loadNative$js_body$_26 = (var$1, var$2, var$3) => {
-    var cBufferSize = var$1.length * Uint8Array.BYTES_PER_ELEMENT;
-    var cBuffer = Gdx._malloc(cBufferSize);
-    Gdx.writeArrayToMemory(var$1, cBuffer);
-    var pixmap = Gdx.Gdx.prototype.g2d_load(cBuffer, var$2, var$3);
-    Gdx._free(cBuffer);
-    var pixels = Gdx.Gdx.prototype.g2d_get_pixels(pixmap);
-    var pixmapAddr = Gdx.getPointer(pixmap);
-    var format = pixmap.get_format();
-    var width = pixmap.get_width();
-    var height = pixmap.get_height();
-    var bytesPerPixel = Gdx.Gdx.prototype.g2d_bytes_per_pixel(format);
-    var bytesSize = width * height * bytesPerPixel;
-    var startIndex = pixels;
-    var endIndex = startIndex + bytesSize;
-    var nativeData = new Int32Array(6);
-    nativeData[0] = pixmapAddr;
-    nativeData[1] = width;
-    nativeData[2] = height;
-    nativeData[3] = format;
-    nativeData[4] = startIndex;
-    nativeData[5] = endIndex;
-    return nativeData;
 },
 cbggg_Gdx2DPixmapNative_newPixmapNative$js_body$_27 = (var$1, var$2, var$3) => {
     var pixmap = Gdx.Gdx.prototype.g2d_new(var$1, var$2, var$3);
@@ -22735,52 +22316,6 @@ cbggg_Gdx2DPixmapNative_newPixmapNative$js_body$_27 = (var$1, var$2, var$3) => {
     nativeData[4] = startIndex;
     nativeData[5] = endIndex;
     return nativeData;
-},
-cbgua_AsyncExecutor = $rt_classWithoutFields(),
-juc_ConcurrentMap = $rt_classWithoutFields(0);
-function juc_ConcurrentHashMap() {
-    let a = this; ju_AbstractMap.call(a);
-    a.$elementCount1 = 0;
-    a.$elementData1 = null;
-    a.$loadFactor5 = 0.0;
-    a.$threshold5 = 0;
-}
-let cbgu_JsonWriter$OutputType = $rt_classWithoutFields(jl_Enum),
-cbgu_JsonWriter$OutputType_json = null,
-cbgu_JsonWriter$OutputType_javascript = null,
-cbgu_JsonWriter$OutputType_minimal = null,
-cbgu_JsonWriter$OutputType_javascriptPattern = null,
-cbgu_JsonWriter$OutputType_minimalNamePattern = null,
-cbgu_JsonWriter$OutputType_minimalValuePattern = null,
-cbgu_JsonWriter$OutputType_$VALUES = null,
-cbgu_JsonWriter$OutputType_$callClinit = () => {
-    cbgu_JsonWriter$OutputType_$callClinit = $rt_eraseClinit(cbgu_JsonWriter$OutputType);
-    cbgu_JsonWriter$OutputType__clinit_();
-},
-cbgu_JsonWriter$OutputType__init_0 = ($this, var$1, var$2) => {
-    cbgu_JsonWriter$OutputType_$callClinit();
-    jl_Enum__init_($this, var$1, var$2);
-},
-cbgu_JsonWriter$OutputType__init_ = (var_0, var_1) => {
-    let var_2 = new cbgu_JsonWriter$OutputType();
-    cbgu_JsonWriter$OutputType__init_0(var_2, var_0, var_1);
-    return var_2;
-},
-cbgu_JsonWriter$OutputType__clinit_ = () => {
-    let var$1, var$2, var$3;
-    cbgu_JsonWriter$OutputType_json = cbgu_JsonWriter$OutputType__init_($rt_s(517), 0);
-    cbgu_JsonWriter$OutputType_javascript = cbgu_JsonWriter$OutputType__init_($rt_s(518), 1);
-    var$1 = cbgu_JsonWriter$OutputType__init_($rt_s(519), 2);
-    cbgu_JsonWriter$OutputType_minimal = var$1;
-    var$2 = $rt_createArray(cbgu_JsonWriter$OutputType, 3);
-    var$3 = var$2.data;
-    var$3[0] = cbgu_JsonWriter$OutputType_json;
-    var$3[1] = cbgu_JsonWriter$OutputType_javascript;
-    var$3[2] = var$1;
-    cbgu_JsonWriter$OutputType_$VALUES = var$2;
-    cbgu_JsonWriter$OutputType_javascriptPattern = jur_Pattern_compile($rt_s(520));
-    cbgu_JsonWriter$OutputType_minimalNamePattern = jur_Pattern_compile($rt_s(521));
-    cbgu_JsonWriter$OutputType_minimalValuePattern = jur_Pattern_compile($rt_s(522));
 };
 function jnc_CharsetDecoder() {
     let a = this; jl_Object.call(a);
@@ -22792,14 +22327,14 @@ function jnc_CharsetDecoder() {
     a.$unmappableAction0 = null;
     a.$state = 0;
 }
-let jnc_CharsetDecoder_onMalformedInput = ($this, $newAction) => {
+let jnc_CharsetDecoder_onMalformedInput = ($this, var$1) => {
     let var$2;
-    if ($newAction !== null) {
-        $this.$malformedAction = $newAction;
+    if (var$1 !== null) {
+        $this.$malformedAction = var$1;
         return $this;
     }
     var$2 = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_(var$2, $rt_s(523));
+    jl_RuntimeException__init_(var$2, $rt_s(500));
     $rt_throw(var$2);
 },
 jnc_CharsetDecoder_onUnmappableCharacter = ($this, $newAction) => {
@@ -22809,7 +22344,7 @@ jnc_CharsetDecoder_onUnmappableCharacter = ($this, $newAction) => {
         return $this;
     }
     var$2 = new jl_IllegalArgumentException;
-    jl_RuntimeException__init_(var$2, $rt_s(523));
+    jl_RuntimeException__init_(var$2, $rt_s(500));
     $rt_throw(var$2);
 },
 jnc_CharsetDecoder_decode = ($this, $in, $out, $endOfInput) => {
@@ -22943,13 +22478,13 @@ cbgg_Texture$TextureFilter__init_ = (var_0, var_1, var_2) => {
 },
 cbgg_Texture$TextureFilter__clinit_ = () => {
     let var$1, var$2, var$3;
-    cbgg_Texture$TextureFilter_Nearest = cbgg_Texture$TextureFilter__init_($rt_s(524), 0, 9728);
-    cbgg_Texture$TextureFilter_Linear = cbgg_Texture$TextureFilter__init_($rt_s(525), 1, 9729);
-    cbgg_Texture$TextureFilter_MipMap = cbgg_Texture$TextureFilter__init_($rt_s(526), 2, 9987);
-    cbgg_Texture$TextureFilter_MipMapNearestNearest = cbgg_Texture$TextureFilter__init_($rt_s(527), 3, 9984);
-    cbgg_Texture$TextureFilter_MipMapLinearNearest = cbgg_Texture$TextureFilter__init_($rt_s(528), 4, 9985);
-    cbgg_Texture$TextureFilter_MipMapNearestLinear = cbgg_Texture$TextureFilter__init_($rt_s(529), 5, 9986);
-    var$1 = cbgg_Texture$TextureFilter__init_($rt_s(530), 6, 9987);
+    cbgg_Texture$TextureFilter_Nearest = cbgg_Texture$TextureFilter__init_($rt_s(501), 0, 9728);
+    cbgg_Texture$TextureFilter_Linear = cbgg_Texture$TextureFilter__init_($rt_s(502), 1, 9729);
+    cbgg_Texture$TextureFilter_MipMap = cbgg_Texture$TextureFilter__init_($rt_s(503), 2, 9987);
+    cbgg_Texture$TextureFilter_MipMapNearestNearest = cbgg_Texture$TextureFilter__init_($rt_s(504), 3, 9984);
+    cbgg_Texture$TextureFilter_MipMapLinearNearest = cbgg_Texture$TextureFilter__init_($rt_s(505), 4, 9985);
+    cbgg_Texture$TextureFilter_MipMapNearestLinear = cbgg_Texture$TextureFilter__init_($rt_s(506), 5, 9986);
+    var$1 = cbgg_Texture$TextureFilter__init_($rt_s(507), 6, 9987);
     cbgg_Texture$TextureFilter_MipMapLinearLinear = var$1;
     var$2 = $rt_createArray(cbgg_Texture$TextureFilter, 7);
     var$3 = var$2.data;
@@ -22981,9 +22516,9 @@ cbgg_Texture$TextureWrap__init_ = (var_0, var_1, var_2) => {
 },
 cbgg_Texture$TextureWrap__clinit_ = () => {
     let var$1, var$2, var$3;
-    cbgg_Texture$TextureWrap_MirroredRepeat = cbgg_Texture$TextureWrap__init_($rt_s(531), 0, 33648);
-    cbgg_Texture$TextureWrap_ClampToEdge = cbgg_Texture$TextureWrap__init_($rt_s(532), 1, 33071);
-    var$1 = cbgg_Texture$TextureWrap__init_($rt_s(533), 2, 10497);
+    cbgg_Texture$TextureWrap_MirroredRepeat = cbgg_Texture$TextureWrap__init_($rt_s(508), 0, 33648);
+    cbgg_Texture$TextureWrap_ClampToEdge = cbgg_Texture$TextureWrap__init_($rt_s(509), 1, 33071);
+    var$1 = cbgg_Texture$TextureWrap__init_($rt_s(510), 2, 10497);
     cbgg_Texture$TextureWrap_Repeat = var$1;
     var$2 = $rt_createArray(cbgg_Texture$TextureWrap, 3);
     var$3 = var$2.data;
@@ -23193,9 +22728,6 @@ jnci_UTF8Decoder_arrayDecode = ($this, $inArray, $inPos, $inSize, $outArray, $ou
 jnci_UTF8Decoder_checkMidByte = ($this, $b) => {
     return ($b & 192) != 128 ? 0 : 1;
 },
-otcin_Buffers = $rt_classWithoutFields(),
-juc_MapEntry = $rt_classWithoutFields(),
-juc_ConcurrentHashMap$HashEntry = $rt_classWithoutFields(juc_MapEntry),
 cbggg_FileTextureData = $rt_classWithoutFields(),
 cbgg_TextureData$TextureDataType = $rt_classWithoutFields(jl_Enum),
 cbgg_TextureData$TextureDataType_Pixmap = null,
@@ -23204,10 +22736,10 @@ cbgg_TextureData$TextureDataType_$VALUES = null,
 cbgg_TextureData$TextureDataType__clinit_ = () => {
     let var$1, var$2, var$3;
     var$1 = new cbgg_TextureData$TextureDataType;
-    jl_Enum__init_(var$1, $rt_s(534), 0);
+    jl_Enum__init_(var$1, $rt_s(511), 0);
     cbgg_TextureData$TextureDataType_Pixmap = var$1;
     var$1 = new cbgg_TextureData$TextureDataType;
-    jl_Enum__init_(var$1, $rt_s(535), 1);
+    jl_Enum__init_(var$1, $rt_s(512), 1);
     cbgg_TextureData$TextureDataType_Custom = var$1;
     var$2 = $rt_createArray(cbgg_TextureData$TextureDataType, 2);
     var$3 = var$2.data;
@@ -23217,12 +22749,24 @@ cbgg_TextureData$TextureDataType__clinit_ = () => {
 },
 cbggg_MipMapGenerator = $rt_classWithoutFields(),
 cbggg_MipMapGenerator_useHWMipMap = 0,
+cbggg_MipMapGenerator_generateMipMapGLES20 = ($target, $pixmap) => {
+    cbg_Gdx_gl.$glTexImage2D($target, 0, cbgg_Pixmap_getGLInternalFormat($pixmap), cbgg_Pixmap_getWidth($pixmap), cbgg_Pixmap_getHeight($pixmap), 0, cbgg_Pixmap_getGLFormat($pixmap), cbgg_Pixmap_getGLType($pixmap), cbgg_Pixmap_getPixels($pixmap));
+    cbg_Gdx_gl20.$glGenerateMipmap($target);
+},
+cbggg_MipMapGenerator_generateMipMapDesktop = ($target, $pixmap, $textureWidth, $textureHeight) => {
+    if (!cgxgbt_TeaGraphics_supportsExtension(cbg_Gdx_graphics, $rt_s(513)) && !cgxgbt_TeaGraphics_supportsExtension(cbg_Gdx_graphics, $rt_s(514)) && !jl_String_equals(jl_Class_getName(jl_Object_getClass(cbg_Gdx_gl20)), $rt_s(515)) && cbg_Gdx_gl30 === null)
+        cbggg_MipMapGenerator_generateMipMapCPU($target, $pixmap, $textureWidth, $textureHeight);
+    else {
+        cbg_Gdx_gl.$glTexImage2D($target, 0, cbgg_Pixmap_getGLInternalFormat($pixmap), cbgg_Pixmap_getWidth($pixmap), cbgg_Pixmap_getHeight($pixmap), 0, cbgg_Pixmap_getGLFormat($pixmap), cbgg_Pixmap_getGLType($pixmap), cbgg_Pixmap_getPixels($pixmap));
+        cbg_Gdx_gl20.$glGenerateMipmap($target);
+    }
+},
 cbggg_MipMapGenerator_generateMipMapCPU = ($target, $pixmap, $textureWidth, $textureHeight) => {
-    let $width, $height, $level, $tmp_0;
+    let $width, $height, $level, $tmp_0, var$9, var$10, var$11, var$12, var$13;
     cbg_Gdx_gl.$glTexImage2D($target, 0, cbgg_Pixmap_getGLInternalFormat($pixmap), cbgg_Pixmap_getWidth($pixmap), cbgg_Pixmap_getHeight($pixmap), 0, cbgg_Pixmap_getGLFormat($pixmap), cbgg_Pixmap_getGLType($pixmap), cbgg_Pixmap_getPixels($pixmap));
     if (cbg_Gdx_gl20 === null && $textureWidth != $textureHeight) {
         $pixmap = new cbgu_GdxRuntimeException;
-        jl_RuntimeException__init_($pixmap, $rt_s(536));
+        jl_RuntimeException__init_($pixmap, $rt_s(516));
         $rt_throw($pixmap);
     }
     $width = cbgg_Pixmap_getWidth($pixmap) / 2 | 0;
@@ -23231,7 +22775,13 @@ cbggg_MipMapGenerator_generateMipMapCPU = ($target, $pixmap, $textureWidth, $tex
     while ($width > 0 && $height > 0) {
         $tmp_0 = cbgg_Pixmap__init_($width, $height, cbgg_Pixmap_getFormat($pixmap));
         cbgg_Pixmap_setBlending($tmp_0, cbgg_Pixmap$Blending_None);
-        cbgg_Pixmap_drawPixmap($tmp_0, $pixmap, 0, 0, cbgg_Pixmap_getWidth($pixmap), cbgg_Pixmap_getHeight($pixmap), 0, 0, $width, $height);
+        var$9 = cbgg_Pixmap_getWidth($pixmap);
+        var$10 = cbgg_Pixmap_getHeight($pixmap);
+        var$11 = $tmp_0.$nativePixmap;
+        var$12 = $pixmap.$nativePixmap;
+        var$13 = var$11.$nativePixmap0;
+        Gdx.Gdx.prototype.g2d_draw_pixmap(var$12.$nativePixmap0.$basePtr, var$13.$basePtr, 0, 0, var$9, var$10, 0, 0, $width, $height);
+        cbggg_Gdx2DPixmapNative_copyHeapToBuffer(var$13);
         if ($level > 1)
             cbgg_Pixmap_dispose($pixmap);
         cbg_Gdx_gl.$glTexImage2D($target, $level, cbgg_Pixmap_getGLInternalFormat($tmp_0), cbgg_Pixmap_getWidth($tmp_0), cbgg_Pixmap_getHeight($tmp_0), 0, cbgg_Pixmap_getGLFormat($tmp_0), cbgg_Pixmap_getGLType($tmp_0), cbgg_Pixmap_getPixels($tmp_0));
@@ -23243,8 +22793,38 @@ cbggg_MipMapGenerator_generateMipMapCPU = ($target, $pixmap, $textureWidth, $tex
 },
 cbggg_MipMapGenerator__clinit_ = () => {
     cbggg_MipMapGenerator_useHWMipMap = 1;
+};
+function jnci_BufferedDecoder$Controller() {
+    let a = this; jl_Object.call(a);
+    a.$in0 = null;
+    a.$out1 = null;
+    a.$inPosition0 = 0;
+    a.$outPosition = 0;
+}
+let jnci_BufferedDecoder$Controller_hasMoreInput = ($this, $sz) => {
+    return jn_Buffer_remaining($this.$in0) < $sz ? 0 : 1;
 },
-jn_NativeBuffer = $rt_classWithoutFields(0),
+cbgu_StreamUtils = $rt_classWithoutFields(),
+cbgu_StreamUtils_EMPTY_BYTES = null,
+cbgu_StreamUtils_closeQuietly = $c => {
+    let $$je;
+    a: {
+        if ($c !== null)
+            try {
+                cgxgbtf_FileDB$1_close($c);
+                break a;
+            } catch ($$e) {
+                $$je = $rt_wrapException($$e);
+                if ($$je instanceof jl_Throwable) {
+                } else {
+                    throw $$e;
+                }
+            }
+    }
+},
+cbgu_StreamUtils__clinit_ = () => {
+    cbgu_StreamUtils_EMPTY_BYTES = $rt_createByteArray(0);
+},
 cgxgbt_TeaFileHandle$1 = $rt_classWithoutFields(),
 cgxgbt_TeaFileHandle$1_$SwitchMap$com$badlogic$gdx$Files$FileType = null,
 cgxgbt_TeaFileHandle$1_$callClinit = () => {
@@ -23258,119 +22838,12 @@ cgxgbt_TeaFileHandle$1__clinit_ = () => {
     cgxgbt_TeaFileHandle$1_$SwitchMap$com$badlogic$gdx$Files$FileType = var$1;
     var$2[cbg_Files$FileType_Internal.$ordinal0] = 1;
     var$2[cbg_Files$FileType_Classpath.$ordinal0] = 2;
-},
-cbgu_StreamUtils = $rt_classWithoutFields(),
-cbgu_StreamUtils_EMPTY_BYTES = null,
-cbgu_StreamUtils_copyStreamToByteArray = ($input, $estimatedSize) => {
-    let $baos, var$4, var$5, var$6, var$7, var$8, var$9, var$10, var$11, var$12;
-    $baos = new cbgu_StreamUtils$OptimizedByteArrayOutputStream;
-    ji_ByteArrayOutputStream__init_($baos, jl_Math_max(0, $estimatedSize));
-    var$4 = $rt_createByteArray(4096);
-    var$5 = var$4.data;
-    var$6 = var$5.length;
-    $input = $input;
-    var$7 = $baos;
-    while (true) {
-        var$8 = 0;
-        var$9 = jl_Math_min(var$6, $input.$count1 - $input.$pos | 0);
-        var$10 = 0;
-        while (var$10 < var$9) {
-            $estimatedSize = var$8 + 1 | 0;
-            var$11 = $input.$buf0.data;
-            var$12 = $input.$pos;
-            $input.$pos = var$12 + 1 | 0;
-            var$5[var$8] = var$11[var$12];
-            var$10 = var$10 + 1 | 0;
-            var$8 = $estimatedSize;
-        }
-        if (var$9 <= 0)
-            var$9 = (-1);
-        if (var$9 == (-1))
-            break;
-        ji_ByteArrayOutputStream_write(var$7, var$4, 0, var$9);
-    }
-    return cbgu_StreamUtils$OptimizedByteArrayOutputStream_toByteArray($baos);
-},
-cbgu_StreamUtils_closeQuietly = $c => {
-    let $$je;
-    a: {
-        if ($c !== null)
-            try {
-                $c.$close();
-                break a;
-            } catch ($$e) {
-                $$je = $rt_wrapException($$e);
-                if ($$je instanceof jl_Throwable) {
-                } else {
-                    throw $$e;
-                }
-            }
-    }
-},
-cbgu_StreamUtils__clinit_ = () => {
-    cbgu_StreamUtils_EMPTY_BYTES = $rt_createByteArray(0);
-};
-function jnci_BufferedDecoder$Controller() {
-    let a = this; jl_Object.call(a);
-    a.$in0 = null;
-    a.$out1 = null;
-    a.$inPosition0 = 0;
-    a.$outPosition = 0;
-}
-let jnci_BufferedDecoder$Controller_hasMoreInput = ($this, $sz) => {
-    return jn_Buffer_remaining($this.$in0) < $sz ? 0 : 1;
 };
 function ji_ByteArrayOutputStream() {
     let a = this; ji_OutputStream.call(a);
     a.$buf = null;
     a.$count0 = 0;
 }
-let ji_ByteArrayOutputStream__init_ = ($this, $size) => {
-    $this.$buf = $rt_createByteArray($size);
-},
-ji_ByteArrayOutputStream__init_0 = var_0 => {
-    let var_1 = new ji_ByteArrayOutputStream();
-    ji_ByteArrayOutputStream__init_(var_1, var_0);
-    return var_1;
-},
-ji_ByteArrayOutputStream_write = ($this, $b, $off, $len) => {
-    let $i, var$5, var$6, var$7, var$8;
-    $i = $this.$count0 + $len | 0;
-    var$5 = $this.$buf.data.length;
-    if (var$5 < $i) {
-        var$6 = jl_Math_max($i, (var$5 * 3 | 0) / 2 | 0);
-        $this.$buf = ju_Arrays_copyOf0($this.$buf, var$6);
-    }
-    $i = 0;
-    while ($i < $len) {
-        var$7 = $b.data;
-        var$8 = $this.$buf.data;
-        var$6 = $this.$count0;
-        $this.$count0 = var$6 + 1 | 0;
-        var$5 = $off + 1 | 0;
-        var$8[var$6] = var$7[$off];
-        $i = $i + 1 | 0;
-        $off = var$5;
-    }
-},
-ji_ByteArrayOutputStream_toByteArray = $this => {
-    return ju_Arrays_copyOf0($this.$buf, $this.$count0);
-},
-cbgu_StreamUtils$OptimizedByteArrayOutputStream = $rt_classWithoutFields(ji_ByteArrayOutputStream),
-cbgu_StreamUtils$OptimizedByteArrayOutputStream_toByteArray = $this => {
-    let var$1, var$2;
-    jl_Object_monitorEnterSync($this);
-    try {
-        var$1 = $this.$count0;
-        var$2 = $this.$buf;
-        if (var$1 == var$2.data.length)
-            return var$2;
-        return ji_ByteArrayOutputStream_toByteArray($this);
-    } finally {
-        jl_Object_monitorExitSync($this);
-    }
-},
-ji_InputStream = $rt_classWithoutFields();
 function cgxgbtf_FileDB$1() {
     let a = this; ji_OutputStream.call(a);
     a.$val$buffer = null;
@@ -23380,59 +22853,42 @@ function cgxgbtf_FileDB$1() {
     a.$this$013 = null;
 }
 let cgxgbtf_FileDB$1_write = ($this, $b) => {
-    let var$2, var$3, var$4;
-    var$2 = $b.data;
-    var$3 = $this.$val$buffer;
-    var$4 = var$2.length;
-    ji_ByteArrayOutputStream_write(var$3, $b, 0, var$4);
+    let var$2, var$3, var$4, var$5, var$6, var$7, var$8;
+    $b = $b.data;
+    var$2 = $this.$val$buffer;
+    var$3 = 0;
+    var$4 = $b.length;
+    var$2 = var$2;
+    var$5 = var$2.$count0 + var$4 | 0;
+    var$6 = var$2.$buf.data.length;
+    if (var$6 < var$5) {
+        var$7 = jl_Math_max(var$5, (var$6 * 3 | 0) / 2 | 0);
+        var$2.$buf = ju_Arrays_copyOf0(var$2.$buf, var$7);
+    }
+    var$7 = 0;
+    while (var$7 < var$4) {
+        var$8 = var$2.$buf.data;
+        var$5 = var$2.$count0;
+        var$2.$count0 = var$5 + 1 | 0;
+        var$6 = var$3 + 1 | 0;
+        var$8[var$5] = $b[var$3];
+        var$7 = var$7 + 1 | 0;
+        var$3 = var$6;
+    }
 },
 cgxgbtf_FileDB$1_close = $this => {
-    let $data, var$2, var$3, var$4, var$5, var$6;
-    $data = ji_ByteArrayOutputStream_toByteArray($this.$val$buffer);
-    var$2 = $data.data;
-    var$3 = $this.$this$013;
+    let var$1, $data, var$3, var$4, var$5, var$6;
+    var$1 = $this.$val$buffer;
+    $data = ju_Arrays_copyOf0(var$1.$buf, var$1.$count0);
+    var$3 = $data.data;
+    var$1 = $this.$this$013;
     var$4 = $this.$val$file;
     var$5 = $this.$val$append;
-    var$6 = jl_Math_max(var$2.length, $this.$val$bufferSize);
-    cgxgbtf_MemoryFileStorage_writeInternal(var$3, var$4, $data, var$5, var$6);
-};
-function ji_ByteArrayInputStream() {
-    let a = this; ji_InputStream.call(a);
-    a.$buf0 = null;
-    a.$pos = 0;
-    a.$mark0 = 0;
-    a.$count1 = 0;
-}
-let ji_ByteArrayInputStream__init_ = ($this, $buf) => {
-    let var$2;
-    var$2 = $buf.data.length;
-    $this.$buf0 = $buf;
-    $this.$pos = 0;
-    $this.$mark0 = 0;
-    $this.$count1 = 0 + var$2 | 0;
+    var$6 = jl_Math_max(var$3.length, $this.$val$bufferSize);
+    cgxgbtf_MemoryFileStorage_writeInternal(var$1, var$4, $data, var$5, var$6);
 },
-ji_ByteArrayInputStream__init_0 = var_0 => {
-    let var_1 = new ji_ByteArrayInputStream();
-    ji_ByteArrayInputStream__init_(var_1, var_0);
-    return var_1;
-},
-ji_ByteArrayInputStream_close = $this => {
-    return;
-};
-function cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0() {
-    jl_Object.call(this);
-    this.$_011 = null;
-}
-let cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0_handleEvent$exported$0 = var$1 => {
-    let var$2, var$3;
-    var$1 = var$1.$_011;
-    var$2 = jl_System_err();
-    var$3 = new jl_StringBuilder;
-    jl_AbstractStringBuilder__init_(var$3);
-    jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(537)), var$1);
-    var$1 = jl_AbstractStringBuilder_toString(var$3);
-    otcic_JsConsolePrintStream_println(var$2, var$1);
-};
+otcin_Buffers = $rt_classWithoutFields(),
+jn_NativeBuffer = $rt_classWithoutFields(0);
 $rt_packages([-1, "com", 0, "github", 1, "xpenatan", 2, "gdx", 3, "backends", 4, "teavm", 5, "filesystem", 6, "types", 0, "badlogic", 8, "gdx", 9, "utils", 10, "reflect", 9, "graphics", 12, "glutils", 12, "g2d", -1, "java", 15, "util", 16, "regex", 15, "nio", 18, "charset", 15, "lang", 20, "reflect", -1, "dev", 22, "cas", 23, "golf", 24, "core", 25, "classical", 24, "base", -1, "org", 28, "teavm", 29, "classlib", 30, "impl", 31, "unicode"
 ]);
 $rt_metadata([jl_Object, "Object", 20, 0, [], 0, 3, 0, 0, ["$hashCode", $rt_wrapFunction0(jl_Object_hashCode), "$equals", $rt_wrapFunction1(jl_Object_equals), "$toString", $rt_wrapFunction0(jl_Object_toString)],
@@ -23480,7 +22936,7 @@ jl_Number, 0, jl_Object, [ji_Serializable], 1, 3, 0, 0, 0,
 jl_Integer, 0, jl_Number, [jl_Comparable], 0, 3, 0, 0, 0,
 jl_AbstractStringBuilder, 0, jl_Object, [ji_Serializable, jl_CharSequence], 0, 0, 0, 0, ["$ensureCapacity", $rt_wrapFunction1(jl_AbstractStringBuilder_ensureCapacity), "$toString", $rt_wrapFunction0(jl_AbstractStringBuilder_toString)],
 jl_Appendable, 0, jl_Object, [], 3, 3, 0, 0, 0,
-jl_StringBuilder, 0, jl_AbstractStringBuilder, [jl_Appendable], 0, 3, 0, 0, ["$insert2", $rt_wrapFunction4(jl_StringBuilder_insert), "$append4", $rt_wrapFunction3(jl_StringBuilder_append4), "$toString", $rt_wrapFunction0(jl_StringBuilder_toString), "$ensureCapacity", $rt_wrapFunction1(jl_StringBuilder_ensureCapacity), "$insert1", $rt_wrapFunction2(jl_StringBuilder_insert0), "$insert", $rt_wrapFunction2(jl_StringBuilder_insert1)],
+jl_StringBuilder, 0, jl_AbstractStringBuilder, [jl_Appendable], 0, 3, 0, 0, ["$insert2", $rt_wrapFunction4(jl_StringBuilder_insert), "$append4", $rt_wrapFunction3(jl_StringBuilder_append3), "$toString", $rt_wrapFunction0(jl_StringBuilder_toString), "$ensureCapacity", $rt_wrapFunction1(jl_StringBuilder_ensureCapacity), "$insert1", $rt_wrapFunction2(jl_StringBuilder_insert0), "$insert", $rt_wrapFunction2(jl_StringBuilder_insert1)],
 otcir_FieldInfo, 0, jl_Object, [], 0, 3, 0, 0, 0,
 otcir_MethodInfo, 0, jl_Object, [], 0, 3, 0, 0, 0,
 otcir_ClassList, 0, jl_Object, [], 0, 3, 0, 0, 0,
@@ -23615,10 +23071,10 @@ ju_HashSet, 0, ju_AbstractSet, [jl_Cloneable, ji_Serializable], 0, 3, 0, 0, 0,
 cbgu_IntMap, 0, jl_Object, [jl_Iterable], 0, 3, 0, 0, 0,
 cbgu_IntSet, 0, jl_Object, [], 0, 3, 0, 0, 0,
 cgxgbtf_FileDB, 0, jl_Object, [], 1, 3, 0, 0, 0,
-cgxgbtf_MemoryFileStorage, 0, cgxgbtf_FileDB, [], 0, 3, 0, 0, ["$putFile", $rt_wrapFunction2(cgxgbtf_MemoryFileStorage_putFile), "$removeFile", $rt_wrapFunction1(cgxgbtf_MemoryFileStorage_removeFile)],
+cgxgbtf_MemoryFileStorage, 0, cgxgbtf_FileDB, [], 0, 3, 0, 0, ["$putFile", $rt_wrapFunction2(cgxgbtf_MemoryFileStorage_putFile)],
 cgxgbtft_InternalStorage, "InternalStorage", 7, cgxgbtf_MemoryFileStorage, [], 0, 3, [0,0,0], 0, 0,
 cgxgbtft_ClasspathStorage, "ClasspathStorage", 7, cgxgbtf_MemoryFileStorage, [], 0, 3, [0,0,0], 0, 0,
-cgxgbtft_LocalDBStorage, "LocalDBStorage", 7, cgxgbtf_MemoryFileStorage, [], 0, 3, [0,0,0], 0, ["$putFile", $rt_wrapFunction2(cgxgbtft_LocalDBStorage_putFile), "$removeFile", $rt_wrapFunction1(cgxgbtft_LocalDBStorage_removeFile)],
+cgxgbtft_LocalDBStorage, "LocalDBStorage", 7, cgxgbtf_MemoryFileStorage, [], 0, 3, [0,0,0], 0, ["$putFile", $rt_wrapFunction2(cgxgbtft_LocalDBStorage_putFile)],
 cgxgbt_TeaPermissions$TeaPermissionResult, 0, jl_Object, [otj_JSObject], 3, 3, 0, 0, 0,
 cgxgbt_TeaClipboard$ClipboardWriteHandler, 0, jl_Object, [cgxgbt_TeaPermissions$TeaPermissionResult], 0, 0, 0, 0, 0,
 cgxgbt_TeaClipboard$_init_$lambda$_0_0, 0, jl_Object, [cgxgbtd_EventListenerWrapper], 0, 3, 0, 0, 0,
@@ -24054,8 +23510,6 @@ jnc_UnmappableCharacterException, "UnmappableCharacterException", 19, jnc_Charac
 cbggg_PixmapNativeInterface, 0, jl_Object, [], 3, 3, 0, 0, 0]);
 $rt_metadata([cbgg_Pixmap, 0, jl_Object, [cbgu_Disposable, cbggg_PixmapNativeInterface], 0, 3, 0, 0, 0,
 cbgg_Pixmap$Format, 0, jl_Enum, [], 12, 3, 0, 0, 0,
-dcgbd_Data, 0, jl_Object, [], 0, 3, 0, dcgbd_Data_$callClinit, 0,
-dcgbu_GraphicUtil, 0, jl_Object, [], 0, 3, 0, 0, 0,
 cbg_Files$FileType, 0, jl_Enum, [], 12, 3, 0, 0, 0,
 jnci_BufferedEncoder, 0, jnc_CharsetEncoder, [], 1, 3, 0, 0, 0,
 jnci_UTF8Encoder, 0, jnci_BufferedEncoder, [], 0, 3, 0, 0, 0,
@@ -24065,35 +23519,25 @@ cbggg_Gdx2DPixmap, 0, jl_Object, [cbgu_Disposable, cbggg_PixmapNativeInterface],
 cbgg_TextureData, 0, jl_Object, [], 3, 3, 0, 0, 0,
 cbggg_PixmapTextureData, "PixmapTextureData", 13, jl_Object, [cbgg_TextureData], 0, 3, 0, 0, 0,
 cbgf_FileHandle, 0, jl_Object, [], 0, 3, 0, 0, 0,
-cgxgbt_TeaFileHandle, "TeaFileHandle", 5, cbgf_FileHandle, [], 0, 3, 0, 0, ["$toString", $rt_wrapFunction0(cgxgbt_TeaFileHandle_toString)],
+cgxgbt_TeaFileHandle, 0, cbgf_FileHandle, [], 0, 3, 0, 0, ["$toString", $rt_wrapFunction0(cgxgbt_TeaFileHandle_toString)],
 cgxgbta_AssetLoadImpl$6, 0, jl_Object, [cgxgbta_AssetLoaderListener], 0, 0, 0, 0, ["$onProgress", $rt_wrapFunction2(cgxgbta_AssetLoadImpl$6_onProgress), "$onSuccess", $rt_wrapFunction2(cgxgbta_AssetLoadImpl$6_onSuccess)],
 cbggg_Gdx2DPixmapNative, 0, jl_Object, [cbgu_Disposable], 0, 3, 0, 0, 0,
-cbgua_AsyncExecutor, 0, jl_Object, [cbgu_Disposable], 0, 3, 0, 0, 0,
-juc_ConcurrentMap, 0, jl_Object, [ju_Map], 3, 3, 0, 0, 0,
-juc_ConcurrentHashMap, 0, ju_AbstractMap, [juc_ConcurrentMap, jl_Cloneable, ji_Serializable], 0, 3, 0, 0, 0,
-cbgu_JsonWriter$OutputType, 0, jl_Enum, [], 12, 3, 0, cbgu_JsonWriter$OutputType_$callClinit, 0,
 jnc_CharsetDecoder, 0, jl_Object, [], 1, 3, 0, 0, 0,
 cbgg_Texture$TextureFilter, 0, jl_Enum, [], 12, 3, 0, 0, 0,
 cbgg_Texture$TextureWrap, 0, jl_Enum, [], 12, 3, 0, 0, 0,
 jnci_BufferedEncoder$Controller, 0, jl_Object, [], 0, 3, 0, 0, 0,
 jnci_BufferedDecoder, 0, jnc_CharsetDecoder, [], 1, 3, 0, 0, 0,
 jnci_UTF8Decoder, 0, jnci_BufferedDecoder, [], 0, 3, 0, 0, 0,
-otcin_Buffers, 0, jl_Object, [], 4, 3, 0, 0, 0,
-juc_MapEntry, 0, jl_Object, [ju_Map$Entry, jl_Cloneable], 0, 0, 0, 0, 0,
-juc_ConcurrentHashMap$HashEntry, 0, juc_MapEntry, [], 0, 0, 0, 0, 0,
 cbggg_FileTextureData, 0, jl_Object, [cbgg_TextureData], 0, 3, 0, 0, 0,
 cbgg_TextureData$TextureDataType, 0, jl_Enum, [], 12, 3, 0, 0, 0,
 cbggg_MipMapGenerator, 0, jl_Object, [], 0, 3, 0, 0, 0,
-jn_NativeBuffer, 0, jl_Object, [], 3, 3, 0, 0, 0,
-cgxgbt_TeaFileHandle$1, 0, jl_Object, [], 32, 0, 0, cgxgbt_TeaFileHandle$1_$callClinit, 0,
-cbgu_StreamUtils, 0, jl_Object, [], 4, 3, 0, 0, 0,
 jnci_BufferedDecoder$Controller, 0, jl_Object, [], 0, 3, 0, 0, 0,
+cbgu_StreamUtils, 0, jl_Object, [], 4, 3, 0, 0, 0,
+cgxgbt_TeaFileHandle$1, 0, jl_Object, [], 32, 0, 0, cgxgbt_TeaFileHandle$1_$callClinit, 0,
 ji_ByteArrayOutputStream, 0, ji_OutputStream, [], 0, 3, 0, 0, 0,
-cbgu_StreamUtils$OptimizedByteArrayOutputStream, 0, ji_ByteArrayOutputStream, [], 0, 3, 0, 0, 0,
-ji_InputStream, 0, jl_Object, [ji_Closeable], 1, 3, 0, 0, 0,
-cgxgbtf_FileDB$1, 0, ji_OutputStream, [], 0, 0, 0, 0, ["$close", $rt_wrapFunction0(cgxgbtf_FileDB$1_close)],
-ji_ByteArrayInputStream, 0, ji_InputStream, [], 0, 3, 0, 0, ["$close", $rt_wrapFunction0(ji_ByteArrayInputStream_close)],
-cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0, 0, jl_Object, [otji_EventHandler], 0, 3, 0, 0, 0]);
+cgxgbtf_FileDB$1, 0, ji_OutputStream, [], 0, 0, 0, 0, 0,
+otcin_Buffers, 0, jl_Object, [], 4, 3, 0, 0, 0,
+jn_NativeBuffer, 0, jl_Object, [], 3, 3, 0, 0, 0]);
 let $rt_booleanArrayCls = $rt_arraycls($rt_booleancls),
 $rt_charArrayCls = $rt_arraycls($rt_charcls),
 $rt_byteArrayCls = $rt_arraycls($rt_bytecls),
@@ -24101,25 +23545,24 @@ $rt_shortArrayCls = $rt_arraycls($rt_shortcls),
 $rt_intArrayCls = $rt_arraycls($rt_intcls),
 $rt_longArrayCls = $rt_arraycls($rt_longcls),
 $rt_floatArrayCls = $rt_arraycls($rt_floatcls);
-$rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Class cannot be created (missing no-arg constructor): ", "GL_EXT_texture_filter_anisotropic", "New data must have the same managed status as the old data", "This TextureData implementation does not upload data itself", "GL_ARB_framebuffer_object", "GL_EXT_framebuffer_object", "com.badlogic.gdx.backends.lwjgl3.Lwjgl3GLES20", "index can\'t be >= size: ", " >= ", "key cannot be null.", "interface ", "class ", "", "[]", "<init>", ": ", "\n",
-"\tat ", "null", "Caused by: ", "0", "String is null", "String is empty", "String contains invalid digits: ", "String contains digits out of radix ", "The value is too big for integer type", "The value is too big for int type: ", "Illegal radix: ", "false", "true", "app", "db/assets", "high-performance", "canvas", "java.runtime.name", "userAgent", "os.name", "Windows", "OS X", "no OS", "Linux", ".html", "index.html", "index-wasm.html", "index-debug.html", "pagehide", "resize", "assets.txt", "update-thread",
-"[root]", "classical-page", "c/t", "c/gs", "[root-scene]", "SpriteBatch.end must be called before begin.", "u_projTrans", "u_texture", "gdx.wasm.js", "howler.js", "WEB_SCRIPT_PATH", "WEB_ASSET_PATH", "bounces cannot be < 2 or > 5: ", "INIT", "PRELOAD_ASSETS", "DOWNLOAD_ASSETS", "APP_CREATE", "APP_LOOP", "object", "function", "string", "number", "undefined", "Either src or dest is null", "java.version", "1.8", "TeaVM", "file.separator", "/", "path.separator", ":", "line.separator", "java.io.tmpdir", "/tmp", "java.vm.version",
-"user.home", "GLVersion", "OpenGL ES (\\d(\\.\\d){0,2})", "WebGL (\\d(\\.\\d){0,2})", "(\\d(\\.\\d){0,2})", "px", "Loading asset: ", "Unsupported asset type ", "assets/", "scripts/", "Loading script: ", "mousedown", "mouseup", "mousemove", "wheel", "touchstart", "touchmove", "touchcancel", "touchend", "keydown", "keypress", "keyup", "CSS1Compat", "IndexedDB is not supported in this browser", "hidden", "visible", "capacity must be >= 0: ", "The required capacity is too large: ", "glGetFloat not supported by WebGL backend",
-"GL error: ", ", ", "Invalid version string: ", "\\.", "Error parsing number: ", ", assuming: ", "libGDX GL", "Android", "Desktop", "HeadlessDesktop", "Applet", "WebGL", "iOS", " REMOVE FOLDER: ", " REMOVE FILE: ", " Path: ", " Error: ", " CONTAINS FOLDER: ", " CONTAINS FILE: ", ".", "./", " GET FOLDER: ", " GET FILE: ", " Size: ", " PUT FILE: ", " Bytes: ", "Cannot put an empty folder name", " PUT FOLDER: ", "PUT FOLDER DB: ", "PUT FILE DB: ", "REMOVE FILE DB: ", "OpenGL", "GLES", "NONE", "Patter is null",
-"IndexedDB Error opening database: ", "public", "protected", "private", "abstract", "static", "final", "transient", "volatile", "synchronized", "native", "strictfp", "interface", "fSet", "Is", "In", "NonCapFSet", "AheadFSet", "BehindFSet", "AtomicFSet", "FinalSet", "<Empty set>", "JointSet", "NonCapJointSet", "PosLookaheadJointSet", "NegLookaheadJointSet", "PosBehindJointSet", "NegBehindJointSet", "<Quant>", "<GroupQuant>", "Lower", "Upper", "ASCII", "Alpha", "Digit", "Alnum", "Punct", "Graph", "Print", "Blank",
-"Cntrl", "XDigit", "javaLowerCase", "javaUpperCase", "javaWhitespace", "javaMirrored", "javaDefined", "javaDigit", "javaIdentifierIgnorable", "javaISOControl", "javaJavaIdentifierPart", "javaJavaIdentifierStart", "javaLetter", "javaLetterOrDigit", "javaSpaceChar", "javaTitleCase", "javaUnicodeIdentifierPart", "javaUnicodeIdentifierStart", "Space", "w", "W", "s", "S", "d", "D", "BasicLatin", "Latin-1Supplement", "LatinExtended-A", "LatinExtended-B", "IPAExtensions", "SpacingModifierLetters", "CombiningDiacriticalMarks",
-"Greek", "Cyrillic", "CyrillicSupplement", "Armenian", "Hebrew", "Arabic", "Syriac", "ArabicSupplement", "Thaana", "Devanagari", "Bengali", "Gurmukhi", "Gujarati", "Oriya", "Tamil", "Telugu", "Kannada", "Malayalam", "Sinhala", "Thai", "Lao", "Tibetan", "Myanmar", "Georgian", "HangulJamo", "Ethiopic", "EthiopicSupplement", "Cherokee", "UnifiedCanadianAboriginalSyllabics", "Ogham", "Runic", "Tagalog", "Hanunoo", "Buhid", "Tagbanwa", "Khmer", "Mongolian", "Limbu", "TaiLe", "NewTaiLue", "KhmerSymbols", "Buginese",
-"PhoneticExtensions", "PhoneticExtensionsSupplement", "CombiningDiacriticalMarksSupplement", "LatinExtendedAdditional", "GreekExtended", "GeneralPunctuation", "SuperscriptsandSubscripts", "CurrencySymbols", "CombiningMarksforSymbols", "LetterlikeSymbols", "NumberForms", "Arrows", "MathematicalOperators", "MiscellaneousTechnical", "ControlPictures", "OpticalCharacterRecognition", "EnclosedAlphanumerics", "BoxDrawing", "BlockElements", "GeometricShapes", "MiscellaneousSymbols", "Dingbats", "MiscellaneousMathematicalSymbols-A",
-"SupplementalArrows-A", "BraillePatterns", "SupplementalArrows-B", "MiscellaneousMathematicalSymbols-B", "SupplementalMathematicalOperators", "MiscellaneousSymbolsandArrows", "Glagolitic", "Coptic", "GeorgianSupplement", "Tifinagh", "EthiopicExtended", "SupplementalPunctuation", "CJKRadicalsSupplement", "KangxiRadicals", "IdeographicDescriptionCharacters", "CJKSymbolsandPunctuation", "Hiragana", "Katakana", "Bopomofo", "HangulCompatibilityJamo", "Kanbun", "BopomofoExtended", "CJKStrokes", "KatakanaPhoneticExtensions",
-"EnclosedCJKLettersandMonths", "CJKCompatibility", "CJKUnifiedIdeographsExtensionA", "YijingHexagramSymbols", "CJKUnifiedIdeographs", "YiSyllables", "YiRadicals", "ModifierToneLetters", "SylotiNagri", "HangulSyllables", "HighSurrogates", "HighPrivateUseSurrogates", "LowSurrogates", "PrivateUseArea", "CJKCompatibilityIdeographs", "AlphabeticPresentationForms", "ArabicPresentationForms-A", "VariationSelectors", "VerticalForms", "CombiningHalfMarks", "CJKCompatibilityForms", "SmallFormVariants", "ArabicPresentationForms-B",
-"HalfwidthandFullwidthForms", "all", "Specials", "Cn", "IsL", "Lu", "Ll", "Lt", "Lm", "Lo", "IsM", "Mn", "Me", "Mc", "N", "Nd", "Nl", "No", "IsZ", "Zs", "Zl", "Zp", "IsC", "Cc", "Cf", "Co", "Cs", "IsP", "Pd", "Ps", "Pe", "Pc", "Po", "IsS", "Sm", "Sc", "Sk", "So", "Pi", "Pf", "posFSet", " ", "^ ", "range:", "CompositeRangeSet:  <nonsurrogate> ", " <surrogate> ", "UCI range:", "decomposed Hangul syllable:", "UCI ", "CI ", "decomposed char:", "<DotAllQuant>", "<DotQuant>", "<SOL>", "WordBoundary", "PreviousMatch",
-"<EOL>", "EOI", "^", "DotAll", "<Unix MultiLine $>", "<MultiLine $>", "CI back reference: ", "back reference: ", "UCI back reference: ", "sequence: ", "UCI sequence: ", "CI sequence: ", "PX", "PCT", "EM", "EX", "PT", "PC", "IN", "CM", "MM", "main", "success", "failure", "IndexedDB Error cursor", "Script download success: ", "Script download failed: ", "#iterator() cannot be used nested.", "No support for buffer ", "Should never been thrown", "Invalid assets description file. ", "1", "c", "l", "\\", "Type ",
-" is not supported", "Binary", "b", "Directory", "IndexedDB Error putting file: ", ">> add Scene: ", ">> unload Scene: ", "Index is ", ", size is ", "Can\'t have more than 8191 sprites per batch: ", "a_position", "a_color", "a_texCoord0", "attributes must be >= 1", "attribute vec4 a_position;\nattribute vec4 a_color;\nattribute vec2 a_texCoord0;\nuniform mat4 u_projTrans;\nvarying vec4 v_color;\nvarying vec2 v_texCoords;\n\nvoid main()\n{\n   v_color = a_color;\n   v_color.a = v_color.a * (255.0/254.0);\n   v_texCoords = a_texCoord0;\n   gl_Position =  u_projTrans * a_position;\n}\n",
-"#ifdef GL_ES\n#define LOWP lowp\nprecision mediump float;\n#else\n#define LOWP \n#endif\nvarying LOWP vec4 v_color;\nvarying vec2 v_texCoords;\nuniform sampler2D u_texture;\nvoid main()\n{\n  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n}", "Error compiling shader: ", "SpriteBatch.begin must be called before end.", "Mesh attempting to access memory outside of the index buffer (count: ", ", offset: ", ", max: ", ")", "image/golf_ball.png", "get failed: ", "Data", "File is null, it does not exist: ",
-"File not found: ", " (", "Error reading file: ", "SpriteBatch.begin must be called before draw.", "VertexArray", "VertexBufferObject", "VertexBufferObjectSubData", "VertexBufferObjectWithVAO", "Fragment shader:\n", "Vertex shader\n", "An attempted fetch uniform from uncompiled shader \n", "No uniform with name \'", "\' in shader", "No buffer allocated!", "IndexBufferObject cannot be used after it has been disposed.", "data must be a ByteBuffer or FloatBuffer", "New position ", " is outside of range [0;", "Capacity is negative: ",
-" is not set", " at ", "[ByteBuffer position=", ", limit=", ", capacity=", ", mark ", "BIG_ENDIAN", "LITTLE_ENDIAN", "Index ", "Asset download failed: ", "Asset download success: ", "This buffer is not allocated in linear memory and does not wrap native JS buffer", "pos is ", "�", "Replacement preconditions do not hold", "UTF-8", "IGNORE", "REPLACE", "REPORT", "Action must be non-null", "Malformed input of length ", "Unmappable characters of length ", "Unknown Format: ", "Pixmap already disposed!", "unknown format: ",
-"Unknown Gdx2DPixmap Format: ", "Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888", "class", "Classpath", "Internal", "External", "Absolute", "Local", "None", "SourceOver", "NearestNeighbour", "BiLinear", "prepare() must not be called on a PixmapTextureData instance as it is already prepared.", "FileType \'", "\' Not supported in web backend", "Error writing file: ", "Can only free direct buffer", "json", "javascript", "minimal", "^[a-zA-Z_$][a-zA-Z_$0-9]*$", "^[^\":,}/ ][^:]*$", "^[^\":,{\\[\\]/ ][^}\\],]*$",
-"newAction must be non-null", "Nearest", "Linear", "MipMap", "MipMapNearestNearest", "MipMapLinearNearest", "MipMapNearestLinear", "MipMapLinearLinear", "MirroredRepeat", "ClampToEdge", "Repeat", "Pixmap", "Custom", "texture width and height must be square when using mipmapping.", "IndexedDB Error removing file: "]);
+$rt_stringPool(["Can\'t enter monitor from another thread synchronously", "Class cannot be created (missing no-arg constructor): ", "GL_EXT_texture_filter_anisotropic", "key cannot be null.", "interface ", "class ", "", "[]", "<init>", ": ", "\n", "\tat ", "null", "Caused by: ", "0", "String is null", "String is empty", "String contains invalid digits: ", "String contains digits out of radix ", "The value is too big for integer type", "The value is too big for int type: ", "Illegal radix: ", "app", "db/assets",
+"high-performance", "canvas", "java.runtime.name", "userAgent", "os.name", "Windows", "OS X", "no OS", "Linux", ".html", "index.html", "index-wasm.html", "index-debug.html", "pagehide", "resize", "assets.txt", "update-thread", "[root]", "classical-page", "c/t", "c/gs", "[root-scene]", "SpriteBatch.end must be called before begin.", "u_projTrans", "u_texture", "index can\'t be >= size: ", " >= ", "gdx.wasm.js", "howler.js", "WEB_SCRIPT_PATH", "WEB_ASSET_PATH", "bounces cannot be < 2 or > 5: ", "INIT", "PRELOAD_ASSETS",
+"DOWNLOAD_ASSETS", "APP_CREATE", "APP_LOOP", "object", "function", "string", "number", "undefined", "Either src or dest is null", "java.version", "1.8", "TeaVM", "file.separator", "/", "path.separator", ":", "line.separator", "java.io.tmpdir", "/tmp", "java.vm.version", "user.home", "GLVersion", "OpenGL ES (\\d(\\.\\d){0,2})", "WebGL (\\d(\\.\\d){0,2})", "(\\d(\\.\\d){0,2})", "px", "Loading asset: ", "Unsupported asset type ", "assets/", "scripts/", "Loading script: ", "mousedown", "mouseup", "mousemove", "wheel",
+"touchstart", "touchmove", "touchcancel", "touchend", "keydown", "keypress", "keyup", "CSS1Compat", "IndexedDB is not supported in this browser", "hidden", "visible", "capacity must be >= 0: ", "The required capacity is too large: ", "glGetFloat not supported by WebGL backend", "GL error: ", ", ", "Invalid version string: ", "\\.", "Error parsing number: ", ", assuming: ", "libGDX GL", "Android", "Desktop", "HeadlessDesktop", "Applet", "WebGL", "iOS", " CONTAINS FOLDER: ", " CONTAINS FILE: ", "false", "true",
+" Path: ", ".", "./", " PUT FILE: ", " Bytes: ", "Cannot put an empty folder name", " PUT FOLDER: ", "PUT FOLDER DB: ", "PUT FILE DB: ", "OpenGL", "GLES", "NONE", "Patter is null", "IndexedDB Error opening database: ", "public", "protected", "private", "abstract", "static", "final", "transient", "volatile", "synchronized", "native", "strictfp", "interface", "fSet", "Is", "In", "NonCapFSet", "AheadFSet", "BehindFSet", "AtomicFSet", "FinalSet", "<Empty set>", "JointSet", "NonCapJointSet", "PosLookaheadJointSet",
+"NegLookaheadJointSet", "PosBehindJointSet", "NegBehindJointSet", "<Quant>", "<GroupQuant>", "Lower", "Upper", "ASCII", "Alpha", "Digit", "Alnum", "Punct", "Graph", "Print", "Blank", "Cntrl", "XDigit", "javaLowerCase", "javaUpperCase", "javaWhitespace", "javaMirrored", "javaDefined", "javaDigit", "javaIdentifierIgnorable", "javaISOControl", "javaJavaIdentifierPart", "javaJavaIdentifierStart", "javaLetter", "javaLetterOrDigit", "javaSpaceChar", "javaTitleCase", "javaUnicodeIdentifierPart", "javaUnicodeIdentifierStart",
+"Space", "w", "W", "s", "S", "d", "D", "BasicLatin", "Latin-1Supplement", "LatinExtended-A", "LatinExtended-B", "IPAExtensions", "SpacingModifierLetters", "CombiningDiacriticalMarks", "Greek", "Cyrillic", "CyrillicSupplement", "Armenian", "Hebrew", "Arabic", "Syriac", "ArabicSupplement", "Thaana", "Devanagari", "Bengali", "Gurmukhi", "Gujarati", "Oriya", "Tamil", "Telugu", "Kannada", "Malayalam", "Sinhala", "Thai", "Lao", "Tibetan", "Myanmar", "Georgian", "HangulJamo", "Ethiopic", "EthiopicSupplement", "Cherokee",
+"UnifiedCanadianAboriginalSyllabics", "Ogham", "Runic", "Tagalog", "Hanunoo", "Buhid", "Tagbanwa", "Khmer", "Mongolian", "Limbu", "TaiLe", "NewTaiLue", "KhmerSymbols", "Buginese", "PhoneticExtensions", "PhoneticExtensionsSupplement", "CombiningDiacriticalMarksSupplement", "LatinExtendedAdditional", "GreekExtended", "GeneralPunctuation", "SuperscriptsandSubscripts", "CurrencySymbols", "CombiningMarksforSymbols", "LetterlikeSymbols", "NumberForms", "Arrows", "MathematicalOperators", "MiscellaneousTechnical", "ControlPictures",
+"OpticalCharacterRecognition", "EnclosedAlphanumerics", "BoxDrawing", "BlockElements", "GeometricShapes", "MiscellaneousSymbols", "Dingbats", "MiscellaneousMathematicalSymbols-A", "SupplementalArrows-A", "BraillePatterns", "SupplementalArrows-B", "MiscellaneousMathematicalSymbols-B", "SupplementalMathematicalOperators", "MiscellaneousSymbolsandArrows", "Glagolitic", "Coptic", "GeorgianSupplement", "Tifinagh", "EthiopicExtended", "SupplementalPunctuation", "CJKRadicalsSupplement", "KangxiRadicals", "IdeographicDescriptionCharacters",
+"CJKSymbolsandPunctuation", "Hiragana", "Katakana", "Bopomofo", "HangulCompatibilityJamo", "Kanbun", "BopomofoExtended", "CJKStrokes", "KatakanaPhoneticExtensions", "EnclosedCJKLettersandMonths", "CJKCompatibility", "CJKUnifiedIdeographsExtensionA", "YijingHexagramSymbols", "CJKUnifiedIdeographs", "YiSyllables", "YiRadicals", "ModifierToneLetters", "SylotiNagri", "HangulSyllables", "HighSurrogates", "HighPrivateUseSurrogates", "LowSurrogates", "PrivateUseArea", "CJKCompatibilityIdeographs", "AlphabeticPresentationForms",
+"ArabicPresentationForms-A", "VariationSelectors", "VerticalForms", "CombiningHalfMarks", "CJKCompatibilityForms", "SmallFormVariants", "ArabicPresentationForms-B", "HalfwidthandFullwidthForms", "all", "Specials", "Cn", "IsL", "Lu", "Ll", "Lt", "Lm", "Lo", "IsM", "Mn", "Me", "Mc", "N", "Nd", "Nl", "No", "IsZ", "Zs", "Zl", "Zp", "IsC", "Cc", "Cf", "Co", "Cs", "IsP", "Pd", "Ps", "Pe", "Pc", "Po", "IsS", "Sm", "Sc", "Sk", "So", "Pi", "Pf", "posFSet", " ", "^ ", "range:", "CompositeRangeSet:  <nonsurrogate> ", " <surrogate> ",
+"UCI range:", "decomposed Hangul syllable:", "UCI ", "CI ", "decomposed char:", "<DotAllQuant>", "<DotQuant>", "<SOL>", "WordBoundary", "PreviousMatch", "<EOL>", "EOI", "^", "DotAll", "<Unix MultiLine $>", "<MultiLine $>", "CI back reference: ", "back reference: ", "UCI back reference: ", "sequence: ", "UCI sequence: ", "CI sequence: ", "PX", "PCT", "EM", "EX", "PT", "PC", "IN", "CM", "MM", "main", "success", "failure", "IndexedDB Error cursor", "Script download success: ", "Script download failed: ", "#iterator() cannot be used nested.",
+"No support for buffer ", "Should never been thrown", "Invalid assets description file. ", "1", "c", "l", "\\", "Type ", " is not supported", "Binary", "b", "Directory", "IndexedDB Error putting file: ", ">> add Scene: ", ">> unload Scene: ", "Index is ", ", size is ", "Can\'t have more than 8191 sprites per batch: ", "a_position", "a_color", "a_texCoord0", "attributes must be >= 1", "attribute vec4 a_position;\nattribute vec4 a_color;\nattribute vec2 a_texCoord0;\nuniform mat4 u_projTrans;\nvarying vec4 v_color;\nvarying vec2 v_texCoords;\n\nvoid main()\n{\n   v_color = a_color;\n   v_color.a = v_color.a * (255.0/254.0);\n   v_texCoords = a_texCoord0;\n   gl_Position =  u_projTrans * a_position;\n}\n",
+"#ifdef GL_ES\n#define LOWP lowp\nprecision mediump float;\n#else\n#define LOWP \n#endif\nvarying LOWP vec4 v_color;\nvarying vec2 v_texCoords;\nuniform sampler2D u_texture;\nvoid main()\n{\n  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n}", "Error compiling shader: ", "SpriteBatch.begin must be called before end.", "Mesh attempting to access memory outside of the index buffer (count: ", ", offset: ", ", max: ", ")", "New data must have the same managed status as the old data", "This TextureData implementation does not upload data itself",
+"SpriteBatch.begin must be called before draw.", "VertexArray", "VertexBufferObject", "VertexBufferObjectSubData", "VertexBufferObjectWithVAO", "Fragment shader:\n", "Vertex shader\n", "An attempted fetch uniform from uncompiled shader \n", "No uniform with name \'", "\' in shader", "No buffer allocated!", "IndexBufferObject cannot be used after it has been disposed.", "data must be a ByteBuffer or FloatBuffer", "New position ", " is outside of range [0;", "Capacity is negative: ", " is not set", " at ", "[ByteBuffer position=",
+", limit=", ", capacity=", ", mark ", "BIG_ENDIAN", "LITTLE_ENDIAN", "Index ", "Asset download failed: ", "Asset download success: ", "This buffer is not allocated in linear memory and does not wrap native JS buffer", "pos is ", "�", "Replacement preconditions do not hold", "UTF-8", "IGNORE", "REPLACE", "REPORT", "Action must be non-null", "Malformed input of length ", "Unmappable characters of length ", "Unknown Format: ", "Pixmap already disposed!", "Can only free direct buffer", "unknown format: ", "Unknown Gdx2DPixmap Format: ",
+"Intensity", "LuminanceAlpha", "RGB565", "RGBA4444", "RGB888", "RGBA8888", "Classpath", "Internal", "External", "Absolute", "Local", "None", "SourceOver", "NearestNeighbour", "BiLinear", "prepare() must not be called on a PixmapTextureData instance as it is already prepared.", "FileType \'", "\' Not supported in web backend", "Error writing file: ", " (", "newAction must be non-null", "Nearest", "Linear", "MipMap", "MipMapNearestNearest", "MipMapLinearNearest", "MipMapNearestLinear", "MipMapLinearLinear", "MirroredRepeat",
+"ClampToEdge", "Repeat", "Pixmap", "Custom", "GL_ARB_framebuffer_object", "GL_EXT_framebuffer_object", "com.badlogic.gdx.backends.lwjgl3.Lwjgl3GLES20", "texture width and height must be square when using mipmapping."]);
 jl_String.prototype.toString = function() {
     return $rt_ustr(this);
 };
@@ -24205,8 +23648,6 @@ let $rt_jso_marker = Symbol('jsoClass');
     c.handleEvent = $rt_callWithReceiver(cgxgbta_AssetDownloadImpl$setOnProgress$lambda$_8_0_handleEvent$exported$0);
     c = cgxgbta_AssetDownloadImpl$lambda$loadBinaryInternally$3$lambda$_13_0.prototype;
     c.onTimer = $rt_callWithReceiver(cgxgbta_AssetDownloadImpl$lambda$loadBinaryInternally$3$lambda$_13_0_onTimer$exported$0);
-    c = cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0.prototype;
-    c.handleEvent = $rt_callWithReceiver(cgxgbtft_LocalDBStorage$removeFile$lambda$_3_0_handleEvent$exported$0);
 })();
 $rt_exports.main = $rt_export_main;
 }));
