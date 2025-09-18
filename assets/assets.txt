@@ -2,6 +2,8 @@ i:d:/font:0:1
 i:d:/font/Roboto:0:1
 i:d:/font/Roboto/static:0:1
 i:b:/font/Roboto/static/Roboto-Regular.ttf:146004:1
+i:d:/image:0:1
+i:b:/image/golf_ball.png:9823:1
 i:b:/play.png:2002:1
 i:b:/replay.png:1483:1
 c:b:/com/badlogic/gdx/utils/lsans-15.png:10270:1
